@@ -1,0 +1,190 @@
+{
+  "vertex": "unlimitedvoid:unlimited_void",
+  "fragment": "unlimitedvoid:unlimited_void",
+  "attributes": [
+    "Position"
+  ],
+  "samplers": [],
+  "uniforms": [
+    {
+      "name": "Resolution",
+      "type": "float",
+      "count": 2,
+      "values": [
+        1280,
+        720
+      ]
+    },
+    {
+      "name": "Time",
+      "type": "float",
+      "count": 1,
+      "values": [
+        0
+      ]
+    },
+    {
+      "name": "Opacity",
+      "type": "float",
+      "count": 1,
+      "values": [
+        0
+      ]
+    },
+    {
+      "name": "TanHalfFov",
+      "type": "float",
+      "count": 1,
+      "values": [
+        0.7
+      ]
+    },
+    {
+      "name": "CameraRight",
+      "type": "float",
+      "count": 3,
+      "values": [
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "CameraUp",
+      "type": "float",
+      "count": 3,
+      "values": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "name": "CameraForward",
+      "type": "float",
+      "count": 3,
+      "values": [
+        0,
+        0,
+        -1
+      ]
+    },
+    {
+      "name": "VoidAxis",
+      "type": "float",
+      "count": 3,
+      "values": [
+        0,
+        0,
+        -1
+      ]
+    },
+    {
+      "name": "DomainStyle",
+      "type": "float",
+      "count": 1,
+      "values": [
+        0
+      ]
+    },
+    {
+      "name": "DomainAge",
+      "type": "float",
+      "count": 1,
+      "values": [
+        0
+      ]
+    },
+    {
+      "name": "VoidOpacity",
+      "type": "float",
+      "count": 1,
+      "values": [
+        0
+      ]
+    },
+    {
+      "name": "ShrineOpacity",
+      "type": "float",
+      "count": 1,
+      "values": [
+        1
+      ]
+    },
+    {
+      "name": "DomainRadius",
+      "type": "float",
+      "count": 1,
+      "values": [
+        16
+      ]
+    },
+    {
+      "name": "ClashAmount",
+      "type": "float",
+      "count": 1,
+      "values": [
+        0
+      ]
+    },
+    {
+      "name": "Closing",
+      "type": "float",
+      "count": 1,
+      "values": [
+        -1
+      ]
+    },
+    {
+      "name": "Overlay",
+      "type": "float",
+      "count": 1,
+      "values": [
+        0
+      ]
+    },
+    {
+      "name": "Veil",
+      "type": "float",
+      "count": 1,
+      "values": [
+        0
+      ]
+    },
+    {
+      "name": "CameraOffset",
+      "type": "float",
+      "count": 3,
+      "values": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "ClashNormal",
+      "type": "float",
+      "count": 3,
+      "values": [
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "ShrineSky",
+      "type": "float",
+      "count": 1,
+      "values": [
+        0
+      ]
+    }
+  ],
+  "blend": {
+    "func": "add",
+    "srcrgb": "srcalpha",
+    "dstrgb": "1-srcalpha",
+    "srcalpha": "1",
+    "dstalpha": "0"
+  }
+}

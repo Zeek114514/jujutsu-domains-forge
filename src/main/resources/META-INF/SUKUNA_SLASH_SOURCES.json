@@ -1,0 +1,32 @@
+[
+  {
+    "name": "landed",
+    "title": "Sukuna Slash [Landed]",
+    "page": "https://www.myinstants.com/en/instant/sukuna-slash-landed-93070/",
+    "download": "https://www.myinstants.com/media/sounds/sukuna-slash-landed.mp3",
+    "sha256": "4960ee8dbec1daf9837714d4c0eb0568a43e9c1043738af0cd241acbb767a65f",
+    "bytes": 12581,
+    "seconds": 0.24585034013605442,
+    "peak": 0.5154104232788086
+  },
+  {
+    "name": "launched",
+    "title": "Sukuna [Slash Launched] sound",
+    "page": "https://www.myinstants.com/en/instant/sukuna-slash-launched-sound-35105/",
+    "download": "https://www.myinstants.com/media/sounds/sukuna-slash-launched-sound.mp3",
+    "sha256": "412cda98e3c9486663c8c4de8062288f397a80350fe8aa1bb5bda6a01e4ccb74",
+    "bytes": 6312,
+    "seconds": 0.1,
+    "peak": 1.152038812637329
+  },
+  {
+    "name": "launched2",
+    "title": "Sukuna [Slash Launched2]",
+    "page": "https://www.myinstants.com/en/instant/sukuna-slash-launched2-96125/",
+    "download": "https://www.myinstants.com/media/sounds/sukuna-slash-launched2.mp3",
+    "sha256": "d93c5de9a4bc5be1ddde58d197b16aae23dbb2afdb01703f190c4a63dd0973fb",
+    "bytes": 6312,
+    "seconds": 0.10027210884353742,
+    "peak": 0.8493167161941528
+  }
+]

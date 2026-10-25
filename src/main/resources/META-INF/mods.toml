@@ -1,0 +1,25 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="MIT (code); separate terms for third-party audio"
+issueTrackerURL="https://github.com/Zeek114514/jujutsu-domains-forge/issues"
+
+[[mods]]
+modId="unlimitedvoid"
+version="1.0.0"
+displayName="Jujutsu Domains / 咒术领域"
+authors="Zeek114514"
+displayURL="https://github.com/Zeek114514/jujutsu-domains-forge"
+displayTest="MATCH_VERSION"
+description='''Unlimited Void closed barrier and Malevolent Shrine open slashing domain. U expands or dismisses, J switches, K resets burnout. Shrine has up to 200-block radius, adaptive Cleave and Dismantle, and shell breaking. Install on server and clients.'''
+[[dependencies.unlimitedvoid]]
+modId="forge"
+mandatory=true
+versionRange="[47.4.10,48)"
+ordering="NONE"
+side="BOTH"
+[[dependencies.unlimitedvoid]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.20.1]"
+ordering="NONE"
+side="BOTH"

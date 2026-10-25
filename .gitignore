@@ -1,0 +1,30 @@
+# Build and local development
+.gradle/
+build/
+run/
+bin/
+out/
+.idea/
+.vscode/
+.settings/
+.classpath
+.project
+*.iml
+*.launch
+__pycache__/
+*.pyc
+*.log
+.DS_Store
+Thumbs.db
+
+# Local credentials and machine-specific settings
+.env
+.env.*
+!.env.example
+local.properties
+*.jks
+*.keystore
+
+# Generated captures and releases
+screenshots/
+releases/

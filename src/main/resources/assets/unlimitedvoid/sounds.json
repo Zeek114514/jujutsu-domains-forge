@@ -1,0 +1,57 @@
+{
+  "void_expand": {
+    "sounds": [
+      "unlimitedvoid:void_expand"
+    ],
+    "subtitle": "subtitles.unlimitedvoid.void_expand"
+  },
+  "shrine_expand": {
+    "sounds": [
+      "unlimitedvoid:shrine_expand"
+    ],
+    "subtitle": "subtitles.unlimitedvoid.shrine_expand"
+  },
+  "slash_wind": {
+    "sounds": [
+      "unlimitedvoid:slash_wind_1",
+      "unlimitedvoid:slash_wind_2",
+      "unlimitedvoid:slash_wind_3"
+    ],
+    "subtitle": "subtitles.unlimitedvoid.slash_wind"
+  },
+  "slash_hit": {
+    "sounds": [
+      "unlimitedvoid:slash_hit_1",
+      "unlimitedvoid:slash_hit_2"
+    ],
+    "subtitle": "subtitles.unlimitedvoid.slash_hit"
+  },
+  "domain_collapse": {
+    "sounds": [
+      "unlimitedvoid:domain_collapse"
+    ],
+    "subtitle": "subtitles.unlimitedvoid.domain_collapse"
+  },
+  "shell_break": {
+    "sounds": [
+      "unlimitedvoid:shell_break"
+    ],
+    "subtitle": "subtitles.unlimitedvoid.shell_break"
+  },
+  "void_ambience": {
+    "sounds": [
+      {
+        "name": "unlimitedvoid:void_ambience",
+        "stream": true
+      }
+    ]
+  },
+  "shrine_ambience": {
+    "sounds": [
+      {
+        "name": "unlimitedvoid:shrine_ambience",
+        "stream": true
+      }
+    ]
+  }
+}

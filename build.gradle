@@ -1,0 +1,43 @@
+plugins {
+    id 'net.minecraftforge.gradle' version '6.0.54'
+}
+version = '1.0.0'
+group = 'dev.unlimitedvoid'
+base { archivesName = 'unlimited-void-1.20.1' }
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+minecraft {
+    mappings channel: 'official', version: '1.20.1'
+    runs {
+        client {
+            workingDirectory project.file('run')
+            args '--width', '1280', '--height', '720', '--mixin', 'unlimitedvoid.mixins.json'
+            property 'forge.logging.console.level', 'info'
+            property 'mixin.config', 'unlimitedvoid.mixins.json'
+            mods { unlimitedvoid { source sourceSets.main } }
+        }
+    }
+}
+dependencies { minecraft 'net.minecraftforge:forge:1.20.1-47.4.10' }
+tasks.named('jar', Jar).configure {
+    manifest { attributes 'MixinConfigs': 'unlimitedvoid.mixins.json' }
+    from('LICENSE') { into 'META-INF'; rename { 'LICENSE-MIT.txt' } }
+    from('THIRD_PARTY_NOTICES.md') { into 'META-INF' }
+    finalizedBy 'reobfJar'
+}
+tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
+
+// Geometry checks run headlessly; they do not create a client or game world.
+sourceSets {
+    validation {
+        java.srcDir 'tools/validation'
+        compileClasspath += sourceSets.main.output + sourceSets.main.compileClasspath
+        runtimeClasspath += output + compileClasspath
+    }
+}
+tasks.register('validateGround', JavaExec) {
+    dependsOn 'classes', 'validationClasses'
+    classpath = sourceSets.validation.runtimeClasspath
+    mainClass = 'dev.unlimitedvoid.server.ShrineGroundCheck15'
+    jvmArgs '-Djava.awt.headless=true'
+}
+tasks.named('check') { dependsOn 'validateGround' }

@@ -1,0 +1,20 @@
+[
+  {
+    "name": "energy_slash",
+    "url": "https://cdn.freesound.org/previews/724/724716_15139380-hq.mp3",
+    "bytes": 12420,
+    "sha256": "5b9fbd1c8b78cd2e69c0ebfd178e229308b37058fe71da1cd4311c7f70a94b59"
+  },
+  {
+    "name": "blade_impact",
+    "url": "https://cdn.freesound.org/previews/568/568169_12735833-hq.mp3",
+    "bytes": 17136,
+    "sha256": "85c4dd67e30321434e67b14f1b0da0fe58e7349e70e35435e7eb0a4ca7c92e5e"
+  },
+  {
+    "name": "portal",
+    "url": "https://cdn.freesound.org/previews/647/647448_12409941-hq.mp3",
+    "bytes": 555888,
+    "sha256": "95c97b83f091fc2cf9dc1e2fe960d9fa7cd6aa3ff25e57b99c47b3ab67decc03"
+  }
+]
