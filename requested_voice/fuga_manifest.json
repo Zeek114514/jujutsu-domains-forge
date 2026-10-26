@@ -1,0 +1,76 @@
+{
+  "source_page": "https://soundboards.gg/sound/9151-sukuna-fi-re-arrow-audio",
+  "source_url": "https://soundboardsgg.fra1.cdn.digitaloceanspaces.com/sounds/9151-sukuna-fi-re-arrow-audio.mp3",
+  "source_sha256": "63b747a4d30db850747ad2387241318dd3627b0478c35817a829e4cb3434d815",
+  "source_duration_seconds": 21.696,
+  "trim_seconds": [
+    5.0,
+    7.75
+  ],
+  "output": "src/main/resources/assets/unlimitedvoid/sounds/fuga_open.ogg",
+  "output_sha256": "857e093c0304bdc3cab6ad089fd453ea8fff321824caa4e352fac2466cd39109",
+  "full_draw_seconds": 1.5,
+  "release_seconds": 2.7,
+  "alignment": "Local whisper.cpp small Japanese ASR and token alignment; Fuga phonetics around original 6.5..7.5s. No manual listening verification.",
+  "license": "User-selected third-party character clip; no general redistribution license established; not MIT or CC0.",
+  "processing": {
+    "codec": "libvorbis",
+    "quality": 5,
+    "sample_rate": 44100,
+    "channels": 1,
+    "filter": "atrim=start=5:end=7.75,asetpts=PTS-STARTPTS,highpass=f=70,loudnorm=I=-16:TP=-3:LRA=7,alimiter=limit=0.85:level=false,afade=t=in:d=0.025,afade=t=out:st=2.69:d=0.06"
+  },
+  "verification": {
+    "decoded_duration_seconds": 2.75,
+    "decoded_mean_volume_db": -16.7,
+    "decoded_peak_volume_db": -1.4,
+    "runtime_log": "build/fuga-voice-final/console.log",
+    "manual_listening": false
+  },
+  "effects": [
+    {
+      "event": "fuga_launch",
+      "source_trim_seconds": [
+        7.75,
+        8.35
+      ],
+      "output": "src/main/resources/assets/unlimitedvoid/sounds/fuga_launch.ogg",
+      "sha256": "f4f39b67b92b6703db3a42d7801c77205cffe1c086aa21db311e3bd619d51fb0",
+      "filter": "atrim=start=7.75:end=8.35,asetpts=PTS-STARTPTS,highpass=f=45,loudnorm=I=-18:TP=-3:LRA=9,alimiter=limit=0.82:level=false,afade=t=in:d=0.008,afade=t=out:st=0.510:d=0.09",
+      "decoded_seconds": 0.597125,
+      "mean_db": -16.27,
+      "peak_db": -2.16,
+      "attenuation_distance": 96,
+      "manual_listening": false
+    },
+    {
+      "event": "fuga_impact",
+      "source_trim_seconds": [
+        9.54,
+        15.95
+      ],
+      "output": "src/main/resources/assets/unlimitedvoid/sounds/fuga_impact.ogg",
+      "sha256": "eab67e9c562b5509cefa7d14e7ff008b9c8576d44f847876b3194c5eeccc5c81",
+      "filter": "atrim=start=9.54:end=15.95,asetpts=PTS-STARTPTS,highpass=f=45,loudnorm=I=-17:TP=-3:LRA=9,alimiter=limit=0.82:level=false,afade=t=in:d=0.008,afade=t=out:st=6.320:d=0.09",
+      "decoded_seconds": 6.41,
+      "mean_db": -17.05,
+      "peak_db": -4.68,
+      "attenuation_distance": 384,
+      "manual_listening": false
+    }
+  ],
+  "effects_verification": {
+    "runtime_log": "build/fuga-sfx-final/console.log",
+    "near_launch_impact_ticks": [
+      93,
+      95
+    ],
+    "far_launch_impact_ticks": [
+      323,
+      328
+    ],
+    "cancel_before_release": true,
+    "cancel_active_impact_tail": true,
+    "manual_listening": false
+  }
+}

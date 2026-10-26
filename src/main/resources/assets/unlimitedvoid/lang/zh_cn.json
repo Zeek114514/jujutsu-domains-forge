@@ -32,5 +32,15 @@
   "subtitles.unlimitedvoid.slash_hit": "斩击命中",
   "subtitles.unlimitedvoid.domain_collapse": "领域消散",
   "subtitles.unlimitedvoid.shell_break": "结界破裂",
-  "message.unlimitedvoid.no_ground": "人物下方没有可用地面，无法展开伏魔御厨子"
+  "message.unlimitedvoid.no_ground": "人物下方没有可用地面，无法展开伏魔御厨子",
+  "key.unlimitedvoid.fuga": "灶·开（纯特效预览）",
+  "message.unlimitedvoid.fuga_preview": "灶·开：纯特效预览（无伤害、无地形破坏），10秒冷却",
+  "key.unlimitedvoid.fuga_reset": "重置灶·开冷却",
+  "hud.unlimitedvoid.fuga": "灶·开 [%s] · %s  |  [%s] 重置冷却",
+  "hud.unlimitedvoid.fuga_ready": "就绪",
+  "hud.unlimitedvoid.fuga_casting": "施放中",
+  "hud.unlimitedvoid.fuga_cooldown": "冷却 %s 秒",
+  "subtitles.unlimitedvoid.fuga_open": "灶·开：Fūga",
+  "subtitles.unlimitedvoid.fuga_launch": "灶·开：火矢射出",
+  "subtitles.unlimitedvoid.fuga_impact": "灶·开：爆燃"
 }

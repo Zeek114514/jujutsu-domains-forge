@@ -53,5 +53,34 @@
         "stream": true
       }
     ]
+  },
+  "fuga_open": {
+    "sounds": [
+      {
+        "name": "unlimitedvoid:fuga_open",
+        "preload": true
+      }
+    ],
+    "subtitle": "subtitles.unlimitedvoid.fuga_open"
+  },
+  "fuga_launch": {
+    "sounds": [
+      {
+        "name": "unlimitedvoid:fuga_launch",
+        "preload": true,
+        "attenuation_distance": 96
+      }
+    ],
+    "subtitle": "subtitles.unlimitedvoid.fuga_launch"
+  },
+  "fuga_impact": {
+    "sounds": [
+      {
+        "name": "unlimitedvoid:fuga_impact",
+        "preload": true,
+        "attenuation_distance": 384
+      }
+    ],
+    "subtitle": "subtitles.unlimitedvoid.fuga_impact"
   }
 }

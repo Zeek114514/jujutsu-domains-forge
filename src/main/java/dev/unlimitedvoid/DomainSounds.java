@@ -8,6 +8,9 @@ public final class DomainSounds {
     public static final DeferredRegister<SoundEvent> EVENTS=DeferredRegister.create(ForgeRegistries.SOUND_EVENTS,UnlimitedVoid.ID);
     public static final RegistryObject<SoundEvent> VOID_EXPAND=event("void_expand");
     public static final RegistryObject<SoundEvent> SHRINE_EXPAND=event("shrine_expand");
+    public static final RegistryObject<SoundEvent> FUGA_OPEN=event("fuga_open");
+    public static final RegistryObject<SoundEvent> FUGA_LAUNCH=event("fuga_launch");
+    public static final RegistryObject<SoundEvent> FUGA_IMPACT=event("fuga_impact");
     public static final RegistryObject<SoundEvent> SLASH_WIND=event("slash_wind");
     public static final RegistryObject<SoundEvent> SLASH_HIT=event("slash_hit");
     public static final RegistryObject<SoundEvent> COLLAPSE=event("domain_collapse");

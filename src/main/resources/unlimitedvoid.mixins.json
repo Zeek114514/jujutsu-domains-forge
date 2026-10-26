@@ -4,6 +4,7 @@
   "package": "dev.unlimitedvoid.mixin",
   "compatibilityLevel": "JAVA_17",
   "client": [
+    "FugaBowPoseMixin",
     "LevelRendererMixin",
     "EntityRenderDispatcherMixin",
     "BlockEntityRenderDispatcherMixin"

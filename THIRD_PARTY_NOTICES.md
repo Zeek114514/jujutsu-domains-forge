@@ -6,6 +6,8 @@
 
 - 五条展开台词：Soundboards.gg 的 Gojo Domain Expansion 公开音频。
 - 宿傩展开台词：Myinstants 的 Malevolent Shrine 同名公开候选片段；没有断言与此前参考站点文件完全一致。
+- 灶·开台词：用户选中的 Soundboards.gg / Isuk「sukuna fire arrow audio」短片段，截取原文件 5.00–7.75 秒；来源及处理见 `requested_voice/fuga_manifest.json`。
+- 灶·开射出与爆燃声：经用户要求，继续使用同一录音的 7.75–8.35 秒与 9.54–15.95 秒，分成两个随游戏阶段触发的音效；许可边界同该录音，处理记录同上。
 - 三种刀风和两种命中：来自 Myinstants 的角色标签用户上传片段，并作混音加工。
 
 以上素材未确认通用再分发许可证，不标为 CC0、MIT 或作者原创。原作品及录音的权利归相应权利人；收录、下载或混音不代表获得了新的授权。详细链接、来源及处理记录见 [台词记录](requested_voice/README.md) 与 [斩击记录](requested_slashes/README.md)。
