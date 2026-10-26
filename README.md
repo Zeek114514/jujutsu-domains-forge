@@ -1,5 +1,7 @@
 # 咒术领域 · Jujutsu Domains
 
+> 当前本地开发分支包含 **1.1.0-preview.1 灶·开纯特效试作**：按 H 试放，10 秒独立冷却，不造成伤害或地形破坏。安装、范围和验证说明见 [试作指南](docs/FUGA_PREVIEW.md)。下文 Releases 仍指正式版 v1.0.0。
+
 [![Build](https://github.com/Zeek114514/jujutsu-domains-forge/actions/workflows/build.yml/badge.svg)](https://github.com/Zeek114514/jujutsu-domains-forge/actions/workflows/build.yml)
 [![Minecraft](https://img.shields.io/badge/Minecraft-1.20.1-62b47a)](https://www.minecraft.net/)
 [![Forge](https://img.shields.io/badge/Forge-47.4.10%2B-e5a34a)](https://files.minecraftforge.net/net/minecraftforge/forge/index_1.20.1.html)

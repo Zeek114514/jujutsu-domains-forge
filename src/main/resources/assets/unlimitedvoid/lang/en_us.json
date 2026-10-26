@@ -32,5 +32,7 @@
   "subtitles.unlimitedvoid.slash_hit": "Slash impacts",
   "subtitles.unlimitedvoid.domain_collapse": "Domain dissolves",
   "subtitles.unlimitedvoid.shell_break": "Domain shell shatters",
-  "message.unlimitedvoid.no_ground": "No supporting ground below you for Malevolent Shrine"
+  "message.unlimitedvoid.no_ground": "No supporting ground below you for Malevolent Shrine",
+  "key.unlimitedvoid.fuga": "Fuga (visual preview)",
+  "message.unlimitedvoid.fuga_preview": "Fuga visual preview: no damage or block changes; 10s cooldown"
 }
