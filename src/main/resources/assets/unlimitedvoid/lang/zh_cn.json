@@ -40,5 +40,7 @@
   "hud.unlimitedvoid.fuga_ready": "就绪",
   "hud.unlimitedvoid.fuga_casting": "施放中",
   "hud.unlimitedvoid.fuga_cooldown": "冷却 %s 秒",
-  "subtitles.unlimitedvoid.fuga_open": "灶·开：Fūga"
+  "subtitles.unlimitedvoid.fuga_open": "灶·开：Fūga",
+  "subtitles.unlimitedvoid.fuga_launch": "灶·开：火矢射出",
+  "subtitles.unlimitedvoid.fuga_impact": "灶·开：爆燃"
 }

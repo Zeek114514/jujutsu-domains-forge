@@ -51,7 +51,7 @@ public final class FugaClient {
             e=new Effect(owner,from,to,seed,mc.level.getGameTime());EFFECTS.put(owner,e);
             if(phase==0)ClientFugaAudio.play(owner,from);
         }
-        if(phase==1){e.from=from;e.to=to;e.flight=flight;e.released=true;e.start=mc.level.getGameTime()-FugaTimeline.CHARGE;}
+        if(phase==1&&!e.released){e.from=from;e.to=to;e.flight=flight;e.released=true;e.start=mc.level.getGameTime()-FugaTimeline.CHARGE;ClientFugaAudio.launch(owner,from);}
     }
     @SubscribeEvent public static void tick(TickEvent.ClientTickEvent event) {
         if(event.phase!=TickEvent.Phase.END)return;
@@ -67,6 +67,7 @@ public final class FugaClient {
             float age=e.age(mc.level,0),burst=FugaTimeline.burstAge(age,e.flight);
             if(e.lastParticleTick==mc.level.getGameTime())continue;
             e.lastParticleTick=mc.level.getGameTime();
+            if(e.released&&burst>=0&&!e.impactSoundPlayed){e.impactSoundPlayed=true;ClientFugaAudio.impact(e.owner,e.to);}
             if(e.released&&burst<0){
                 Vec3 p=e.from.lerp(e.to,FugaTimeline.travel(age,e.flight));
                 mc.level.addParticle(ParticleTypes.FLAME,p.x,p.y,p.z,0,.012,0);
@@ -110,7 +111,7 @@ public final class FugaClient {
         FugaRenderer.render(event,EFFECTS.values());
     }
     static final class Effect {
-        final UUID owner;final int seed;Vec3 from,to;long start,lastParticleTick=Long.MIN_VALUE;int flight=1;boolean released;
+        final UUID owner;final int seed;Vec3 from,to;long start,lastParticleTick=Long.MIN_VALUE;int flight=1;boolean released,impactSoundPlayed;
         private Vec3[] ground;
         Effect(UUID owner,Vec3 from,Vec3 to,int seed,long start){this.owner=owner;this.from=from;this.to=to;this.seed=seed;this.start=start;}
         float age(ClientLevel level,float partial){return Math.max(0,level.getGameTime()-start+partial);}

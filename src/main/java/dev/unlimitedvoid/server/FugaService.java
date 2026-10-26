@@ -6,8 +6,6 @@ import dev.unlimitedvoid.network.DomainNetwork;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.TickEvent;
@@ -78,11 +76,6 @@ public final class FugaService {
                         ClipContext.Block.COLLIDER,ClipContext.Fluid.NONE,player)).getType()!=net.minecraft.world.phys.HitResult.Type.MISS)c.from=eye;
                 c.flight=FugaTimeline.flight(c.from.distanceTo(c.to));c.released=true;
                 DomainNetwork.fuga(c.level,c.owner,1,c.from,c.to,c.seed,c.flight);
-                c.level.playSound(null,BlockPos.containing(c.from),SoundEvents.FIRECHARGE_USE,SoundSource.PLAYERS,.8f,.65f);
-            }
-            if(c.released && !c.impacted && age>=FugaTimeline.CHARGE+c.flight) {
-                c.impacted=true;
-                c.level.playSound(null,BlockPos.containing(c.to),SoundEvents.GENERIC_EXPLODE,SoundSource.PLAYERS,24f,.5f);
             }
             if(c.released && age>=FugaTimeline.CHARGE+c.flight+FugaTimeline.AFTERMATH){iterator.remove();DomainNetwork.fugaStatus(player);}
         }
@@ -93,7 +86,7 @@ public final class FugaService {
     @SubscribeEvent public static void stop(ServerStoppingEvent event) { CASTS.clear();READY.clear();LAST_RESET.clear(); }
     private static final class Cast {
         final UUID owner;final ServerLevel level;final int start,seed;
-        Vec3 from,to;int flight=1;boolean released,impacted;
+        Vec3 from,to;int flight=1;boolean released;
         Cast(ServerPlayer p,int tick){owner=p.getUUID();level=p.serverLevel();start=tick;seed=p.getRandom().nextInt();from=hand(p);to=from;}
     }
 }

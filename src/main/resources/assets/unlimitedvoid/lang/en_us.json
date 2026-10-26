@@ -40,5 +40,7 @@
   "hud.unlimitedvoid.fuga_ready": "Ready",
   "hud.unlimitedvoid.fuga_casting": "Casting",
   "hud.unlimitedvoid.fuga_cooldown": "%s s cooldown",
-  "subtitles.unlimitedvoid.fuga_open": "Fuga: Open"
+  "subtitles.unlimitedvoid.fuga_open": "Fuga: Open",
+  "subtitles.unlimitedvoid.fuga_launch": "Fuga arrow launched",
+  "subtitles.unlimitedvoid.fuga_impact": "Fuga detonates"
 }
