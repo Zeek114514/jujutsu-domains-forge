@@ -83,7 +83,7 @@ public final class FugaService {
             }
             if(c.released && !c.impacted && age>=FugaTimeline.CHARGE+c.flight) {
                 c.impacted=true;
-                c.level.playSound(null,BlockPos.containing(c.to),SoundEvents.GENERIC_EXPLODE,SoundSource.PLAYERS,2f,.55f);
+                c.level.playSound(null,BlockPos.containing(c.to),SoundEvents.GENERIC_EXPLODE,SoundSource.PLAYERS,24f,.5f);
             }
             if(c.released && age>=FugaTimeline.CHARGE+c.flight+FugaTimeline.AFTERMATH){iterator.remove();DomainNetwork.fugaStatus(player);}
         }

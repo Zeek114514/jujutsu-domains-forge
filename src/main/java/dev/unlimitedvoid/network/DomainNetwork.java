@@ -21,7 +21,7 @@ import java.util.UUID;
 
 /** The client requests activation only. Position, membership, damage and timing are server-owned. */
 public final class DomainNetwork {
-    private static final String VERSION = "9";
+    private static final String VERSION = "10";
     private static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(UnlimitedVoid.ID, "domain"), () -> VERSION, VERSION::equals, VERSION::equals);
 
@@ -110,7 +110,7 @@ public final class DomainNetwork {
     public static void fuga(net.minecraft.server.level.ServerLevel level,UUID owner,int phase,Vec3 from,Vec3 to,int seed,int flight) {
         var message=new FugaEffect(owner,phase,from,to,seed,flight);
         for(ServerPlayer p:level.players())
-            if(p.getUUID().equals(owner)||p.position().distanceToSqr(from)<96*96||p.position().distanceToSqr(to)<96*96)
+            if(p.getUUID().equals(owner)||p.position().distanceToSqr(from)<dev.unlimitedvoid.FugaTimeline.VIEW_RANGE*dev.unlimitedvoid.FugaTimeline.VIEW_RANGE||p.position().distanceToSqr(to)<dev.unlimitedvoid.FugaTimeline.VIEW_RANGE*dev.unlimitedvoid.FugaTimeline.VIEW_RANGE)
                 CHANNEL.send(PacketDistributor.PLAYER.with(()->p),message);
     }
 

@@ -9,6 +9,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
@@ -91,7 +93,12 @@ public final class FugaClient {
         double shake=0;
         for(var e:EFFECTS.values())if(e.released){
             float burst=FugaTimeline.burstAge(e.age(mc.level,mc.getFrameTime()),e.flight);
-            if(burst>=0&&burst<14)shake=Math.max(shake,(1-burst/14)*Math.max(0,1-e.to.distanceTo(mc.gameRenderer.getMainCamera().getPosition())/48)*.65);
+            if(burst>=0&&burst<54){
+                double distance=e.to.distanceTo(mc.gameRenderer.getMainCamera().getPosition());
+                double arrival=distance/FugaTimeline.SHOCK_RADIUS*44;
+                double wave=Math.max(0,1-Math.abs(burst-arrival-3)/10);
+                shake=Math.max(shake,wave*Math.max(0,1-distance/(FugaTimeline.SHOCK_RADIUS+64))*1.15);
+            }
         }
         // Respect the vanilla reduced-screen-motion preference; no random displacement or flash.
         shake*=mc.options.screenEffectScale().get();
@@ -106,8 +113,22 @@ public final class FugaClient {
     }
     static final class Effect {
         final UUID owner;final int seed;Vec3 from,to;long start,lastParticleTick=Long.MIN_VALUE;int flight=1;boolean released;
+        private Vec3[] ground;
         Effect(UUID owner,Vec3 from,Vec3 to,int seed,long start){this.owner=owner;this.from=from;this.to=to;this.seed=seed;this.start=start;}
         float age(ClientLevel level,float partial){return Math.max(0,level.getGameTime()-start+partial);}
+        Vec3[] ground(ClientLevel level){
+            if(ground!=null)return ground;
+            ground=new Vec3[320];
+            // One bounded sampling pass. Unloaded terrain uses the impact plane without loading chunks.
+            for(int i=0;i<ground.length;i++){
+                double angle=i*2.3999632297+(seed&255)*.0245;
+                double radius=FugaTimeline.FIRE_RADIUS*Math.sqrt((i+.5)/ground.length);
+                double x=to.x+Math.cos(angle)*radius,z=to.z+Math.sin(angle)*radius,y=to.y;
+                if(level.hasChunkAt(BlockPos.containing(x,y,z)))y=level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,(int)Math.floor(x),(int)Math.floor(z));
+                ground[i]=new Vec3(x,y+.12,z);
+            }
+            return ground;
+        }
         Vec3 origin(ClientLevel level,float partial){
             if(released)return from;
             var p=level.getPlayerByUUID(owner);if(p==null)return from;

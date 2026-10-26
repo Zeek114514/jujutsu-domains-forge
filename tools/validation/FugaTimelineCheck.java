@@ -23,6 +23,18 @@ public final class FugaTimelineCheck {
             require(rejected,"reject invalid range");checks++;
         }
         require(FugaTimeline.COOLDOWN>FugaTimeline.CHARGE+12+FugaTimeline.AFTERMATH,"bounded overlap per caster");checks++;
+        require(FugaTimeline.FIRE_RADIUS>=200&&FugaTimeline.COLUMN_HEIGHT>=240,"district scale footprint and height");checks++;
+        require(FugaTimeline.SHOCK_RADIUS>FugaTimeline.FIRE_RADIUS&&FugaTimeline.VIEW_RANGE>FugaTimeline.SHOCK_RADIUS+FugaTimeline.RANGE,"far observer visibility includes full wave");checks++;
+        require(FugaTimeline.fireRadius(0)==0&&FugaTimeline.fireRadius(32)==FugaTimeline.FIRE_RADIUS,"fire front endpoints");checks++;
+        require(FugaTimeline.shockRadius(0)==0&&FugaTimeline.shockRadius(44)==FugaTimeline.SHOCK_RADIUS,"shock front endpoints");checks++;
+        require(FugaTimeline.burstFade(70)==1&&FugaTimeline.burstFade(FugaTimeline.AFTERMATH)==0,"long burn fades before cleanup");checks++;
+        double fire=-1,shock=-1;
+        for(int i=0;i<=600;i++){
+            float age=i*.25f;
+            double f=FugaTimeline.fireRadius(age),s=FugaTimeline.shockRadius(age);
+            require(Double.isFinite(f)&&f>=fire&&f<=FugaTimeline.FIRE_RADIUS,"bounded continuous fire front");
+            require(Double.isFinite(s)&&s>=shock&&s<=FugaTimeline.SHOCK_RADIUS,"bounded continuous shock front");fire=f;shock=s;
+        }checks++;
         System.out.println("Fuga timing/bounds: "+checks+" checks PASS (no Minecraft runtime started)");
     }
     private static void require(boolean condition,String message){if(!condition)throw new AssertionError(message);}

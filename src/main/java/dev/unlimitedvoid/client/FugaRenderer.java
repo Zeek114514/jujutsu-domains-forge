@@ -39,7 +39,7 @@ final class FugaRenderer {
             Matrix4f matrix=event.getPoseStack().last().pose();
             float partial=mc.isPaused()?0:event.getPartialTick();
             for(var e:effects) {
-                if(e.from.distanceToSqr(camera)>128*128&&e.to.distanceToSqr(camera)>128*128)continue;
+                if(e.from.distanceToSqr(camera)>FugaTimeline.VIEW_RANGE*FugaTimeline.VIEW_RANGE&&e.to.distanceToSqr(camera)>FugaTimeline.VIEW_RANGE*FugaTimeline.VIEW_RANGE)continue;
                 float age=e.age(mc.level,partial);
                 if(!e.released) {
                     Vec3 p=e.origin(mc.level,partial),direction=e.direction(mc.level,partial);
@@ -87,32 +87,49 @@ final class FugaRenderer {
                             flame(buffer,matrix,camera,trail,right,up,.48+i*.02,.85+i*.035,age-i,(1-i/33f)*.7f);
                         }
                     } else if(burst<FugaTimeline.AFTERMATH) {
-                        float grow=FugaTimeline.smooth(burst/8),fade=1-FugaTimeline.smooth((burst-20)/52);
-                        // Stacked billowing lobes form a rising column instead of a flat particle cloud.
-                        for(int i=0;i<160;i++) {
-                            double a=i*2.399+random(e.seed,i)*.7;
-                            double tier=i%8;
-                            // Many short tongues preserve square texels instead of stretching one texture into a curtain.
-                            double radius=tier<2?5:tier>5?3.8:2.8;
-                            double rad=(.3+random(e.seed,i+80)*radius)*grow;
-                            double h=(1.8+random(e.seed,i+130)*2)*grow;
-                            Vec3 p=e.to.add(Math.cos(a)*rad,(.7+tier*1.65)*grow+Math.sin(age*.14+i)*.25,Math.sin(a)*rad);
-                            flame(buffer,matrix,camera,p,right,up,(1.1+random(e.seed,i+270)*1.3)*grow,h,age+i,fade*.62f);
+                        float grow=FugaTimeline.smooth(burst/18),fade=FugaTimeline.burstFade(burst);
+                        int stride=effects.size()>2||e.to.distanceToSqr(camera)>400*400?2:1;
+                        // Ignition travels across a 400-block-wide footprint; bounded cached terrain samples.
+                        var tiles=e.ground(mc.level);
+                        double front=FugaTimeline.fireRadius(burst);
+                        for(int i=0;i<tiles.length;i+=stride){
+                            Vec3 root=tiles[i];
+                            double radius=Math.sqrt(Math.pow(root.x-e.to.x,2)+Math.pow(root.z-e.to.z,2));
+                            if(radius>front)continue;
+                            float ignition=FugaTimeline.smooth((float)((front-radius)/18));
+                            double h=12+random(e.seed,i+400)*20;
+                            double width=22+random(e.seed,i+800)*18;
+                            float pulse=.8f+.2f*(float)Math.sin(age*.19+i);
+                            flame(buffer,matrix,camera,root.add(0,h*.45,0),right,new Vec3(0,1,0),width,h,age+i,fade*ignition*.68f*pulse);
+                            flame(buffer,matrix,camera,root,new Vec3(1,0,0),new Vec3(0,0,1),width,width,age+i+3,fade*ignition*.5f);
                         }
+                        // A broad base, narrowed rising stem and billowing crown give the blast a distant silhouette.
+                        for(int i=0;i<384;i+=stride){
+                            int tier=i%16;
+                            double y=(tier+.5)/16.0*FugaTimeline.COLUMN_HEIGHT;
+                            double radius=tier<4?65:tier>11?78:38;
+                            double a=i*2.399963+age*.006,rad=Math.sqrt(random(e.seed,i+80))*radius*grow;
+                            double h=18+random(e.seed,i+130)*16;
+                            Vec3 p=e.to.add(Math.cos(a)*rad,(y+Math.sin(age*.1+i)*3)*grow,Math.sin(a)*rad);
+                            flame(buffer,matrix,camera,p,right,new Vec3(0,1,0),(15+random(e.seed,i+270)*19)*grow,h*grow,age+i,fade*.72f);
+                        }
+                        // Three city-scale pressure fronts, followed by a high expanding crown.
                         for(int wave=0;wave<3;wave++){
-                            float t=burst-wave*5;
-                            if(t>=0&&t<28)ring(buffer,matrix,camera,e.to.add(0,.12+wave*.18,0),.5+t*.48,.35+t*.02,t,(1-t/28)*.95f);
+                            float t=burst-wave*7;
+                            if(t>=0&&t<52){
+                                double radius=FugaTimeline.shockRadius(t);
+                                ring(buffer,matrix,camera,e.to.add(0,.4+wave*.8,0),radius,2.5+t*.06,t,(1-FugaTimeline.smooth((t-30)/22))*fade);
+                                if(wave==0)for(int i=0;i<96;i+=stride){
+                                    double a=i*Math.PI/48,h=(6+random(e.seed,i+1000)*14)*(1-t/52);
+                                    Vec3 p=e.to.add(Math.cos(a)*radius,h*.5,Math.sin(a)*radius);
+                                    flame(buffer,matrix,camera,p,right,new Vec3(0,1,0),8,h,age+i,(1-t/52)*fade*.65f);
+                                }
+                            }
                         }
-                        // A short lived radial crown makes the impact readable from the side as well.
-                        if(burst<22)for(int i=0;i<24;i++){
-                            double a=i*Math.PI/12,rad=(1+burst*.35),h=(1-burst/22)*6;
-                            Vec3 root=e.to.add(Math.cos(a)*rad,.1,Math.sin(a)*rad);
-                            flame(buffer,matrix,camera,root.add(0,h*.5,0),right,new Vec3(0,1,0),1.1,h,age+i,(1-burst/22)*.65f);
-                        }
-                        for(int i=0;i<64;i++) {
-                            double a=i*2.399,speed=.08+random(e.seed,i+300)*.23;
-                            Vec3 p=e.to.add(Math.cos(a)*speed*burst,.2+burst*(.13+random(e.seed,i+350)*.12)-.004*burst*burst,Math.sin(a)*speed*burst);
-                            if(p.y>=e.to.y)flame(buffer,matrix,camera,p,right,up,.11,.25,age+i,fade*.8f);
+                        for(int i=0;i<96;i+=stride){
+                            double a=i*2.399,speed=.4+random(e.seed,i+300)*1.1;
+                            Vec3 p=e.to.add(Math.cos(a)*speed*burst,1+burst*(.9+random(e.seed,i+350)*1.2)-.014*burst*burst,Math.sin(a)*speed*burst);
+                            if(p.y>=e.to.y)flame(buffer,matrix,camera,p,right,up,.4,.9,age+i,fade*.8f);
                         }
                     }
                 }
@@ -151,8 +168,8 @@ final class FugaRenderer {
         }
     }
     private static void ring(BufferBuilder b,Matrix4f m,Vec3 camera,Vec3 center,double radius,double width,float age,float alpha) {
-        for(int i=0;i<64;i++) {
-            double a=i*Math.PI/32,z=(i+1)*Math.PI/32;
+        for(int i=0;i<128;i++) {
+            double a=i*Math.PI/64,z=(i+1)*Math.PI/64;
             Vec3 x=center.add(Math.cos(a)*radius,0,Math.sin(a)*radius),y=center.add(Math.cos(z)*radius,0,Math.sin(z)*radius);
             Vec3 outward=new Vec3(Math.cos((a+z)/2),0,Math.sin((a+z)/2));
             ribbon(b,m,camera,x,y,outward,width,age+i,alpha*.55f);
