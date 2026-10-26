@@ -31,7 +31,8 @@ final class FugaRenderer {
         int texture=RenderSystem.getShaderTexture(0);ShaderInstance shader=RenderSystem.getShader();
         float[] color=RenderSystem.getShaderColor().clone();
         try {
-            RenderSystem.enableBlend();RenderSystem.blendFuncSeparate(GL11.GL_SRC_ALPHA,GL11.GL_ONE,GL11.GL_ONE,GL11.GL_ONE_MINUS_SRC_ALPHA);
+            // Alpha compositing keeps the orange silhouette readable when many lobes overlap.
+            RenderSystem.enableBlend();RenderSystem.defaultBlendFunc();
             RenderSystem.enableDepthTest();RenderSystem.depthMask(false);RenderSystem.disableCull();
             RenderSystem.setShaderColor(1,1,1,1);RenderSystem.setShader(GameRenderer::getPositionTexColorShader);RenderSystem.setShaderTexture(0,TEXTURE);
             BufferBuilder buffer=Tesselator.getInstance().getBuilder();buffer.begin(VertexFormat.Mode.QUADS,DefaultVertexFormat.POSITION_TEX_COLOR);
@@ -42,24 +43,34 @@ final class FugaRenderer {
                 float age=e.age(mc.level,partial);
                 if(!e.released) {
                     Vec3 p=e.origin(mc.level,partial),direction=e.direction(mc.level,partial);
+                    // First-person viewmodel spacing; observers retain the hand-aligned world anchor.
+                    if(mc.player!=null&&e.owner.equals(mc.player.getUUID())&&mc.options.getCameraType().isFirstPerson())p=p.add(direction);
                     float charge=FugaTimeline.charge(Math.min(age,FugaTimeline.CHARGE));
                     Vec3 side=direction.cross(new Vec3(0,1,0));if(side.lengthSqr()<.001)side=new Vec3(1,0,0);else side=side.normalize();
                     Vec3 vertical=side.cross(direction).normalize();
                     // Curling fire converges on the hand before the arrow takes shape.
-                    for(int i=0;i<16;i++) {
-                        double a=i*2.399+age*.16,rad=(1-charge)*.6+.08;
+                    for(int i=0;i<32;i++) {
+                        double a=i*2.399+age*.16,rad=(1-charge)*1.25+.12;
                         Vec3 spark=p.add(side.scale(Math.cos(a)*rad)).add(vertical.scale(Math.sin(a)*rad));
-                        flame(buffer,matrix,camera,spark,right,up,.13,.24,age+i,.3f+charge*.3f);
+                        flame(buffer,matrix,camera,spark,right,up,.18,.38,age+i,.3f+charge*.35f);
                     }
                     if(charge>.22f) {
                         arrow(buffer,matrix,camera,p,direction,vertical,side,age,charge);
-                        Vec3 prior=null;
-                        for(int i=0;i<=22;i++) {
-                            double a=-1.25+i/22.0*2.5;
-                            Vec3 q=p.add(direction.scale(.25+Math.cos(a)*.28)).add(vertical.scale(Math.sin(a)*.82*charge));
-                            if(prior!=null)ribbon(buffer,matrix,camera,prior,q,side,.025+charge*.025,age+i,.65f);
+                        Vec3 prior=null,top=null,bottom=null;
+                        for(int i=0;i<=32;i++) {
+                            double a=-1.4+i/32.0*2.8;
+                            Vec3 q=p.add(direction.scale(.1+Math.cos(a)*.65)).add(vertical.scale(Math.sin(a)*.95*charge));
+                            if(i==0)bottom=q;if(i==32)top=q;
+                            if(prior!=null){
+                                ribbon(buffer,matrix,camera,prior,q,side,.045+charge*.065,age+i,.85f);
+                                if(i%2==0)flame(buffer,matrix,camera,q,side,vertical,.2,.45,age+i,.6f*charge);
+                            }
                             prior=q;
                         }
+                        Vec3 draw=p.subtract(direction.scale(.25+.65*charge));
+                        ribbon(buffer,matrix,camera,bottom,draw,side,.018,age,.8f);
+                        ribbon(buffer,matrix,camera,draw,top,side,.018,age,.8f);
+                        spiral(buffer,matrix,camera,p,direction,vertical,side,age,charge,.7);
                     }
                 } else {
                     float burst=FugaTimeline.burstAge(age,e.flight);
@@ -69,25 +80,39 @@ final class FugaRenderer {
                         Vec3 vertical=side.cross(direction).normalize();
                         arrow(buffer,matrix,camera,p,direction,vertical,side,age,1);
                         double available=e.from.distanceTo(p);
-                        for(int i=1;i<=18;i++) {
-                            double behind=i*.42;if(behind>available)break;
+                        spiral(buffer,matrix,camera,p,direction,vertical,side,age,1,1.3);
+                        for(int i=1;i<=32;i++) {
+                            double behind=i*.45;if(behind>available)break;
                             Vec3 trail=p.subtract(direction.scale(behind)).add(vertical.scale(Math.sin(age*.6-i)*.04));
-                            flame(buffer,matrix,camera,trail,right,up,.32+i*.015,.52+i*.02,age-i,(1-i/19f)*.6f);
+                            flame(buffer,matrix,camera,trail,right,up,.48+i*.02,.85+i*.035,age-i,(1-i/33f)*.7f);
                         }
                     } else if(burst<FugaTimeline.AFTERMATH) {
-                        float grow=FugaTimeline.smooth(burst/5),fade=1-FugaTimeline.smooth((burst-12)/36);
-                        for(int i=0;i<44;i++) {
-                            double a=i*2.399+random(e.seed,i)*.7,rad=(.4+random(e.seed,i+80)*2.9)*grow;
-                            double h=2.2+random(e.seed,i+130)*4.8;
-                            Vec3 p=e.to.add(Math.cos(a)*rad,(.4+random(e.seed,i+200)*2)*grow+burst*.025,Math.sin(a)*rad);
-                            flame(buffer,matrix,camera,p,right,up,(.65+random(e.seed,i+270))*grow,h*grow,age+i,fade*.44f);
+                        float grow=FugaTimeline.smooth(burst/8),fade=1-FugaTimeline.smooth((burst-20)/52);
+                        // Stacked billowing lobes form a rising column instead of a flat particle cloud.
+                        for(int i=0;i<160;i++) {
+                            double a=i*2.399+random(e.seed,i)*.7;
+                            double tier=i%8;
+                            // Many short tongues preserve square texels instead of stretching one texture into a curtain.
+                            double radius=tier<2?5:tier>5?3.8:2.8;
+                            double rad=(.3+random(e.seed,i+80)*radius)*grow;
+                            double h=(1.8+random(e.seed,i+130)*2)*grow;
+                            Vec3 p=e.to.add(Math.cos(a)*rad,(.7+tier*1.65)*grow+Math.sin(age*.14+i)*.25,Math.sin(a)*rad);
+                            flame(buffer,matrix,camera,p,right,up,(1.1+random(e.seed,i+270)*1.3)*grow,h,age+i,fade*.62f);
                         }
-                        // Low, expanding shock front: a textured annulus, not a white sphere.
-                        if(burst<24)ring(buffer,matrix,camera,e.to.add(0,.08,0),.3+burst*.34,.25+burst*.015,burst,fade);
-                        for(int i=0;i<34;i++) {
-                            double a=i*2.399,speed=.04+random(e.seed,i+300)*.14;
+                        for(int wave=0;wave<3;wave++){
+                            float t=burst-wave*5;
+                            if(t>=0&&t<28)ring(buffer,matrix,camera,e.to.add(0,.12+wave*.18,0),.5+t*.48,.35+t*.02,t,(1-t/28)*.95f);
+                        }
+                        // A short lived radial crown makes the impact readable from the side as well.
+                        if(burst<22)for(int i=0;i<24;i++){
+                            double a=i*Math.PI/12,rad=(1+burst*.35),h=(1-burst/22)*6;
+                            Vec3 root=e.to.add(Math.cos(a)*rad,.1,Math.sin(a)*rad);
+                            flame(buffer,matrix,camera,root.add(0,h*.5,0),right,new Vec3(0,1,0),1.1,h,age+i,(1-burst/22)*.65f);
+                        }
+                        for(int i=0;i<64;i++) {
+                            double a=i*2.399,speed=.08+random(e.seed,i+300)*.23;
                             Vec3 p=e.to.add(Math.cos(a)*speed*burst,.2+burst*(.13+random(e.seed,i+350)*.12)-.004*burst*burst,Math.sin(a)*speed*burst);
-                            if(p.y>=e.to.y)flame(buffer,matrix,camera,p,right,up,.07,.13,age+i,fade*.8f);
+                            if(p.y>=e.to.y)flame(buffer,matrix,camera,p,right,up,.11,.25,age+i,fade*.8f);
                         }
                     }
                 }
@@ -103,16 +128,27 @@ final class FugaRenderer {
         }
     }
     private static void arrow(BufferBuilder b,Matrix4f m,Vec3 camera,Vec3 p,Vec3 d,Vec3 up,Vec3 side,float age,float charge) {
-        for(int i=0;i<12;i++) {
-            double q=-.65+i*.18,spread=(.05+.09*Math.sin(i/12.0*Math.PI))*charge;
+        for(int i=0;i<18;i++) {
+            double q=-1.1+i*.22,spread=(.08+.17*Math.sin(i/18.0*Math.PI))*charge;
             Vec3 c=p.add(d.scale(q)).add(up.scale(Math.sin(age*.7+i)*.025));
-            flame(b,m,camera,c,d,up,.4*charge,spread*2,age+i,.7f);
-            flame(b,m,camera,c,d,side,.4*charge,spread*2,age+i+2,.6f);
+            flame(b,m,camera,c,d,up,.6*charge,spread*2,age+i,.85f);
+            flame(b,m,camera,c,d,side,.6*charge,spread*2,age+i+2,.75f);
         }
-        Vec3 tip=p.add(d.scale(1.65*charge)),base=p.add(d.scale(1.16*charge));
-        ribbon(b,m,camera,base.add(up.scale(.18*charge)),tip,side,.05*charge,age,.9f);
-        ribbon(b,m,camera,base.add(up.scale(-.18*charge)),tip,side,.05*charge,age+2,.9f);
-        ribbon(b,m,camera,p.subtract(d.scale(.7*charge)),tip,up,.023*charge,age+4,.9f);
+        Vec3 tip=p.add(d.scale(3.1*charge)),base=p.add(d.scale(2.1*charge));
+        ribbon(b,m,camera,base.add(up.scale(.38*charge)),tip,side,.085*charge,age,.95f);
+        ribbon(b,m,camera,base.add(up.scale(-.38*charge)),tip,side,.085*charge,age+2,.95f);
+        ribbon(b,m,camera,p.subtract(d.scale(1.2*charge)),tip,up,.06*charge,age+4,.95f);
+    }
+    private static void spiral(BufferBuilder b,Matrix4f m,Vec3 camera,Vec3 p,Vec3 d,Vec3 up,Vec3 side,float age,float charge,double scale){
+        for(int strand=0;strand<2;strand++){
+            Vec3 prior=null;
+            for(int i=0;i<=32;i++){
+                double a=i*.48-age*.32+strand*Math.PI,r=(.12+.23*Math.sin(i/32.0*Math.PI))*charge*scale;
+                Vec3 q=p.add(d.scale((-1.2+i*.12)*charge)).add(side.scale(Math.cos(a)*r)).add(up.scale(Math.sin(a)*r));
+                if(prior!=null)ribbon(b,m,camera,prior,q,up,.04*charge,age+i,.65f*charge);
+                prior=q;
+            }
+        }
     }
     private static void ring(BufferBuilder b,Matrix4f m,Vec3 camera,Vec3 center,double radius,double width,float age,float alpha) {
         for(int i=0;i<64;i++) {

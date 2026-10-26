@@ -34,5 +34,10 @@
   "subtitles.unlimitedvoid.shell_break": "Domain shell shatters",
   "message.unlimitedvoid.no_ground": "No supporting ground below you for Malevolent Shrine",
   "key.unlimitedvoid.fuga": "Fuga (visual preview)",
-  "message.unlimitedvoid.fuga_preview": "Fuga visual preview: no damage or block changes; 10s cooldown"
+  "message.unlimitedvoid.fuga_preview": "Fuga visual preview: no damage or block changes; 10s cooldown",
+  "key.unlimitedvoid.fuga_reset": "Reset Fuga cooldown",
+  "hud.unlimitedvoid.fuga": "Fuga [%s] - %s  |  [%s] Reset cooldown",
+  "hud.unlimitedvoid.fuga_ready": "Ready",
+  "hud.unlimitedvoid.fuga_casting": "Casting",
+  "hud.unlimitedvoid.fuga_cooldown": "%s s cooldown"
 }

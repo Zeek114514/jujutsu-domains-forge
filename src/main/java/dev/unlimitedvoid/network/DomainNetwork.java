@@ -21,7 +21,7 @@ import java.util.UUID;
 
 /** The client requests activation only. Position, membership, damage and timing are server-owned. */
 public final class DomainNetwork {
-    private static final String VERSION = "8";
+    private static final String VERSION = "9";
     private static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(UnlimitedVoid.ID, "domain"), () -> VERSION, VERSION::equals, VERSION::equals);
 
@@ -30,11 +30,21 @@ public final class DomainNetwork {
     private record Cycle() {}
     private record Reset() {}
     private record FugaRequest() {}
+    private record FugaReset() {}
+    private record FugaStatus(int cooldown,boolean casting) {}
     private record FugaEffect(UUID owner,int phase,Vec3 from,Vec3 to,int seed,int flight) {}
     private record Expansion(UUID caster,DomainKind kind,Vec3 center,float radius) {}
     private record Snapshot(List<DomainState> states, boolean captive, DomainKind selected, int cooldown) {}
 
     public static void register() {
+        CHANNEL.messageBuilder(FugaReset.class,7,NetworkDirection.PLAY_TO_SERVER)
+                .encoder((m,b)->{}).decoder(b->new FugaReset())
+                .consumerMainThread((m,c)->{var p=c.get().getSender();if(p!=null)dev.unlimitedvoid.server.FugaService.resetCooldown(p);}).add();
+        CHANNEL.messageBuilder(FugaStatus.class,8,NetworkDirection.PLAY_TO_CLIENT)
+                .encoder((m,b)->{b.writeVarInt(m.cooldown());b.writeBoolean(m.casting());})
+                .decoder(b->{int ticks=b.readVarInt();if(ticks<0||ticks>dev.unlimitedvoid.FugaTimeline.COOLDOWN)throw new IllegalArgumentException("Invalid Fuga cooldown");return new FugaStatus(ticks,b.readBoolean());})
+                .consumerMainThread((m,c)->DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
+                        ()->()->dev.unlimitedvoid.client.FugaClient.status(m.cooldown(),m.casting()))).add();
         CHANNEL.messageBuilder(FugaRequest.class,5,NetworkDirection.PLAY_TO_SERVER)
                 .encoder((m,b)->{}).decoder(b->new FugaRequest())
                 .consumerMainThread((m,c)->{var p=c.get().getSender();if(p!=null)dev.unlimitedvoid.server.FugaService.request(p);}).add();
@@ -93,6 +103,10 @@ public final class DomainNetwork {
     public static void requestCycle() { CHANNEL.sendToServer(new Cycle()); }
     public static void requestReset() { CHANNEL.sendToServer(new Reset()); }
     public static void requestFuga() { CHANNEL.sendToServer(new FugaRequest()); }
+    public static void resetFuga() { CHANNEL.sendToServer(new FugaReset()); }
+    public static void fugaStatus(ServerPlayer p) {
+        CHANNEL.send(PacketDistributor.PLAYER.with(()->p),new FugaStatus(dev.unlimitedvoid.server.FugaService.cooldown(p),dev.unlimitedvoid.server.FugaService.casting(p.getUUID())));
+    }
     public static void fuga(net.minecraft.server.level.ServerLevel level,UUID owner,int phase,Vec3 from,Vec3 to,int seed,int flight) {
         var message=new FugaEffect(owner,phase,from,to,seed,flight);
         for(ServerPlayer p:level.players())

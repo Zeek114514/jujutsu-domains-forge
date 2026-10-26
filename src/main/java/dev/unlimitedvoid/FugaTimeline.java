@@ -2,7 +2,7 @@ package dev.unlimitedvoid;
 
 /** Pure visual timing shared by the server, renderer and headless checks. */
 public final class FugaTimeline {
-    public static final int CHARGE = 50, AFTERMATH = 48, COOLDOWN = 200, MAX_CASTS = 8;
+    public static final int CHARGE = 50, AFTERMATH = 72, COOLDOWN = 200, MAX_CASTS = 8;
     public static final double RANGE = 64;
     private FugaTimeline() {}
     public static int flight(double distance) {
