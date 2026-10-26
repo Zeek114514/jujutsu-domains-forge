@@ -39,5 +39,6 @@
   "hud.unlimitedvoid.fuga": "灶·开 [%s] · %s  |  [%s] 重置冷却",
   "hud.unlimitedvoid.fuga_ready": "就绪",
   "hud.unlimitedvoid.fuga_casting": "施放中",
-  "hud.unlimitedvoid.fuga_cooldown": "冷却 %s 秒"
+  "hud.unlimitedvoid.fuga_cooldown": "冷却 %s 秒",
+  "subtitles.unlimitedvoid.fuga_open": "灶·开：Fūga"
 }

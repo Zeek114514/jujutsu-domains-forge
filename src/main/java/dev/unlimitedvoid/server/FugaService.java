@@ -44,7 +44,6 @@ public final class FugaService {
         CASTS.put(player.getUUID(),cast); READY.put(player.getUUID(),now+FugaTimeline.COOLDOWN);
         DomainNetwork.fugaStatus(player);
         DomainNetwork.fuga(cast.level,cast.owner,0,hand(player),player.getEyePosition().add(player.getLookAngle().scale(3)),cast.seed,1);
-        cast.level.playSound(null,player.blockPosition(),SoundEvents.BLAZE_AMBIENT,SoundSource.PLAYERS,.55f,.65f);
     }
     private static Vec3 hand(ServerPlayer p) {
         Vec3 direction=p.getLookAngle();
@@ -79,7 +78,7 @@ public final class FugaService {
                         ClipContext.Block.COLLIDER,ClipContext.Fluid.NONE,player)).getType()!=net.minecraft.world.phys.HitResult.Type.MISS)c.from=eye;
                 c.flight=FugaTimeline.flight(c.from.distanceTo(c.to));c.released=true;
                 DomainNetwork.fuga(c.level,c.owner,1,c.from,c.to,c.seed,c.flight);
-                c.level.playSound(null,BlockPos.containing(c.from),SoundEvents.FIRECHARGE_USE,SoundSource.PLAYERS,1.2f,.55f);
+                c.level.playSound(null,BlockPos.containing(c.from),SoundEvents.FIRECHARGE_USE,SoundSource.PLAYERS,.8f,.65f);
             }
             if(c.released && !c.impacted && age>=FugaTimeline.CHARGE+c.flight) {
                 c.impacted=true;

@@ -18,6 +18,8 @@ public final class FugaTimelineCheck {
         }
         require(FugaTimeline.charge(0)==0&&FugaTimeline.charge(FugaTimeline.CHARGE)==1,"charge endpoints");checks++;
         require(FugaTimeline.charge(-1)==0&&FugaTimeline.charge(1000)==1,"clamped charge");checks++;
+        require(FugaTimeline.FULL_DRAW<FugaTimeline.CHARGE&&FugaTimeline.charge(FugaTimeline.FULL_DRAW)==1,"full draw precedes release during spoken cue");checks++;
+        for(int t=FugaTimeline.FULL_DRAW;t<=FugaTimeline.CHARGE;t++)require(FugaTimeline.charge(t)==1&&FugaTimeline.travel(t,12)==0,"hold full draw throughout Fuga before launch");checks++;
         for(double bad:new double[]{-1,Double.NaN,Double.POSITIVE_INFINITY}) {
             boolean rejected=false;try{FugaTimeline.flight(bad);}catch(IllegalArgumentException e){rejected=true;}
             require(rejected,"reject invalid range");checks++;

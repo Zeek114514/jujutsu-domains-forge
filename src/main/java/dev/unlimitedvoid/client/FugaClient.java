@@ -34,7 +34,7 @@ public final class FugaClient {
     private static int cooldown;
     private static boolean casting;
     private FugaClient() {}
-    private static void clear(ClientLevel level){EFFECTS.clear();cooldown=0;casting=false;lastLevel=level;}
+    private static void clear(ClientLevel level){ClientFugaAudio.clear();EFFECTS.clear();cooldown=0;casting=false;lastLevel=level;}
     public static void status(int ticks,boolean active){var level=Minecraft.getInstance().level;if(level!=lastLevel)clear(level);cooldown=ticks;casting=active;}
     /** Negative means no bow pose; the mixin is client-only and leaves other entities alone. */
     public static float drawProgress(UUID owner){
@@ -44,11 +44,12 @@ public final class FugaClient {
     public static void receive(UUID owner,int phase,Vec3 from,Vec3 to,int seed,int flight) {
         var mc=Minecraft.getInstance();if(mc.level==null)return;
         if(lastLevel!=mc.level)clear(mc.level);
-        if(phase==2){EFFECTS.remove(owner);return;}
+        if(phase==2){EFFECTS.remove(owner);ClientFugaAudio.stop(owner);return;}
         Effect e=EFFECTS.get(owner);
         if(phase==0||e==null){
-            if(EFFECTS.size()>=FugaTimeline.MAX_CASTS)EFFECTS.remove(EFFECTS.keySet().iterator().next());
+            if(EFFECTS.size()>=FugaTimeline.MAX_CASTS){var oldest=EFFECTS.keySet().iterator().next();EFFECTS.remove(oldest);ClientFugaAudio.stop(oldest);}
             e=new Effect(owner,from,to,seed,mc.level.getGameTime());EFFECTS.put(owner,e);
+            if(phase==0)ClientFugaAudio.play(owner,from);
         }
         if(phase==1){e.from=from;e.to=to;e.flight=flight;e.released=true;e.start=mc.level.getGameTime()-FugaTimeline.CHARGE;}
     }

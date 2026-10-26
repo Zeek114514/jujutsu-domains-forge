@@ -39,5 +39,6 @@
   "hud.unlimitedvoid.fuga": "Fuga [%s] - %s  |  [%s] Reset cooldown",
   "hud.unlimitedvoid.fuga_ready": "Ready",
   "hud.unlimitedvoid.fuga_casting": "Casting",
-  "hud.unlimitedvoid.fuga_cooldown": "%s s cooldown"
+  "hud.unlimitedvoid.fuga_cooldown": "%s s cooldown",
+  "subtitles.unlimitedvoid.fuga_open": "Fuga: Open"
 }

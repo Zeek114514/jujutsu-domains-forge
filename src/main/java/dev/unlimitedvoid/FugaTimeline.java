@@ -2,7 +2,8 @@ package dev.unlimitedvoid;
 
 /** Pure visual timing shared by the server, renderer and headless checks. */
 public final class FugaTimeline {
-    public static final int CHARGE = 50, AFTERMATH = 132, COOLDOWN = 200, MAX_CASTS = 8;
+    // Selected source 5.00..7.75s: full draw before the Fuga syllables, release after the line.
+    public static final int FULL_DRAW = 30, CHARGE = 54, AFTERMATH = 132, COOLDOWN = 200, MAX_CASTS = 8;
     public static final double RANGE = 64;
     public static final double FIRE_RADIUS = 200, COLUMN_HEIGHT = 240, SHOCK_RADIUS = 300, VIEW_RANGE = 768;
     public static final float BOW_SCALE = 3;
@@ -15,7 +16,7 @@ public final class FugaTimeline {
     public static float smooth(float value) {
         float t=Math.max(0, Math.min(1,value)); return t*t*(3-2*t);
     }
-    public static float charge(float age) { return smooth(age / CHARGE); }
+    public static float charge(float age) { return smooth(age / FULL_DRAW); }
     public static float travel(float age, int flight) { return Math.max(0,Math.min(1,(age-CHARGE)/flight)); }
     public static float burstAge(float age, int flight) { return age-CHARGE-flight; }
     public static double fireRadius(float burst) { return FIRE_RADIUS*smooth(burst/32); }

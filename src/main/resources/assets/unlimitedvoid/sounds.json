@@ -53,5 +53,14 @@
         "stream": true
       }
     ]
+  },
+  "fuga_open": {
+    "sounds": [
+      {
+        "name": "unlimitedvoid:fuga_open",
+        "preload": true
+      }
+    ],
+    "subtitle": "subtitles.unlimitedvoid.fuga_open"
   }
 }

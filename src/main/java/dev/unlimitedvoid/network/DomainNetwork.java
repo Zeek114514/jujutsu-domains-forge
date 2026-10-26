@@ -21,7 +21,7 @@ import java.util.UUID;
 
 /** The client requests activation only. Position, membership, damage and timing are server-owned. */
 public final class DomainNetwork {
-    private static final String VERSION = "10";
+    private static final String VERSION = "11";
     private static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(UnlimitedVoid.ID, "domain"), () -> VERSION, VERSION::equals, VERSION::equals);
 

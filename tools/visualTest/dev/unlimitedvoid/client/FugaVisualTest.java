@@ -24,7 +24,13 @@ import java.util.function.Consumer;
 public final class FugaVisualTest {
     private static boolean started;
     private static volatile boolean failed;
-    private static int ticks;
+    private static volatile int ticks,voiceStarts;
+    private static volatile net.minecraft.client.resources.sounds.SoundInstance lastVoice;
+    @SubscribeEvent public static void source(net.minecraftforge.client.event.sound.PlaySoundSourceEvent event){
+        if(!Boolean.getBoolean("uv.fugaTest")||!event.getSound().getLocation().toString().equals("unlimitedvoid:fuga_open"))return;
+        voiceStarts++;lastVoice=event.getSound();
+        LogUtils.getLogger().info("FUGA_AUDIO_STARTED: tick={} relative={} pitch={}",ticks,event.getSound().isRelative(),event.getSound().getPitch());
+    }
     @SubscribeEvent public static void tick(TickEvent.ClientTickEvent event){
         if(!Boolean.getBoolean("uv.fugaTest")||event.phase!=TickEvent.Phase.END)return;
         var mc=Minecraft.getInstance();GLFW.glfwHideWindow(mc.getWindow().getWindow());if(failed){mc.stop();return;}
@@ -42,10 +48,13 @@ public final class FugaVisualTest {
         if(ticks==40)key(GLFW.GLFW_KEY_H);
         if(ticks==50)server(mc,p->{require(FugaService.casting(p.getUUID())&&FugaService.cooldown(p)>0,"H starts cast and cooldown");});
         if(ticks==65)capture(mc,"01-charge-first-person.png");
+        if(ticks==73){requireClient(voiceStarts==1&&FugaClient.drawProgress(mc.player.getUUID())==1,"selected voice reached audio channel and full draw holds during Fuga");capture(mc,"fuga-full-draw.png");}
         if(ticks==75)key(GLFW.GLFW_KEY_O);
         if(ticks==80)server(mc,p->{require(FugaService.cooldown(p)==0&&FugaService.casting(p.getUUID()),"O resets cooldown without interrupting cast");});
         if(ticks==82)key(GLFW.GLFW_KEY_H);
         if(ticks==85)capture(mc,"02-ready-bow-first-person.png");
+        if(ticks==90)requireClient(FugaClient.drawProgress(mc.player.getUUID())==1,"hold full draw until spoken cue ends");
+        if(ticks==100)requireClient(FugaClient.drawProgress(mc.player.getUUID())<0&&voiceStarts==1,"release follows Fuga once without restarting voice");
         if(ticks==101)capture(mc,"03-impact-first-person.png");
         if(ticks==118)capture(mc,"04-plume-first-person.png");
         if(ticks==250)server(mc,p->{require(!FugaService.casting(p.getUUID())&&FugaService.cooldown(p)==0,"cast completes after reset without extending cooldown");});
@@ -66,13 +75,19 @@ public final class FugaVisualTest {
         if(ticks==390)capture(mc,"07b-district-firestorm-loaded.png");
         if(ticks==400)server(mc,p->p.teleportTo(p.serverLevel(),0,-55,-48,0,0));
         if(ticks==410){capture(mc,"08-inside-firestorm.png");LogUtils.getLogger().info("FUGA_FPS_INSIDE: {}",mc.getFps());}
-        if(ticks==455)server(mc,p->{require(!FugaService.casting(p.getUUID())&&FugaService.cooldown(p)>0,"natural cast ends while cooldown remains");});
-        if(ticks==458)capture(mc,"08-cooldown-hud.png");
-        if(ticks==460)key(GLFW.GLFW_KEY_O);
-        if(ticks==465){server(mc,p->{require(FugaService.cooldown(p)==0,"O clears natural remaining cooldown");});capture(mc,"09-ready-hud.png");}
-        if(ticks==480){LogUtils.getLogger().info("FUGA_VISUAL_TEST_COMPLETE");mc.stop();}
+        if(ticks==464)server(mc,p->{require(!FugaService.casting(p.getUUID())&&FugaService.cooldown(p)>0,"natural cast ends while cooldown remains");});
+        if(ticks==465)capture(mc,"08-cooldown-hud.png");
+        if(ticks==466)key(GLFW.GLFW_KEY_O);
+        if(ticks==468){server(mc,p->{require(FugaService.cooldown(p)==0,"O clears natural remaining cooldown");});capture(mc,"09-ready-hud.png");}
+        if(ticks==485)key(GLFW.GLFW_KEY_H);
+        if(ticks==493)server(mc,p->p.setGameMode(GameType.SPECTATOR));
+        // SoundEngine keeps stopped channel handles for 20 ticks; check after that grace period,
+        // still before this 2.75-second clip could have ended naturally.
+        if(ticks==518)requireClient(voiceStarts==3&&lastVoice!=null&&!mc.getSoundManager().isActive(lastVoice)&&FugaClient.drawProgress(mc.player.getUUID())<0,"cancelling cast stops its spoken clip before natural completion");
+        if(ticks==530){LogUtils.getLogger().info("FUGA_VISUAL_TEST_COMPLETE");mc.stop();}
     }
     private static void require(boolean ok,String message){if(!ok)throw new AssertionError(message);LogUtils.getLogger().info("FUGA_PASS: {}",message);}
+    private static void requireClient(boolean ok,String message){try{require(ok,message);}catch(Throwable error){failed=true;LogUtils.getLogger().error("FUGA_TEST_FAIL",error);}}
     private static void key(int key){KeyMapping.click(InputConstants.getKey(key,0));}
     private static void server(Minecraft mc,Consumer<ServerPlayer> action){var s=mc.getSingleplayerServer();var id=mc.player.getUUID();s.execute(()->{try{action.accept(s.getPlayerList().getPlayer(id));}catch(Throwable t){failed=true;LogUtils.getLogger().error("FUGA_TEST_FAIL",t);}});}
     private static void capture(Minecraft mc,String name){Screenshot.grab(mc.gameDirectory,name,mc.getMainRenderTarget(),c->LogUtils.getLogger().info("FUGA_CAPTURE {}",name));}
