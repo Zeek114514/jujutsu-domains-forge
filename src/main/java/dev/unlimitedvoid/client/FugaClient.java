@@ -66,13 +66,10 @@ public final class FugaClient {
             float age=e.age(mc.level,0),burst=FugaTimeline.burstAge(age,e.flight);
             if(e.lastParticleTick==mc.level.getGameTime())continue;
             e.lastParticleTick=mc.level.getGameTime();
-            if(!e.released){
-                Vec3 p=e.origin(mc.level,1);var r=mc.level.random;
-                for(int i=0;i<3;i++)mc.level.addParticle(ParticleTypes.SMALL_FLAME,p.x+(r.nextDouble()-.5)*.5,p.y+(r.nextDouble()-.5)*.5,p.z+(r.nextDouble()-.5)*.5,0,.015,0);
-            }else if(burst<0){
+            if(e.released&&burst<0){
                 Vec3 p=e.from.lerp(e.to,FugaTimeline.travel(age,e.flight));
                 mc.level.addParticle(ParticleTypes.FLAME,p.x,p.y,p.z,0,.012,0);
-            }else if(burst<30&&((int)burst)%3==0){
+            }else if(e.released&&burst>=0&&burst<30&&((int)burst)%3==0){
                 var r=mc.level.random;
                 for(int i=0;i<5;i++){
                     double angle=r.nextDouble()*Math.PI*2,rad=.3+r.nextDouble()*2;

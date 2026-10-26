@@ -51,8 +51,15 @@ public final class FugaVisualTest {
         if(ticks==250)server(mc,p->{require(!FugaService.casting(p.getUUID())&&FugaService.cooldown(p)==0,"cast completes after reset without extending cooldown");});
         if(ticks==265)mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT);
         if(ticks==270)key(GLFW.GLFW_KEY_H);
+        if(ticks==300){
+            // Detached client camera gives the enlarged bow and full aura room in the frame.
+            var observer=new net.minecraft.world.entity.decoration.ArmorStand(mc.level,24,-50,-24);
+            observer.moveTo(24,-50,-24,45,14);observer.setOldPosAndRot();
+            observer.setYHeadRot(45);observer.yHeadRotO=45;
+            mc.options.hideGui=true;mc.options.setCameraType(CameraType.FIRST_PERSON);mc.setCameraEntity(observer);
+        }
         if(ticks==312)capture(mc,"05-third-person-bow-pose.png");
-        if(ticks==317)mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
+        if(ticks==317){mc.options.hideGui=false;mc.setCameraEntity(mc.player);mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);}
         if(ticks==328){mc.options.setCameraType(CameraType.FIRST_PERSON);server(mc,p->{p.getAbilities().flying=true;p.onUpdateAbilities();p.teleportTo(p.serverLevel(),0,40,-260,0,0);});}
         if(ticks==340)capture(mc,"06-impact-third-person.png");
         if(ticks==360){capture(mc,"07-district-firestorm.png");LogUtils.getLogger().info("FUGA_FPS_DISTANT: {}",mc.getFps());}

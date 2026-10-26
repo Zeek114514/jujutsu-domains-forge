@@ -5,6 +5,8 @@ public final class FugaTimeline {
     public static final int CHARGE = 50, AFTERMATH = 132, COOLDOWN = 200, MAX_CASTS = 8;
     public static final double RANGE = 64;
     public static final double FIRE_RADIUS = 200, COLUMN_HEIGHT = 240, SHOCK_RADIUS = 300, VIEW_RANGE = 768;
+    public static final float BOW_SCALE = 3;
+    public static final double CHARGE_RADIUS = 18;
     private FugaTimeline() {}
     public static int flight(double distance) {
         if (!Double.isFinite(distance) || distance < 0) throw new IllegalArgumentException("Invalid flight distance");

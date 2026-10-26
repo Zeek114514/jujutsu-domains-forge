@@ -44,43 +44,47 @@ final class FugaRenderer {
                 if(!e.released) {
                     Vec3 p=e.origin(mc.level,partial),direction=e.direction(mc.level,partial);
                     // First-person viewmodel spacing; observers retain the hand-aligned world anchor.
-                    if(mc.player!=null&&e.owner.equals(mc.player.getUUID())&&mc.options.getCameraType().isFirstPerson())p=p.add(direction);
+                    if(mc.player!=null&&e.owner.equals(mc.player.getUUID())&&mc.options.getCameraType().isFirstPerson()&&mc.getCameraEntity()==mc.player)p=p.add(direction.scale(2.8));
                     float charge=FugaTimeline.charge(Math.min(age,FugaTimeline.CHARGE));
+                    chargeAura(buffer,matrix,camera,e,right,up,mc,age,charge,partial,1);
+                    float scale=FugaTimeline.BOW_SCALE;
                     Vec3 side=direction.cross(new Vec3(0,1,0));if(side.lengthSqr()<.001)side=new Vec3(1,0,0);else side=side.normalize();
                     Vec3 vertical=side.cross(direction).normalize();
                     // Curling fire converges on the hand before the arrow takes shape.
-                    for(int i=0;i<32;i++) {
-                        double a=i*2.399+age*.16,rad=(1-charge)*1.25+.12;
+                    for(int i=0;i<48;i++) {
+                        double a=i*2.399+age*.16,rad=((1-charge)*1.25+.12)*scale;
                         Vec3 spark=p.add(side.scale(Math.cos(a)*rad)).add(vertical.scale(Math.sin(a)*rad));
-                        flame(buffer,matrix,camera,spark,right,up,.18,.38,age+i,.3f+charge*.35f);
+                        flame(buffer,matrix,camera,spark,right,up,.18*scale,.38*scale,age+i,.3f+charge*.35f);
                     }
                     if(charge>.22f) {
-                        arrow(buffer,matrix,camera,p,direction,vertical,side,age,charge);
+                        arrow(buffer,matrix,camera,p,direction,vertical,side,age,charge*scale);
                         Vec3 prior=null,top=null,bottom=null;
                         for(int i=0;i<=32;i++) {
                             double a=-1.4+i/32.0*2.8;
-                            Vec3 q=p.add(direction.scale(.1+Math.cos(a)*.65)).add(vertical.scale(Math.sin(a)*.95*charge));
+                            Vec3 q=p.add(direction.scale((.1+Math.cos(a)*.65)*scale)).add(vertical.scale(Math.sin(a)*.95*charge*scale));
                             if(i==0)bottom=q;if(i==32)top=q;
                             if(prior!=null){
-                                ribbon(buffer,matrix,camera,prior,q,side,.045+charge*.065,age+i,.85f);
-                                if(i%2==0)flame(buffer,matrix,camera,q,side,vertical,.2,.45,age+i,.6f*charge);
+                                ribbon(buffer,matrix,camera,prior,q,side,(.045+charge*.065)*scale,age+i,.85f);
+                                if(i%2==0)flame(buffer,matrix,camera,q,side,vertical,.2*scale,.45*scale,age+i,.6f*charge);
                             }
                             prior=q;
                         }
-                        Vec3 draw=p.subtract(direction.scale(.25+.65*charge));
-                        ribbon(buffer,matrix,camera,bottom,draw,side,.018,age,.8f);
-                        ribbon(buffer,matrix,camera,draw,top,side,.018,age,.8f);
-                        spiral(buffer,matrix,camera,p,direction,vertical,side,age,charge,.7);
+                        Vec3 draw=p.subtract(direction.scale((.25+.65*charge)*scale));
+                        ribbon(buffer,matrix,camera,bottom,draw,side,.018*scale,age,.8f);
+                        ribbon(buffer,matrix,camera,draw,top,side,.018*scale,age,.8f);
+                        spiral(buffer,matrix,camera,p,direction,vertical,side,age,charge*scale,.7);
                     }
                 } else {
                     float burst=FugaTimeline.burstAge(age,e.flight);
+                    float afterDraw=age-FugaTimeline.CHARGE;
+                    if(afterDraw<10)chargeAura(buffer,matrix,camera,e,right,up,mc,age,1,partial,1-FugaTimeline.smooth(afterDraw/10));
                     if(burst<0) {
                         Vec3 direction=e.direction(mc.level,partial),p=e.from.lerp(e.to,FugaTimeline.travel(age,e.flight));
                         Vec3 side=direction.cross(new Vec3(0,1,0));if(side.lengthSqr()<.001)side=new Vec3(1,0,0);else side=side.normalize();
                         Vec3 vertical=side.cross(direction).normalize();
-                        arrow(buffer,matrix,camera,p,direction,vertical,side,age,1);
+                        arrow(buffer,matrix,camera,p,direction,vertical,side,age,FugaTimeline.BOW_SCALE);
                         double available=e.from.distanceTo(p);
-                        spiral(buffer,matrix,camera,p,direction,vertical,side,age,1,1.3);
+                        spiral(buffer,matrix,camera,p,direction,vertical,side,age,FugaTimeline.BOW_SCALE,1.3);
                         for(int i=1;i<=32;i++) {
                             double behind=i*.45;if(behind>available)break;
                             Vec3 trail=p.subtract(direction.scale(behind)).add(vertical.scale(Math.sin(age*.6-i)*.04));
@@ -144,9 +148,28 @@ final class FugaRenderer {
             if(depth)RenderSystem.enableDepthTest();else RenderSystem.disableDepthTest();
         }
     }
+    private static void chargeAura(BufferBuilder b,Matrix4f m,Vec3 camera,FugaClient.Effect e,Vec3 right,Vec3 up,Minecraft mc,float age,float charge,float partial,float fade){
+        var caster=mc.level.getPlayerByUUID(e.owner);if(caster==null||charge<=0||fade<=0)return;
+        Vec3 base=caster.getPosition(partial).add(0,.12,0);
+        double radius=FugaTimeline.CHARGE_RADIUS*charge;
+        ring(b,m,camera,base,radius,.2+charge*.5,age,charge*fade*.8f);
+        ring(b,m,camera,base.add(0,.08,0),radius*.48,.18+charge*.3,age+4,charge*fade*.7f);
+        // Three expanding helical streams pull into the raised fire bow, rather than just sparks at the hand.
+        for(int strand=0;strand<3;strand++)for(int i=0;i<32;i++){
+            double t=i/31.0,a=strand*Math.PI*2/3+t*Math.PI*2-age*.12;
+            double r=radius*(1-t)*(.8+.2*Math.sin(age*.1+t*5));
+            Vec3 p=base.add(Math.cos(a)*r,t*t*(3+charge*9),Math.sin(a)*r);
+            flame(b,m,camera,p,right,up,(.4+charge*1.1)*(1-t*.4),(.8+charge*2.4)*(1-t*.3),age+i+strand*7,charge*fade*.55f);
+        }
+        for(int i=0;i<24;i++){
+            double a=i*Math.PI/12+age*.04,r=radius*.3;
+            double height=(1.3+random(e.seed,i+1200)*3)*charge;
+            flame(b,m,camera,base.add(Math.cos(a)*r,height*.5,Math.sin(a)*r),right,new Vec3(0,1,0),.8+charge, height,age+i,charge*fade*.45f);
+        }
+    }
     private static void arrow(BufferBuilder b,Matrix4f m,Vec3 camera,Vec3 p,Vec3 d,Vec3 up,Vec3 side,float age,float charge) {
         for(int i=0;i<18;i++) {
-            double q=-1.1+i*.22,spread=(.08+.17*Math.sin(i/18.0*Math.PI))*charge;
+            double q=(-1.1+i*.22)*charge,spread=(.08+.17*Math.sin(i/18.0*Math.PI))*charge;
             Vec3 c=p.add(d.scale(q)).add(up.scale(Math.sin(age*.7+i)*.025));
             flame(b,m,camera,c,d,up,.6*charge,spread*2,age+i,.85f);
             flame(b,m,camera,c,d,side,.6*charge,spread*2,age+i+2,.75f);
