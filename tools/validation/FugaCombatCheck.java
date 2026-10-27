@@ -3,6 +3,17 @@ package dev.unlimitedvoid;
 public final class FugaCombatCheck {
     public static void main(String[] args){
         int checks=0;
+        require(FugaCombatRules.damage(0,200,240)==240,"new center damage");checks++;
+        require(FugaCombatRules.damage(200,200,240)==60,"new edge damage");checks++;
+        require(FugaCombatRules.damage(200,200,480)==120,"dust edge damage");checks++;
+        require(FugaCombatRules.damage(200.01,200,240)==0,"new radius boundary");checks++;
+        for(var kind:DomainKind.values()){
+            require(DomainSealTimeline.weight(kind,0,-1)==0,"seal begins lowered");checks++;
+            require(DomainSealTimeline.weight(kind,10,-1)==1,"seal rises");checks++;
+            require(DomainSealTimeline.weight(kind,DomainTimeline.chant(kind),-1)==1,"seal held through chant");checks++;
+            require(DomainSealTimeline.weight(kind,DomainTimeline.chant(kind)+12,-1)==0,"seal releases");checks++;
+            require(DomainSealTimeline.weight(kind,30,0)==0,"dismissed seal clears");checks++;
+        }
         require(FugaCombatRules.damage(0,16,32)==32,"center damage");checks++;
         require(FugaCombatRules.damage(16,16,32)==8,"edge falloff");checks++;
         require(FugaCombatRules.damage(16.01,16,32)==0,"outside");checks++;

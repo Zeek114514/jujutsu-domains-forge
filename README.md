@@ -1,6 +1,6 @@
 # 咒术领域 · Jujutsu Domains
 
-> 当前正式版：**1.1.0**。新增灶·开范围伤害、御厨子粉尘引爆、第一人称双手动画和多人同步补偿。
+> 当前正式版：**1.2.0**。灶·开伤害覆盖约200格半径火海，新增第一、第三人称领域结印。
 
 [![Build](https://github.com/Zeek114514/jujutsu-domains-forge/actions/workflows/build.yml/badge.svg)](https://github.com/Zeek114514/jujutsu-domains-forge/actions/workflows/build.yml)
 [![Minecraft](https://img.shields.io/badge/Minecraft-1.20.1-62b47a)](https://www.minecraft.net/)
@@ -11,12 +11,12 @@
 
 无量空处以纯白空间与宇宙结界封锁战场，御厨子以升起的神龛、镜面地面和开放式斩击覆盖周围。新增灶·开从聚火、拉弓到爆燃展开，提供独立的台词、射出声与命中余响。灶·开现已接入服务端范围伤害及御厨子粉尘引爆；地形破坏仍默认关闭。
 
-[灶·开指南](docs/FUGA.md) · [开发进度](docs/PROGRESS.md) · [1.1.0验证记录](docs/FUGA_COMBAT_VALIDATION.md) · [Wiki](https://github.com/Zeek114514/jujutsu-domains-forge/wiki)
+[1.2.0验证记录](docs/DOMAIN_SEALS_VALIDATION.md) · [灶·开指南](docs/FUGA.md) · [开发进度](docs/PROGRESS.md) · [1.1.0验证记录](docs/FUGA_COMBAT_VALIDATION.md) · [Wiki](https://github.com/Zeek114514/jujutsu-domains-forge/wiki)
 
 ## 下载和安装
 
 1. 安装 **Minecraft Java 1.20.1、Forge 47.4.10 或更高的 47.x、Java 17**。
-2. 前往 [Releases](https://github.com/Zeek114514/jujutsu-domains-forge/releases/latest)，下载 `unlimited-void-1.20.1-1.1.0.jar`。
+2. 前往 [Releases](https://github.com/Zeek114514/jujutsu-domains-forge/releases/latest)，下载 `unlimited-void-1.20.1-1.2.0.jar`。
 3. 放进当前游戏实例的 `mods` 文件夹。升级时移走旧版同名模组，避免重复加载，随后重启游戏。
 4. 多人游戏中客户端与服务端都要安装相同版本。
 
@@ -34,6 +34,8 @@
 | `H` | 灶·开：聚火、满蓄力、吟唱后射出火矢 |
 | `O` | 重置灶·开的独立冷却，不打断当前施放 |
 
+领域咏唱时自动结印：无量空处为右手交指，御厨子为双手结印，带独立手指模型。第一、第三人称均可见；咏唱结束或领域解除后恢复原持物。
+
 按键可在游戏设置中修改。两种领域共用 40 秒熔断；完全成型后持续约 20 秒，解除时有约 2 秒过渡。
 
 ### 灶·开 · Fūga
@@ -50,7 +52,7 @@
 
 *Forge 47.4.20 独立测试世界中的预览版实机画面。实际可见范围受视距和地形遮挡影响；v1.1.0已加入伤害与御厨子粉尘强化，详见指南。*
 
-普通火矢默认伤害半径16格、中心32点生命值；自己的御厨子粉尘满后可消耗并触发领域范围的强化爆燃。每目标每次施放最多命中一次，支持队友、宠物、抗火和结界保护。
+普通火矢默认伤害半径200格、中心240点生命值，边缘仍有60点；自己的御厨子粉尘满后可消耗并触发领域范围的强化爆燃，中心最大480点。每目标每次施放最多命中一次，支持队友、宠物、抗火和结界保护。
 
 ![1.1.0第一人称双臂拉弓](docs/images/fuga-hands-1.1.png)
 
@@ -124,7 +126,7 @@ blocksDestroyedPerTick = 96
 ./gradlew --no-daemon build
 ```
 
-当前安装包在 `build/libs/unlimited-void-1.20.1-1.1.0.jar`。开发客户端使用 `./gradlew runClient`。自动构建运行时序、战斗/渲染预算和寻地共147项无窗口检查，不启动游戏。
+当前安装包在 `build/libs/unlimited-void-1.20.1-1.2.0.jar`。开发客户端使用 `./gradlew runClient`。自动构建运行时序、战斗/渲染预算和寻地共147项无窗口检查，不启动游戏。
 
 仓库已经包含运行所需的音频资源，正常构建无需重新加工音频。可选的素材处理脚本位于 `tools/`，依赖 Python 3 与 FFmpeg，来源见 [第三方素材说明](THIRD_PARTY_NOTICES.md)。
 

@@ -26,7 +26,9 @@ public final class FugaCombat {
         var candidates=level.getEntitiesOfClass(LivingEntity.class,box,t->DomainService.fugaEligible(t,caster)&&!struck.contains(t.getUUID()));
         candidates.sort(Comparator.comparingDouble(t->t.distanceToSqr(impact)));
         int count=0;
-        for(var target:candidates){
+        int offset=candidates.isEmpty()?0:Math.floorMod(((int)burst/4)*FugaCombatRules.SCAN_BUDGET,candidates.size());
+        for(int scanned=0;scanned<Math.min(candidates.size(),FugaCombatRules.SCAN_BUDGET);scanned++){
+            var target=candidates.get((offset+scanned)%candidates.size());
             if(count>=FugaCombatRules.HIT_BUDGET||struck.size()>=FugaCombatRules.TARGET_LIMIT)break;
             Vec3 point=target.getBoundingBox().getCenter();double distance=point.distanceTo(impact);
             if(distance>front || DomainService.fugaSheltered(level,origin,point))continue;
