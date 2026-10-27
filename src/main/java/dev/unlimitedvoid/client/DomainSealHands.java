@@ -1,8 +1,9 @@
 package dev.unlimitedvoid.client;
 
 import dev.unlimitedvoid.*;
+import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.world.InteractionHand;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderHandEvent;
@@ -14,8 +15,9 @@ public final class DomainSealHands {
     @SubscribeEvent(priority=EventPriority.HIGHEST) public static void hand(RenderHandEvent event){
         var mc=Minecraft.getInstance();if(mc.player==null||mc.getCameraEntity()!=mc.player||mc.player.isInvisible())return;
         var seal=DomainSeals.of(mc.player.getUUID(),event.getPartialTick());if(seal==null)return;
+        if(!(mc.getEntityRenderDispatcher().getRenderer(mc.player) instanceof PlayerRenderer renderer))return;
         event.setCanceled(true);if(event.getHand()!=InteractionHand.MAIN_HAND)return;
-        var poses=event.getPoseStack();var out=event.getMultiBufferSource().getBuffer(RenderType.entityCutoutNoCull(mc.player.getSkinTextureLocation()));
+        var poses=event.getPoseStack();
         DomainSeals.renderingHands(true);
         try{
             for(boolean right:new boolean[]{true,false}){
@@ -23,11 +25,12 @@ public final class DomainSealHands {
                 poses.pushPose();
                 try{
                     float sign=right?1:-1;
-                    double x=seal.kind()==DomainKind.VOID?.22:sign*.08;
-                    poses.translate(x,-.15-(1-seal.weight())*.65,-.72);
-                    poses.scale(-1,-1,-1);
-                    SealHandMesh.forearm(poses,out,event.getPackedLight(),right);
-                    SealHandMesh.hand(poses,out,event.getPackedLight(),seal.kind(),right);
+                    boolean single=seal.kind()==DomainKind.VOID;
+                    poses.translate(single?.65:sign*.57,-.83-(1-seal.weight())*.65,-.80);
+                    poses.mulPose(Axis.XP.rotationDegrees(-12));
+                    poses.mulPose(Axis.ZP.rotationDegrees(single?-8:sign*12));
+                    if(right)renderer.renderRightHand(poses,event.getMultiBufferSource(),event.getPackedLight(),mc.player);
+                    else renderer.renderLeftHand(poses,event.getMultiBufferSource(),event.getPackedLight(),mc.player);
                 }finally{poses.popPose();}
             }
         }finally{DomainSeals.renderingHands(false);}
