@@ -18,7 +18,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 
-/** Preview only: never hurts entities, ignites blocks or calls Level.explode. */
+/** Authoritative cast, bounded damage and observer synchronization; never loads terrain. */
 @Mod.EventBusSubscriber(modid=UnlimitedVoid.ID)
 public final class FugaService {
     private static final Map<UUID,Cast> CASTS=new HashMap<>();
@@ -41,7 +41,7 @@ public final class FugaService {
         Cast cast=new Cast(player,now);
         CASTS.put(player.getUUID(),cast); READY.put(player.getUUID(),now+FugaTimeline.COOLDOWN);
         DomainNetwork.fugaStatus(player);
-        DomainNetwork.fuga(cast.level,cast.owner,0,hand(player),player.getEyePosition().add(player.getLookAngle().scale(3)),cast.seed,1);
+        syncObservers(cast);
     }
     private static Vec3 hand(ServerPlayer p) {
         Vec3 direction=p.getLookAngle();
@@ -57,7 +57,8 @@ public final class FugaService {
         while(iterator.hasNext()) {
             Cast c=iterator.next();var player=server.getPlayerList().getPlayer(c.owner);
             if(player==null || !player.isAlive() || player.isSpectator() || player.serverLevel()!=c.level || DomainService.isCaptive(c.owner)) {
-                DomainNetwork.fuga(c.level,c.owner,2,c.from,c.to,c.seed,1);iterator.remove();
+                for(var listener:c.level.players())if(c.listeners.contains(listener.getUUID()))send(c,listener,2);
+                iterator.remove();
                 if(player!=null)DomainNetwork.fugaStatus(player);continue;
             }
             int age=now-c.start;
@@ -71,12 +72,25 @@ public final class FugaService {
                 }
                 Vec3 end=eye.add(direction.scale(loadedRange));
                 c.to=c.level.clip(new ClipContext(eye,end,ClipContext.Block.COLLIDER,ClipContext.Fluid.NONE,player)).getLocation();
+                var entityHit=net.minecraft.world.entity.projectile.ProjectileUtil.getEntityHitResult(c.level,player,eye,c.to,
+                    player.getBoundingBox().expandTowards(c.to.subtract(eye)).inflate(1),t->t instanceof net.minecraft.world.entity.LivingEntity living&&DomainService.fugaEligible(living,player));
+                if(entityHit!=null)c.to=entityHit.getLocation();
                 // A wall immediately in front must not put the visible arrow beyond that wall.
                 if(eye.distanceTo(c.to)<1.6 || c.level.clip(new ClipContext(eye,c.from,
                         ClipContext.Block.COLLIDER,ClipContext.Fluid.NONE,player)).getType()!=net.minecraft.world.phys.HitResult.Type.MISS)c.from=eye;
                 c.flight=FugaTimeline.flight(c.from.distanceTo(c.to));c.released=true;
-                DomainNetwork.fuga(c.level,c.owner,1,c.from,c.to,c.seed,c.flight);
+                for(var listener:c.level.players())if(c.listeners.contains(listener.getUUID()))send(c,listener,1);
             }
+            if(c.released&&age>=FugaTimeline.CHARGE+c.flight){
+                float burst=age-FugaTimeline.CHARGE-c.flight;
+                if(!c.impacted){
+                    c.impacted=true;
+                    if(dev.unlimitedvoid.DomainConfig.FUGA_COMBAT.get())c.dust=DomainService.consumeFugaDust(player,c.to);
+                    if(c.dust!=null){for(var listener:c.level.players())if(c.listeners.contains(listener.getUUID()))send(c,listener,3);DomainNetwork.fugaStatus(player);}
+                }
+                if(((int)burst)%4==0)FugaCombat.pulse(player,c.from,c.to,burst,c.dust,c.struck);
+            }
+            if(now%10==0)syncObservers(c);
             if(c.released && age>=FugaTimeline.CHARGE+c.flight+FugaTimeline.AFTERMATH){iterator.remove();DomainNetwork.fugaStatus(player);}
         }
         READY.entrySet().removeIf(e->now>=e.getValue());
@@ -84,9 +98,18 @@ public final class FugaService {
         if(now%20==0)for(var p:server.getPlayerList().getPlayers())DomainNetwork.fugaStatus(p);
     }
     @SubscribeEvent public static void stop(ServerStoppingEvent event) { CASTS.clear();READY.clear();LAST_RESET.clear(); }
+    private static void send(Cast c,ServerPlayer p,int phase){DomainNetwork.fugaTo(p,c.owner,phase,c.from,c.to,c.seed,c.flight,c.startGameTime);}
+    private static void syncObservers(Cast c){
+        c.listeners.removeIf(id->c.level.getPlayerByUUID(id)==null);
+        double range=FugaTimeline.VIEW_RANGE*FugaTimeline.VIEW_RANGE;
+        for(var p:c.level.players())if(p.getUUID().equals(c.owner)||p.distanceToSqr(c.from)<range||p.distanceToSqr(c.to)<range){
+            if(c.listeners.add(p.getUUID()))send(c,p,c.dust!=null?3:c.released?1:0);
+        }
+    }
     private static final class Cast {
         final UUID owner;final ServerLevel level;final int start,seed;
-        Vec3 from,to;int flight=1;boolean released;
-        Cast(ServerPlayer p,int tick){owner=p.getUUID();level=p.serverLevel();start=tick;seed=p.getRandom().nextInt();from=hand(p);to=from;}
+        final long startGameTime;final java.util.Set<UUID> listeners=new java.util.HashSet<>(),struck=new java.util.HashSet<>();
+        Vec3 from,to;int flight=1;boolean released,impacted;DomainService.FugaDust dust;
+        Cast(ServerPlayer p,int tick){owner=p.getUUID();level=p.serverLevel();start=tick;startGameTime=level.getGameTime();seed=p.getRandom().nextInt();from=hand(p);to=from;}
     }
 }

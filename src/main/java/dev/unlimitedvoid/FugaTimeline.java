@@ -1,6 +1,6 @@
 package dev.unlimitedvoid;
 
-/** Pure visual timing shared by the server, renderer and headless checks. */
+/** Shared authoritative cast timing, rendering bounds and regression-check constants. */
 public final class FugaTimeline {
     // Selected source 5.00..7.75s: full draw before the Fuga syllables, release after the line.
     public static final int FULL_DRAW = 30, CHARGE = 54, AFTERMATH = 132, COOLDOWN = 200, MAX_CASTS = 8;

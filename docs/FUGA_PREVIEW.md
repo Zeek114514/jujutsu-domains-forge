@@ -1,3 +1,5 @@
+> 历史预览版记录。当前1.1.0玩法与验证见 [灶·开指南](FUGA.md) 和 [新版验证](FUGA_COMBAT_VALIDATION.md)。
+
 # 灶·开：纯特效试作
 
 版本 `1.1.0-preview.6`，Minecraft Java 1.20.1 / Forge 47.4.10+（47.x）/ Java 17。

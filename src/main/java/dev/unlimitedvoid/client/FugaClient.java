@@ -31,27 +31,40 @@ public final class FugaClient {
     private static final KeyMapping RESET=new KeyMapping("key.unlimitedvoid.fuga_reset",InputConstants.Type.KEYSYM,GLFW.GLFW_KEY_O,"category.unlimitedvoid");
     private static final Map<UUID,Effect> EFFECTS=new LinkedHashMap<>();
     private static ClientLevel lastLevel;
-    private static int cooldown;
+    private static int cooldown,dust;
     private static boolean casting;
     private FugaClient() {}
-    private static void clear(ClientLevel level){ClientFugaAudio.clear();EFFECTS.clear();cooldown=0;casting=false;lastLevel=level;}
-    public static void status(int ticks,boolean active){var level=Minecraft.getInstance().level;if(level!=lastLevel)clear(level);cooldown=ticks;casting=active;}
+    private static void clear(ClientLevel level){ClientFugaAudio.clear();EFFECTS.clear();cooldown=0;dust=0;casting=false;lastLevel=level;}
+    public static void status(int ticks,boolean active,int powder){var level=Minecraft.getInstance().level;if(level!=lastLevel)clear(level);cooldown=ticks;casting=active;dust=powder;}
     /** Negative means no bow pose; the mixin is client-only and leaves other entities alone. */
     public static float drawProgress(UUID owner){
         var mc=Minecraft.getInstance();var e=EFFECTS.get(owner);
         return mc.level==null||e==null||e.released?-1:FugaTimeline.charge(e.age(mc.level,mc.getFrameTime()));
     }
-    public static void receive(UUID owner,int phase,Vec3 from,Vec3 to,int seed,int flight) {
+    public static float handProgress(){
+        var mc=Minecraft.getInstance();if(mc.player==null||mc.level==null)return -1;
+        var e=EFFECTS.get(mc.player.getUUID());if(e==null)return -1;
+        float age=e.age(mc.level,mc.getFrameTime());
+        return !e.released?FugaTimeline.charge(age):age<FugaTimeline.CHARGE+8?1-FugaTimeline.smooth((age-FugaTimeline.CHARGE)/8):-1;
+    }
+    public static void receive(UUID owner,int phase,Vec3 from,Vec3 to,int seed,int flight,long serverStart) {
         var mc=Minecraft.getInstance();if(mc.level==null)return;
         if(lastLevel!=mc.level)clear(mc.level);
         if(phase==2){EFFECTS.remove(owner);ClientFugaAudio.stop(owner);return;}
         Effect e=EFFECTS.get(owner);
-        if(phase==0||e==null){
+        if(e!=null&&e.start!=serverStart){ClientFugaAudio.stop(owner);EFFECTS.remove(owner);e=null;}
+        boolean fresh=e==null;
+        if(fresh){
             if(EFFECTS.size()>=FugaTimeline.MAX_CASTS){var oldest=EFFECTS.keySet().iterator().next();EFFECTS.remove(oldest);ClientFugaAudio.stop(oldest);}
-            e=new Effect(owner,from,to,seed,mc.level.getGameTime());EFFECTS.put(owner,e);
-            if(phase==0)ClientFugaAudio.play(owner,from);
+            e=new Effect(owner,from,to,seed,serverStart);EFFECTS.put(owner,e);
+            if(phase==0&&e.age(mc.level,0)<=4)ClientFugaAudio.play(owner,from);
         }
-        if(phase==1&&!e.released){e.from=from;e.to=to;e.flight=flight;e.released=true;e.start=mc.level.getGameTime()-FugaTimeline.CHARGE;ClientFugaAudio.launch(owner,from);}
+        if(phase==1||phase==3){
+            boolean launch=!e.released;e.from=from;e.to=to;e.flight=flight;e.released=true;e.empowered|=phase==3;
+            float burst=FugaTimeline.burstAge(e.age(mc.level,0),flight);
+            if(launch&&burst<=4)ClientFugaAudio.launch(owner,from);
+            if(fresh&&burst>4)e.impactSoundPlayed=true;
+        }
     }
     @SubscribeEvent public static void tick(TickEvent.ClientTickEvent event) {
         if(event.phase!=TickEvent.Phase.END)return;
@@ -63,10 +76,12 @@ public final class FugaClient {
         if(mc.isPaused())return;
         if(cooldown>0)cooldown--;
         EFFECTS.values().removeIf(e->e.age(mc.level,0)>FugaTimeline.CHARGE+e.flight+FugaTimeline.AFTERMATH+20);
+        int terrainBudget=32;
         for(Effect e:EFFECTS.values()){
             float age=e.age(mc.level,0),burst=FugaTimeline.burstAge(age,e.flight);
             if(e.lastParticleTick==mc.level.getGameTime())continue;
             e.lastParticleTick=mc.level.getGameTime();
+            if(e.released&&burst>=0&&terrainBudget>0){int used=e.resolveGround(mc.level,Math.max(1,32/Math.max(1,EFFECTS.size())));terrainBudget-=used;}
             if(e.released&&burst>=0&&!e.impactSoundPlayed){e.impactSoundPlayed=true;ClientFugaAudio.impact(e.owner,e.to);}
             if(e.released&&burst<0){
                 Vec3 p=e.from.lerp(e.to,FugaTimeline.travel(age,e.flight));
@@ -86,6 +101,7 @@ public final class FugaClient {
         var mc=Minecraft.getInstance();if(mc.player==null||mc.options.hideGui)return;
         Component state=Component.translatable(casting?"hud.unlimitedvoid.fuga_casting":cooldown>0?"hud.unlimitedvoid.fuga_cooldown":"hud.unlimitedvoid.fuga_ready",(cooldown+19)/20);
         event.getGuiGraphics().drawString(mc.font,Component.translatable("hud.unlimitedvoid.fuga",PREVIEW.getTranslatedKeyMessage(),state,RESET.getTranslatedKeyMessage()),8,68,0xFFC381,true);
+        if(dust>0)event.getGuiGraphics().drawString(mc.font,Component.translatable("hud.unlimitedvoid.fuga_dust",dust),8,80,dust>=100?0xFF7340:0xD3AD88,true);
     }
     @SubscribeEvent public static void camera(ViewportEvent.ComputeCameraAngles event){
         var mc=Minecraft.getInstance();if(mc.level==null||mc.player==null||mc.isPaused())return;
@@ -111,22 +127,39 @@ public final class FugaClient {
         FugaRenderer.render(event,EFFECTS.values());
     }
     static final class Effect {
-        final UUID owner;final int seed;Vec3 from,to;long start,lastParticleTick=Long.MIN_VALUE;int flight=1;boolean released,impactSoundPlayed;
-        private Vec3[] ground;
+        final UUID owner;final int seed;Vec3 from,to;long start,lastParticleTick=Long.MIN_VALUE;int flight=1;boolean released,impactSoundPlayed,empowered;
+        private Vec3[] ground;private int groundCursor;
         Effect(UUID owner,Vec3 from,Vec3 to,int seed,long start){this.owner=owner;this.from=from;this.to=to;this.seed=seed;this.start=start;}
         float age(ClientLevel level,float partial){return Math.max(0,level.getGameTime()-start+partial);}
         Vec3[] ground(ClientLevel level){
             if(ground!=null)return ground;
             ground=new Vec3[320];
-            // One bounded sampling pass. Unloaded terrain uses the impact plane without loading chunks.
+            // Allocate positions once; terrain queries are separately budgeted across client ticks.
             for(int i=0;i<ground.length;i++){
                 double angle=i*2.3999632297+(seed&255)*.0245;
                 double radius=FugaTimeline.FIRE_RADIUS*Math.sqrt((i+.5)/ground.length);
                 double x=to.x+Math.cos(angle)*radius,z=to.z+Math.sin(angle)*radius,y=to.y;
-                if(level.hasChunkAt(BlockPos.containing(x,y,z)))y=level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,(int)Math.floor(x),(int)Math.floor(z));
                 ground[i]=new Vec3(x,y+.12,z);
             }
             return ground;
+        }
+        int resolveGround(ClientLevel level,int budget){
+            ground(level);int used=0;
+            while(used<budget){
+                int i=groundCursor++%ground.length;Vec3 point=ground[i];used++;
+                var block=BlockPos.containing(point);
+                if(!level.hasChunkAt(block))continue;
+                double top=level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,block.getX(),block.getZ());
+                // Under a roof/cave, sample from the impact stratum rather than its ceiling.
+                double start=top>to.y+24?to.y+2:top+1;
+                start=Math.min(level.getMaxBuildHeight()-.01,start);
+                double bottom=Math.max(level.getMinBuildHeight(),Math.min(start-1,to.y-64));
+                if(start<=bottom)continue;
+                var from=new Vec3(point.x,start,point.z);var end=new Vec3(point.x,bottom,point.z);
+                var hit=level.clip(new net.minecraft.world.level.ClipContext(from,end,net.minecraft.world.level.ClipContext.Block.COLLIDER,net.minecraft.world.level.ClipContext.Fluid.NONE,Minecraft.getInstance().player));
+                if(hit.getType()!=net.minecraft.world.phys.HitResult.Type.MISS)ground[i]=new Vec3(point.x,hit.getLocation().y+.12,point.z);
+            }
+            return used;
         }
         Vec3 origin(ClientLevel level,float partial){
             if(released)return from;

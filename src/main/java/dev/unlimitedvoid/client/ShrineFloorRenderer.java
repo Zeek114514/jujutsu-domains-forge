@@ -16,6 +16,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL14;
 import java.util.*;
 
 /** A temporary world-space mirror. Never edits terrain, fluid or collision. */
@@ -32,7 +33,14 @@ public final class ShrineFloorRenderer {
     public static int reflectedCount(){return reflectedCount;}
     public static int shrineCount(){return shrineCount;}
     public static int frames(){return frames;}
-    private static void release(){if(reflection!=null){reflection.destroyBuffers();reflection=null;Minecraft.getInstance().getMainRenderTarget().bindWrite(true);}reflectedCount=0;shrineCount=0;}
+    private static void release(){
+        if(reflection!=null){
+            var target=FramebufferState.capture();boolean bound=target.draw()==reflection.frameBufferId||target.read()==reflection.frameBufferId;
+            reflection.destroyBuffers();reflection=null;
+            if(bound)Minecraft.getInstance().getMainRenderTarget().bindWrite(true);else target.restore();
+        }
+        reflectedCount=0;shrineCount=0;
+    }
     public static void clear(){Runnable clean=()->{release();SURFACES.clear();};if(RenderSystem.isOnRenderThread())clean.run();else RenderSystem.recordRenderCall(clean::run);}
 
     public static void render(RenderLevelStageEvent event,List<DomainState> states){
@@ -45,15 +53,18 @@ public final class ShrineFloorRenderer {
         boolean blend=GL11.glIsEnabled(GL11.GL_BLEND),depth=GL11.glIsEnabled(GL11.GL_DEPTH_TEST),cull=GL11.glIsEnabled(GL11.GL_CULL_FACE);
         boolean depthMask=GL11.glGetBoolean(GL11.GL_DEPTH_WRITEMASK);
         int depthFunc=GL11.glGetInteger(GL11.GL_DEPTH_FUNC),front=GL11.glGetInteger(GL11.GL_FRONT_FACE);
+        var target=FramebufferState.capture();
+        int src=GL11.glGetInteger(GL14.GL_BLEND_SRC_RGB),dst=GL11.glGetInteger(GL14.GL_BLEND_DST_RGB),srcAlpha=GL11.glGetInteger(GL14.GL_BLEND_SRC_ALPHA),dstAlpha=GL11.glGetInteger(GL14.GL_BLEND_DST_ALPHA);
         int texture=RenderSystem.getShaderTexture(0);
         float[] color=RenderSystem.getShaderColor().clone();ShaderInstance previous=RenderSystem.getShader();
         try {
             ensureTarget(mc);
+            target.restore();
             for(DomainState d:visible){
                 double floor=SURFACES.computeIfAbsent(d.owner(),id->surfaceHeight(d))+0.025;
                 if(camera.y<=floor+0.01)continue;
                 renderReflections(mc,event,d,floor);
-                mc.getMainRenderTarget().bindWrite(true);
+                target.restore();
                 GL11.glFrontFace(front);
                 // Terrain is already drawn; living entities and the shrine are drawn next.
                 // Replace ground colour even when it lies above the visual plane, while
@@ -62,7 +73,7 @@ public final class ShrineFloorRenderer {
                 RenderSystem.enableDepthTest();RenderSystem.depthFunc(inside?GL11.GL_ALWAYS:GL11.GL_LEQUAL);RenderSystem.depthMask(false);
                 RenderSystem.disableCull();RenderSystem.enableBlend();RenderSystem.defaultBlendFunc();RenderSystem.setShaderColor(1,1,1,1);
                 shader.setSampler("Reflection",reflection.getColorTextureId());
-                shader.safeGetUniform("Resolution").set((float)mc.getMainRenderTarget().width,(float)mc.getMainRenderTarget().height);
+                shader.safeGetUniform("Resolution").set((float)target.width(),(float)target.height());
                 shader.safeGetUniform("Time").set((d.age()+event.getPartialTick())/20f);
                 shader.safeGetUniform("Opacity").set(opacity(d,event.getPartialTick()));
                 shader.safeGetUniform("Radius").set(d.radius());
@@ -89,9 +100,10 @@ public final class ShrineFloorRenderer {
         } catch(RuntimeException error){
             failed=true;com.mojang.logging.LogUtils.getLogger().error("Shrine mirror rendering failed",error);
         } finally {
-            reflecting=false;mc.getMainRenderTarget().bindWrite(true);GL11.glFrontFace(front);
+            reflecting=false;target.restore();GL11.glFrontFace(front);
             RenderSystem.setShaderTexture(0,texture);RenderSystem.setShaderColor(color[0],color[1],color[2],color[3]);
             RenderSystem.depthMask(depthMask);RenderSystem.depthFunc(depthFunc);
+            RenderSystem.blendFuncSeparate(src,dst,srcAlpha,dstAlpha);
             if(depth)RenderSystem.enableDepthTest();else RenderSystem.disableDepthTest();
             if(blend)RenderSystem.enableBlend();else RenderSystem.disableBlend();
             if(cull)RenderSystem.enableCull();else RenderSystem.disableCull();

@@ -18,6 +18,8 @@ import java.util.Collection;
 /** Bounded full-bright pixel ribbons and crossed flame cards, with ordinary depth occlusion. */
 final class FugaRenderer {
     private static final ResourceLocation TEXTURE=new ResourceLocation(UnlimitedVoid.ID,"textures/effect/fuga_flame.png");
+    private static int detail=1,quads;
+    static int quads(){return quads;}
     private FugaRenderer() {}
     static void render(RenderLevelStageEvent event,Collection<FugaClient.Effect> effects) {
         var mc=Minecraft.getInstance();if(mc.level==null)return;
@@ -38,9 +40,11 @@ final class FugaRenderer {
             BufferBuilder buffer=Tesselator.getInstance().getBuilder();buffer.begin(VertexFormat.Mode.QUADS,DefaultVertexFormat.POSITION_TEX_COLOR);
             Matrix4f matrix=event.getPoseStack().last().pose();
             float partial=mc.isPaused()?0:event.getPartialTick();
+            quads=0;
             for(var e:effects) {
                 if(e.from.distanceToSqr(camera)>FugaTimeline.VIEW_RANGE*FugaTimeline.VIEW_RANGE&&e.to.distanceToSqr(camera)>FugaTimeline.VIEW_RANGE*FugaTimeline.VIEW_RANGE)continue;
                 float age=e.age(mc.level,partial);
+                detail=dev.unlimitedvoid.FugaRenderBudget.stride(effects.size(),e.to.distanceToSqr(camera),mc.options.particles().get().getId());
                 if(!e.released) {
                     Vec3 p=e.origin(mc.level,partial),direction=e.direction(mc.level,partial);
                     // First-person viewmodel spacing; observers retain the hand-aligned world anchor.
@@ -92,10 +96,11 @@ final class FugaRenderer {
                         }
                     } else if(burst<FugaTimeline.AFTERMATH) {
                         float grow=FugaTimeline.smooth(burst/18),fade=FugaTimeline.burstFade(burst);
-                        int stride=effects.size()>2||e.to.distanceToSqr(camera)>400*400?2:1;
+                        int stride=detail;
                         // Ignition travels across a 400-block-wide footprint; bounded cached terrain samples.
                         var tiles=e.ground(mc.level);
                         double front=FugaTimeline.fireRadius(burst);
+                        if(e.empowered&&burst<48)ring(buffer,matrix,camera,e.to.add(0,.7,0),front,3.5,age,fade*.9f);
                         for(int i=0;i<tiles.length;i+=stride){
                             Vec3 root=tiles[i];
                             double radius=Math.sqrt(Math.pow(root.x-e.to.x,2)+Math.pow(root.z-e.to.z,2));
@@ -191,8 +196,9 @@ final class FugaRenderer {
         }
     }
     private static void ring(BufferBuilder b,Matrix4f m,Vec3 camera,Vec3 center,double radius,double width,float age,float alpha) {
-        for(int i=0;i<128;i++) {
-            double a=i*Math.PI/64,z=(i+1)*Math.PI/64;
+        int segments=Math.max(16,128/detail);
+        for(int i=0;i<segments;i++) {
+            double a=i*Math.PI*2/segments,z=(i+1)*Math.PI*2/segments;
             Vec3 x=center.add(Math.cos(a)*radius,0,Math.sin(a)*radius),y=center.add(Math.cos(z)*radius,0,Math.sin(z)*radius);
             Vec3 outward=new Vec3(Math.cos((a+z)/2),0,Math.sin((a+z)/2));
             ribbon(b,m,camera,x,y,outward,width,age+i,alpha*.55f);
@@ -207,6 +213,8 @@ final class FugaRenderer {
         quad(b,m,camera,center.subtract(x).subtract(y),center.add(x).subtract(y),center.add(x).add(y),center.subtract(x).add(y),frame,alpha);
     }
     private static void quad(BufferBuilder b,Matrix4f m,Vec3 camera,Vec3 a,Vec3 z,Vec3 c,Vec3 d,float frame,float alpha) {
+        if(quads>=dev.unlimitedvoid.FugaRenderBudget.MAX_QUADS)return;
+        quads++;
         int f=Math.floorMod((int)(frame*.6f),8);float v0=f/8f,v1=(f+1)/8f;
         vertex(b,m,camera,a,0,v1,alpha);vertex(b,m,camera,z,1,v1,alpha);vertex(b,m,camera,c,1,v0,alpha);vertex(b,m,camera,d,0,v0,alpha);
     }

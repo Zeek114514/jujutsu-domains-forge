@@ -1,0 +1,20 @@
+{
+  "vanilla": {
+    "frames": 355,
+    "mean_frame_ms": 8.594502542372881,
+    "quads": 3200,
+    "fps": 119,
+    "three_damage_pulses_ms": 5.972699
+  },
+  "shader": {
+    "frames": 350,
+    "mean_frame_ms": 8.713888252148998,
+    "quads": 3200,
+    "fps": 116,
+    "three_damage_pulses_ms": 6.0483
+  },
+  "headless_checks": 147,
+  "network_observer": true,
+  "shader_pipeline_active": true,
+  "mirror_target_preserved": true
+}
