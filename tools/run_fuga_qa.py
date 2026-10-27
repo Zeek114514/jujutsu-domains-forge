@@ -10,7 +10,9 @@ p.add_argument('--run-id',default=str(int(time.time())))
 p.add_argument('--compat-dir',help='Directory containing only Oculus and Embeddium test jars and the chosen shader zip')
 p.add_argument('--shader-pack',default='ComplementaryReimagined_r5.2.2.zip')
 p.add_argument('--test-jar',help='Explicit visual-test jar; otherwise use newest build/libs/*-visual-test.jar')
+p.add_argument('--suite',choices=['combat','seals'],default='combat')
 args=p.parse_args()
+if args.suite=='seals' and args.mode=='network':p.error('Seal suite uses one isolated client; choose plain or shader')
 if os.name!='nt':p.error('This launcher harness uses a Windows Forge profile. Gradle headless checks remain cross-platform.')
 assert re.fullmatch('[a-zA-Z0-9-]+',args.run_id)
 project=Path(__file__).resolve().parents[1]
@@ -42,11 +44,14 @@ assert jar.exists(),jar
 def launch(role):
  game=root/role;assert not game.exists(), 'Use a fresh QA folder to preserve evidence';(game/'mods').mkdir(parents=True)
  shutil.copy2(jar,game/'mods'/jar.name)
+ if args.suite=='seals':
+  (game/'config').mkdir(exist_ok=True)
+  (game/'config/unlimitedvoid-common.toml').write_text('fugaDamageRadius=16.0\nfugaBaseDamage=32.0\nfugaDustDamage=80.0\nshrineTerrainDamage=false\n','utf-8')
  if args.mode=='shader':
   downloads=Path(args.compat_dir).resolve() if args.compat_dir else project/'build/compat-downloads'
   for f in downloads.glob('*.jar'):shutil.copy2(f,game/'mods'/f.name)
   (game/'shaderpacks').mkdir();shader=downloads/args.shader_pack;shutil.copy2(shader,game/'shaderpacks'/shader.name)
-  (game/'config').mkdir();(game/'config/oculus.properties').write_text('enableShaders=true\nshaderPack='+shader.name+'\n','utf-8')
+  (game/'config').mkdir(exist_ok=True);(game/'config/oculus.properties').write_text('enableShaders=true\nshaderPack='+shader.name+'\n','utf-8')
   (game/'shaderpacks'/(shader.name+'.txt')).write_text('SHADOW_QUALITY=0.5\nSHADOW_DISTANCE=64.0\n','utf-8')
  (game/'options.txt').write_text('lang:zh_cn\nonboardAccessibility:false\nrenderDistance:8\nsimulationDistance:5\nmaxFps:120\npauseOnLostFocus:false\nenableVsync:false\nentityShadows:false\n','utf-8')
  values={'natives_directory':str(version/'natives-windows-x86_64'),'launcher_name':'Jujutsu-isolated-QA','launcher_version':'1','classpath':';'.join(cp),'classpath_separator':';','library_directory':str(libs),'version_name':d['id'],'primary_jar_name':'1.20.1-Forge.jar','auth_player_name':'FugaObserver' if role=='observer' else 'FugaHost','game_directory':str(game),'assets_root':str(base/'assets'),'assets_index_name':str(d['assetIndex']['id']),'auth_uuid':uuid.uuid3(uuid.NAMESPACE_DNS,'OfflinePlayer:'+('FugaObserver' if role=='observer' else 'FugaHost')).hex,'auth_access_token':'0','clientid':'0','auth_xuid':'0','user_type':'mojang','version_type':'release'}
@@ -60,7 +65,7 @@ def launch(role):
    else:out.append(expand(arg))
   return out
  java=Path(args.java);assert java.exists(),'Pass --java pointing to a JDK17 java.exe'
- command=[str(java),'-Xmx1800M','-Duv.fugaCombatTest=true','-Duv.fugaNetwork='+str(args.mode=='network' and role=='host').lower(),'-Duv.fugaObserver='+str(role=='observer').lower(),'-Duv.shaderTest='+str(args.mode=='shader').lower(),'-Duv.readyFile='+str(root/'ready')]+arguments(d['arguments']['jvm'])+[d['mainClass']]+arguments(d['arguments']['game'])+['--width','960','--height','540']
+ command=[str(java),'-Xmx1800M','-Duv.'+('sealTest' if args.suite=='seals' else 'fugaCombatTest')+'=true','-Duv.fugaNetwork='+str(args.mode=='network' and role=='host').lower(),'-Duv.fugaObserver='+str(role=='observer').lower(),'-Duv.shaderTest='+str(args.mode=='shader').lower(),'-Duv.readyFile='+str(root/'ready')]+arguments(d['arguments']['jvm'])+[d['mainClass']]+arguments(d['arguments']['game'])+['--width','960','--height','540']
  log=(game/'console.log').open('w',encoding='utf-8')
  environment=os.environ.copy();environment['ALSOFT_DRIVERS']='null'
  proc=subprocess.Popen(command,cwd=game,stdout=log,stderr=subprocess.STDOUT,creationflags=0x08000000,env=environment)
@@ -77,7 +82,7 @@ try:
  host.wait(timeout=240);log.close()
  if observer:observer.wait(timeout=30);observerlog.close()
  text=(root/'host/console.log').read_text('utf-8',errors='replace')
- assert 'FUGA_COMBAT_TEST_COMPLETE' in text and 'FUGA_COMBAT_FAIL' not in text, 'Host test failed; inspect console.log'
+ assert ('DOMAIN_SEAL_TEST_COMPLETE' if args.suite=='seals' else 'FUGA_COMBAT_TEST_COMPLETE') in text and 'FUGA_COMBAT_FAIL' not in text and 'DOMAIN_SEAL_FAIL' not in text, 'Host test failed; inspect console.log'
  if observer:
   text=(root/'observer/console.log').read_text('utf-8',errors='replace');assert 'FUGA_NETWORK_OBSERVER_COMPLETE' in text and 'FUGA_COMBAT_FAIL' not in text
  print('FUGA_QA_PASS '+args.mode,flush=True)

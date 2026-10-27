@@ -12,6 +12,7 @@ public final class DomainConfig {
     public static final ForgeConfigSpec.BooleanValue DOMAIN_AMBIENCE;
     public static final ForgeConfigSpec.BooleanValue FUGA_COMBAT;
     public static final ForgeConfigSpec.DoubleValue FUGA_RADIUS,FUGA_DAMAGE,FUGA_DUST_DAMAGE;
+    public static final ForgeConfigSpec.IntValue FUGA_BALANCE_REVISION;
     static {
         ForgeConfigSpec.Builder b=new ForgeConfigSpec.Builder();
         SHRINE_RADIUS=b.comment("Open domain radius in blocks; 1 block is treated as 1 metre. Loaded targets only.").defineInRange("shrineRadius",200,16,200);
@@ -22,9 +23,10 @@ public final class DomainConfig {
         SOUND_VOLUME=b.comment("Master gain for this mod's custom sounds, also controlled by vanilla sound category sliders.").defineInRange("domainSoundVolume",0.8,0.0,1.0);
         DOMAIN_AMBIENCE=b.comment("Enable the quiet local ambience loop while inside a domain.").define("domainAmbience",true);
         FUGA_COMBAT=b.comment("Enable server-authoritative Fuga entity damage. Does not enable block destruction.").define("fugaCombatEnabled",true);
-        FUGA_RADIUS=b.comment("Ordinary Fuga damage radius; the distant firestorm is visual.").defineInRange("fugaDamageRadius",16.0,1,64);
-        FUGA_DAMAGE=b.defineInRange("fugaBaseDamage",32.0,0,1000);
-        FUGA_DUST_DAMAGE=b.comment("Maximum damage after consuming a fully charged own Shrine dust field.").defineInRange("fugaDustDamage",80.0,0,1000);
+        FUGA_RADIUS=b.comment("Fuga damage radius matches the main firestorm footprint by default.").defineInRange("fugaDamageRadius",200.0,1,200);
+        FUGA_DAMAGE=b.defineInRange("fugaBaseDamage",240.0,0,10000);
+        FUGA_DUST_DAMAGE=b.comment("Maximum damage after consuming a fully charged own Shrine dust field.").defineInRange("fugaDustDamage",480.0,0,10000);
+        FUGA_BALANCE_REVISION=b.comment("One-time migration of unmodified 1.1.0 Fuga defaults; custom values are preserved.").defineInRange("fugaBalanceRevision",0,0,1);
         SPEC=b.build();
     }
 }

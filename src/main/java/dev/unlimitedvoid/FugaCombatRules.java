@@ -3,6 +3,7 @@ package dev.unlimitedvoid;
 /** Deterministic combat limits shared with the regression checks. */
 public final class FugaCombatRules {
     public static final int DUST_REQUIRED=100, TARGET_LIMIT=512, HIT_BUDGET=32;
+    public static final int SCAN_BUDGET=256;
     private FugaCombatRules(){}
     public static double front(float burst,double radius){return radius*FugaTimeline.smooth(burst/32);}
     public static float damage(double distance,double radius,double maximum){

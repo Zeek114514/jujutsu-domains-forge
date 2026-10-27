@@ -107,7 +107,7 @@ public final class FugaCombatVisualTest {
         if(ticks==140)server(mc,p->{
             LogUtils.getLogger().info("FUGA_COMBAT_HITS {}",hits);
             require(hits.getOrDefault(victim,0)==1,"ordinary Fuga hits target once");
-            require(hits.getOrDefault(ally,0)==0,"team protection");require(hits.getOrDefault(far,0)==0,"visual firestorm does not imply ordinary 200-block damage");
+            require(hits.getOrDefault(ally,0)==0,"team protection");require(hits.getOrDefault(far,0)==1,"ordinary firestorm reaches loaded target at 48 blocks");
             require(hits.getOrDefault(blocked,0)==0,"wall blocks ordinary fire blast");
             require(p.serverLevel().getBlockState(new BlockPos(4,-59,10)).is(Blocks.STONE),"no terrain destruction");
             require(p.getHealth()==p.getMaxHealth(),"caster protected");
@@ -151,7 +151,7 @@ public final class FugaCombatVisualTest {
             require(DomainService.fugaDust(p.getUUID())<100,"powder consumed at actual impact");
             require(hits.getOrDefault(protectedVictim,0)==0,"complete external Void barrier shelters its inside target");
         });
-        if(ticks==612)server(mc,p->{require(hits.getOrDefault(domainVictim,0)==1,"powder ignition reaches beyond ordinary damage radius");});
+        if(ticks==612)server(mc,p->{require(hits.getOrDefault(domainVictim,0)==1,"powder ignition reaches distant domain target");});
         if(ticks==620){
             server(mc,p->p.teleportTo(p.serverLevel(),30,-50,-20,35,-12));
             // Actual production renderer with 8 simultaneous server-equivalent received effects.
