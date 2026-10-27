@@ -59,7 +59,21 @@ public final class LimitlessRenderer {
             float fade=s.phase()==2?(s.kind()==LimitlessKind.BLUE?1-LimitlessKind.smooth((phaseAge-68)/12):1-LimitlessKind.smooth(phaseAge/16)):1;
             float radius=s.phase()==0?.22f+.67f*power:s.kind()==LimitlessKind.PURPLE?4.5f:s.kind()==LimitlessKind.BLUE?(float)(1.2+LimitlessKind.power(s.charge())*.6):.8f;
             if(s.phase()==1&&mc.player!=null&&s.owner().equals(mc.player.getUUID()))fade*=.12f+.88f*LimitlessKind.smooth((float)(p.distanceTo(camera)/12));
-            if(s.phase()==0&&s.kind()==LimitlessKind.PURPLE){
+            if(s.phase()==PurpleDetonation.GROWING){
+                float merge=LimitlessKind.smooth(phaseAge/12),ingredients=1-LimitlessKind.smooth((phaseAge-5)/9);
+                if(ingredients>.008){
+                    balls.add(new Ball(p.add(side.scale(1.6*(1-merge))),side,1.1f,age,0,true,1.2f,ingredients));
+                    balls.add(new Ball(p.subtract(side.scale(1.6*(1-merge))),side,1.1f,-age,1,true,1.2f,ingredients));
+                }
+                balls.add(new Ball(p,vertical,(float)Math.min(s.blastRadius(),PurpleDetonation.core(phaseAge)),age,2,false,1,LimitlessKind.smooth(phaseAge/6)));
+            }else if(s.phase()==PurpleDetonation.BLAST){
+                float flash=1-LimitlessKind.smooth(phaseAge/14);
+                if(flash>.01)balls.add(new Ball(p,vertical,(float)Math.min(s.blastRadius(),PurpleDetonation.CORE_RADIUS),age,2,false,1,flash));
+                balls.add(new Ball(p,vertical,(float)PurpleDetonation.front(phaseAge,s.blastRadius()),phaseAge,3,false,1,1-LimitlessKind.smooth((phaseAge-12)/28)));
+            }else if(s.phase()==PurpleDetonation.AIR){
+                float heldFade=1-LimitlessKind.smooth((phaseAge-PurpleDetonation.HOLD+14)/14);
+                balls.add(new Ball(p,vertical,s.kind()==LimitlessKind.BLUE?1.8f:1.15f,age,s.kind().ordinal(),false,1,heldFade));
+            }else if(s.phase()==0&&s.kind()==LimitlessKind.PURPLE){
                 float merge=LimitlessKind.smooth((age-35)/28);Vec3 axis=side.scale(.85).add(vertical.scale(.52)).normalize();
                 Vec3 center=p.add(0,.15,0);float gap=1.65f*(1-merge),ingredients=1-LimitlessKind.smooth((merge-.65f)/.35f);
                 balls.add(new Ball(center.add(axis.scale(gap)).add(dir.scale(.12)),axis,.90f+.13f*merge,age,0,true,1+.3f*merge,ingredients));

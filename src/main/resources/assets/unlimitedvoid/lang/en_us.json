@@ -71,5 +71,7 @@
   "subtitles.unlimitedvoid.red_impact": "Red impact",
   "subtitles.unlimitedvoid.purple_voice": "Purple voice",
   "subtitles.unlimitedvoid.purple_charge": "Purple charge",
-  "subtitles.unlimitedvoid.purple_impact": "Purple impact"
+  "subtitles.unlimitedvoid.purple_impact": "Purple impact",
+  "hud.unlimitedvoid.purple_growing": "Blue + Red: Purple expanding",
+  "hud.unlimitedvoid.purple_blast": "Unlimited Purple: detonation"
 }

@@ -14,3 +14,5 @@ python tools/run_fuga_qa.py --minecraft-root '你的Minecraft根目录' --versio
 原始日志、截图和可丢弃的测试存档保存在新建的build/fuga-combat-*子目录。音频使用无输出OpenAL后端验证事件及声道，不作为人工耳听。测试专用JAR不能用于正式游戏或发布。
 
 `--suite seals --mode plain`运行领域手势检查。`--suite limitless --mode network`运行苍、赫、茈的完整战斗、同步、地形开关和取消检查；`--suite limitless --mode shader`追加真实Iris管线断言。未指定suite时保留原灶·开套件。
+
+`--suite slashes --mode plain|shader`采集御厨子斩痕。`--suite combo --mode plain|network|shader`检查空中自爆茈的两种融合顺序、范围/单次命中、队友与墙体保护、施术者反噬、旁观取消、空中球超时清理及音效去重；network追加真实TCP观察者，shader检查真实Iris管线。联网观察者首次握手超时可在3次尝试上限内重连；原失败运行不作为通过证据。

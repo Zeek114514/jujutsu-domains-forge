@@ -1,6 +1,6 @@
 # 咒术领域 · Jujutsu Domains
 
-> 当前正式版：**1.4.1**。御厨子的解与捌采用白色尖刃、红黑裂痕和短促交叉斩击。
+> 当前正式版：**1.5.0**。向空中的苍射入赫，或向赫射入苍，形成逐渐膨胀并大范围爆炸的自爆茈。
 
 [![Build](https://github.com/Zeek114514/jujutsu-domains-forge/actions/workflows/build.yml/badge.svg)](https://github.com/Zeek114514/jujutsu-domains-forge/actions/workflows/build.yml)
 [![Minecraft](https://img.shields.io/badge/Minecraft-1.20.1-62b47a)](https://www.minecraft.net/)
@@ -16,13 +16,13 @@
 ## 下载和安装
 
 1. 安装 **Minecraft Java 1.20.1、Forge 47.4.10 或更高的 47.x、Java 17**。
-2. 前往 [Releases](https://github.com/Zeek114514/jujutsu-domains-forge/releases/latest)，下载 `unlimited-void-1.20.1-1.4.1.jar`。
+2. 前往 [Releases](https://github.com/Zeek114514/jujutsu-domains-forge/releases/latest)，下载 `unlimited-void-1.20.1-1.5.0.jar`。
 3. 放进当前游戏实例的 `mods` 文件夹。升级时移走旧版同名模组，避免重复加载，随后重启游戏。
 4. 多人游戏中客户端与服务端都要安装相同版本。
 
 升级时同时更新客户端和服务端；本版网络协议与旧预览版不同。
 
-开发依赖为Forge47.4.10；本版在47.4.20独立实例中检查普通画面与指定光影斩击，战斗与联网沿用此前版本的记录。具体版本和范围见验证记录，不表示所有47.x或光影组合均已覆盖。
+开发依赖为Forge47.4.10；本版验证范围见[自爆茈记录](docs/PURPLE_DETONATION_VALIDATION.md)。此前记录按各自版本保留，不表示所有47.x、光影组合和硬件均已覆盖。御厨子血红天空/镜面的指定光影限制仍见[1.4.1记录](docs/SHRINE_SLASH_VALIDATION.md)。
 
 ## 玩法
 
@@ -46,6 +46,8 @@
 苍提供持续引力和伤害，赫提供爆发与击退，茈先将苍赫汇合，再以紫色能量球贯穿路径上的生物。三种术式分别冷却，使用原版方块手臂、光效和分阶段的出招语音、招式音效。默认保留地形，完整机制见[术式指南](docs/LIMITLESS.md)。
 
 单独的苍采用白色亮核与青蓝火焰，赫采用紧凑红球、亮核与火花；只有合成茈时的苍赫使用深蓝、暗红云纹球。茈成型后显示紫色球壳、内部星点、白粉亮核与跳动闪电，球体周围会折射背景。
+
+**空中自爆茈**：先向空中射出苍或赫，瞄准停留的能量球再射出相反属性，两种顺序都支持。融合后约2.2秒膨胀并爆炸，默认半径64格、中心480点基础伤害，施术者承受5%反噬。地形破坏默认关闭；玩法和配置见[术式指南](docs/LIMITLESS.md)。
 
 ![苍赫融合前的独立云纹球体，实机光影截图](docs/images/limitless-fusion-1.4.png)
 

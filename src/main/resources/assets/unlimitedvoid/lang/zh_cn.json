@@ -71,5 +71,7 @@
   "subtitles.unlimitedvoid.red_impact": "命中：赫",
   "subtitles.unlimitedvoid.purple_voice": "五条：虚式·茈",
   "subtitles.unlimitedvoid.purple_charge": "蓄力：虚式·茈",
-  "subtitles.unlimitedvoid.purple_impact": "命中：虚式·茈"
+  "subtitles.unlimitedvoid.purple_impact": "命中：虚式·茈",
+  "hud.unlimitedvoid.purple_growing": "苍赫融合：茈正在膨胀",
+  "hud.unlimitedvoid.purple_blast": "自爆茈：冲击波扩散"
 }
