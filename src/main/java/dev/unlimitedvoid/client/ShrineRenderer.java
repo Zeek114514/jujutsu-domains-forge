@@ -14,15 +14,18 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL14;
 import java.util.List;
 
 /** Temporary client geometry: never places or removes world blocks. */
 public final class ShrineRenderer {
     private static final int RED=0x85202D, DARK=0x211920, ROOF=0x25292B, BONE=0xD5C6A4;
+    static int slashCount;
     public static void render(RenderLevelStageEvent event,List<DomainState> states) {
         if (states.stream().noneMatch(s->s.kind()==DomainKind.SHRINE)) return;
         boolean depth=GL11.glIsEnabled(GL11.GL_DEPTH_TEST),blend=GL11.glIsEnabled(GL11.GL_BLEND),cull=GL11.glIsEnabled(GL11.GL_CULL_FACE);
         boolean mask=GL11.glGetBoolean(GL11.GL_DEPTH_WRITEMASK);
+        int src=GL11.glGetInteger(GL14.GL_BLEND_SRC_RGB),dst=GL11.glGetInteger(GL14.GL_BLEND_DST_RGB),srcA=GL11.glGetInteger(GL14.GL_BLEND_SRC_ALPHA),dstA=GL11.glGetInteger(GL14.GL_BLEND_DST_ALPHA);
         ShaderInstance previous=RenderSystem.getShader();
         float[] color=RenderSystem.getShaderColor().clone();
         PoseStack poses=event.getPoseStack();
@@ -31,6 +34,7 @@ public final class ShrineRenderer {
             RenderSystem.disableBlend(); RenderSystem.disableCull();
             RenderSystem.setShaderColor(1,1,1,1);
             RenderSystem.setShader(GameRenderer::getPositionColorShader);
+            slashCount=0;
             for (DomainState state:states) {
                 if (state.kind()!=DomainKind.SHRINE || state.age()<dev.unlimitedvoid.DomainTimeline.formed(state.kind())) continue;
                 float fade=dev.unlimitedvoid.DomainTimeline.fade(state.closing());
@@ -49,13 +53,15 @@ public final class ShrineRenderer {
                     quad(buffer,matrix,new double[][]{{Math.cos(a)*r,0,Math.sin(a)*r},{Math.cos(b)*r,0,Math.sin(b)*r},
                             {Math.cos(b)*(r-0.12),0,Math.sin(b)*(r-0.12)},{Math.cos(a)*(r-0.12),0,Math.sin(a)*(r-0.12)}},0xA2162E,1);
                 }
-                if(state.closing()<0){slashes(buffer,matrix,state,event.getPartialTick());
-                fieldSlashes(buffer,matrix,state,event.getCamera().getPosition());}
+                RenderSystem.depthMask(false);
+                if(state.closing()<0){slashes(buffer,matrix,state,event.getCamera().getPosition(),event.getPartialTick());
+                fieldSlashes(buffer,matrix,state,event.getCamera().getPosition(),event.getPartialTick());}
                 BufferUploader.drawWithShader(buffer.end());
                 poses.popPose();
             }
         } finally {
             RenderSystem.depthMask(mask);
+            RenderSystem.blendFuncSeparate(src,dst,srcA,dstA);
             if (depth) RenderSystem.enableDepthTest(); else RenderSystem.disableDepthTest();
             if (blend) RenderSystem.enableBlend(); else RenderSystem.disableBlend();
             if (cull) RenderSystem.enableCull(); else RenderSystem.disableCull();
@@ -182,35 +188,54 @@ public final class ShrineRenderer {
             if(i==11) box(b,m,cx-x1,y1-0.16,Math.min(z0,z1),cx+x1,y1-0.01,Math.max(z0,z1),RED);
         }
     }
-    private static void slashes(VertexConsumer b,Matrix4f m,DomainState state,float partial) {
+    private static void slashes(VertexConsumer b,Matrix4f m,DomainState state,Vec3 camera,float partial) {
         var mc=Minecraft.getInstance();
         if(mc.level==null) return;
         double radius=state.radius();
         AABB box=new AABB(state.center().subtract(radius,radius,radius),state.center().add(radius,radius,radius));
-        int phase=(state.age()/5),count=0;
+        Vec3 origin=state.center().add(0,-.96,0),viewer=camera.subtract(origin);int count=0;
         for(LivingEntity entity:mc.level.getEntitiesOfClass(LivingEntity.class,box)) {
-            if(entity.getUUID().equals(state.owner()) || entity.getBoundingBox().getCenter().distanceToSqr(state.center())>radius*radius || count++>64) continue;
-            Vec3 p=entity.getBoundingBox().getCenter().subtract(state.center().add(0,-0.96,0));
-            double seed=entity.getId()*2.37+phase*1.63;
+            if(entity.getUUID().equals(state.owner()) || entity.getBoundingBox().getCenter().distanceToSqr(state.center())>radius*radius)continue;
+            if(count++>=48)break;
+            double clock=(state.age()+partial+entity.getId()*.73)/6,life=clock-Math.floor(clock);
+            if(life>.86)continue;
+            float alpha=slashFade(life);double seed=entity.getId()*2.37+Math.floor(clock)*1.63;
+            Vec3 p=entity.getBoundingBox().getCenter().subtract(origin);
+            double size=Math.max(1.6,entity.getBbHeight()*1.15);
+            // Cleave appears as a brief crossing group close to each struck body.
             for(int i=0;i<3;i++) {
-                double dx=Math.sin(seed+i*1.7)*2,dy=Math.cos(seed+i*1.3)*1.4,dz=Math.cos(seed+i*2.1)*1.7;
-                double shift=(i-1)*0.4;
-                quad(b,m,new double[][]{{p.x-dx,p.y-dy+shift,p.z-dz},{p.x+dx,p.y+dy+shift,p.z+dz},
-                        {p.x+dx,p.y+dy+shift+0.028,p.z+dz},{p.x-dx,p.y-dy+shift+0.028,p.z-dz}},i==2?0xC62A3D:0xFFF5ED,1);
+                Vec3 direction=new Vec3(Math.sin(seed+i*2.2),Math.cos(seed+i*1.7),Math.sin(seed+i*.9)).normalize();
+                Vec3 shift=new Vec3(Math.sin(seed)*.16,(i-1)*.24+(life-.4)*.7,Math.cos(seed)*.16);
+                blade(b,m,p.add(shift),direction,viewer,size*(1.1+.45*i),.028+.014*i,alpha,i==2);
             }
         }
     }
-    private static void fieldSlashes(VertexConsumer b,Matrix4f m,DomainState state,Vec3 camera) {
+    private static void fieldSlashes(VertexConsumer b,Matrix4f m,DomainState state,Vec3 camera,float partial) {
         if(camera.distanceToSqr(state.center())>state.radius()*state.radius() || VoidClient.isCameraInside()) return;
         Vec3 viewer=camera.subtract(state.center().add(0,-0.96,0));
-        int phase=state.age()/4;
-        for(int i=0;i<38;i++) {
-            double seed=i*7.93+phase*1.67;
-            double x=viewer.x+Math.sin(seed*1.7)*12,y=viewer.y+Math.cos(seed*2.2)*5,z=viewer.z+Math.sin(seed*0.73)*12;
-            double dx=Math.cos(seed)*7,dy=Math.sin(seed*1.43)*5,dz=Math.sin(seed)*8;
-            double w=i%3==0?0.07:0.025;
-            quad(b,m,new double[][]{{x-dx,y-dy-w,z-dz},{x+dx,y+dy,z+dz},{x+dx*0.15,y+dy*0.15+w,z+dz*0.15},{x-dx,y-dy+w,z-dz}},i%3==0?0xA90D29:0xFFF9F2,1);
+        for(int i=0;i<36;i++) {
+            double clock=(state.age()+partial+i*.91)/7,life=clock-Math.floor(clock);
+            if(life>.84)continue;
+            double seed=i*7.93+Math.floor(clock)*1.67;
+            Vec3 direction=new Vec3(Math.cos(seed),Math.sin(seed*1.43)*.85,Math.sin(seed)).normalize();
+            Vec3 center=viewer.add(Math.sin(seed*1.7)*16,Math.cos(seed*2.2)*10,Math.sin(seed*.73)*16);
+            Vec3 sweep=direction.cross(center.subtract(viewer)).normalize().scale((life-.4)*2.6);
+            // Dismantle cuts travel through space; tapered blades have no rectangular ends.
+            blade(b,m,center.add(sweep),direction,viewer,13+7*(1+Math.sin(seed*.8)),i%3==0?.085:.045,slashFade(life),i%3==0);
         }
+    }
+    private static float slashFade(double life){return dev.unlimitedvoid.DomainTimeline.smooth((float)(life/.10))*(1-dev.unlimitedvoid.DomainTimeline.smooth((float)((life-.32)/.52)));}
+    private static void blade(VertexConsumer b,Matrix4f m,Vec3 center,Vec3 direction,Vec3 viewer,double length,double width,float alpha,boolean black){
+        Vec3 cross=direction.cross(center.subtract(viewer)).normalize();if(cross.lengthSqr()<.01)return;
+        Vec3 start=center.subtract(direction.scale(length*.5)),end=center.add(direction.scale(length*.5));
+        slashCount++;
+        diamond(b,m,start,end,center,cross.scale(width*4.8),black?0xFA1239:0xFFD4D8,alpha*(black?.17f:.08f));
+        diamond(b,m,start,end,center,cross.scale(width*1.9),black?0xF01432:0xFFE4E4,alpha*(black?.8f:.32f));
+        diamond(b,m,start,end,center,cross.scale(width),black?0x080106:0xFFFFFF,alpha);
+    }
+    private static void diamond(VertexConsumer b,Matrix4f m,Vec3 start,Vec3 end,Vec3 center,Vec3 halfWidth,int color,float alpha){
+        for(Vec3 p:new Vec3[]{start,center.add(halfWidth),end,center.subtract(halfWidth)})
+            b.vertex(m,(float)p.x,(float)p.y,(float)p.z).color(((color>>16)&255)/255f,((color>>8)&255)/255f,(color&255)/255f,alpha).endVertex();
     }
     private static void box(VertexConsumer b,Matrix4f m,double x0,double y0,double z0,double x1,double y1,double z1,int color) {
         quad(b,m,new double[][]{{x0,y1,z0},{x1,y1,z0},{x1,y1,z1},{x0,y1,z1}},color,1.0f);
