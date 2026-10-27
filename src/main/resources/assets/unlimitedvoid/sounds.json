@@ -82,5 +82,45 @@
       }
     ],
     "subtitle": "subtitles.unlimitedvoid.fuga_impact"
+  },
+  "limitless_charge": {
+    "sounds": [
+      {
+        "name": "unlimitedvoid:limitless_charge",
+        "preload": true,
+        "attenuation_distance": 128
+      }
+    ],
+    "subtitle": "subtitles.unlimitedvoid.limitless_charge"
+  },
+  "blue_cast": {
+    "sounds": [
+      {
+        "name": "unlimitedvoid:blue_cast",
+        "preload": true,
+        "attenuation_distance": 128
+      }
+    ],
+    "subtitle": "subtitles.unlimitedvoid.blue_cast"
+  },
+  "red_cast": {
+    "sounds": [
+      {
+        "name": "unlimitedvoid:red_cast",
+        "preload": true,
+        "attenuation_distance": 128
+      }
+    ],
+    "subtitle": "subtitles.unlimitedvoid.red_cast"
+  },
+  "purple_cast": {
+    "sounds": [
+      {
+        "name": "unlimitedvoid:purple_cast",
+        "preload": true,
+        "attenuation_distance": 128
+      }
+    ],
+    "subtitle": "subtitles.unlimitedvoid.purple_cast"
   }
 }

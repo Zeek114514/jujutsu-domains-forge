@@ -36,7 +36,7 @@ public final class FugaService {
     public static void request(ServerPlayer player) {
         if(!player.isAlive() || player.isSpectator() || DomainService.isCaptive(player.getUUID())) return;
         int now=player.server.getTickCount();
-        if(CASTS.containsKey(player.getUUID()) || now<READY.getOrDefault(player.getUUID(),0)) return;
+        if(CASTS.containsKey(player.getUUID()) || LimitlessService.casting(player.getUUID()) || now<READY.getOrDefault(player.getUUID(),0)) return;
         if(CASTS.size()>=FugaTimeline.MAX_CASTS) return;
         Cast cast=new Cast(player,now);
         CASTS.put(player.getUUID(),cast); READY.put(player.getUUID(),now+FugaTimeline.COOLDOWN);

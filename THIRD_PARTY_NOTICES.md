@@ -4,6 +4,8 @@
 
 ## 角色台词与相关音效
 
+1.3.0新增的`limitless_charge.ogg`、`blue_cast.ogg`、`red_cast.ogg`、`purple_cast.ogg`与`limitless_glow.png`由项目中的`tools/generate_limitless_assets.py`程序合成，没有采样第三方录音，采用项目MIT许可。它们不是动漫原声。下列既有第三方音频的许可边界保持独立。
+
 - 五条展开台词：Soundboards.gg 的 Gojo Domain Expansion 公开音频。
 - 宿傩展开台词：Myinstants 的 Malevolent Shrine 同名公开候选片段；没有断言与此前参考站点文件完全一致。
 - 灶·开台词：用户选中的 Soundboards.gg / Isuk「sukuna fire arrow audio」短片段，截取原文件 5.00–7.75 秒；来源及处理见 `requested_voice/fuga_manifest.json`。

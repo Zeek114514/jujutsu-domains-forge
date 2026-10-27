@@ -75,6 +75,7 @@ public final class DomainService {
         Integer prior=LAST_RESET.put(player.getUUID(),now);
         if(prior!=null && now-prior<4) return;
         READY_AT.remove(player.getUUID());
+        LimitlessService.reset(player);
         player.displayClientMessage(Component.translatable("message.unlimitedvoid.reset"),true);
         DomainNetwork.sync(player);
     }

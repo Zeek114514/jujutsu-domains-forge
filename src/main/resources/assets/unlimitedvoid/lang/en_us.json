@@ -45,5 +45,22 @@
   "subtitles.unlimitedvoid.fuga_impact": "Fuga detonates",
   "hud.unlimitedvoid.fuga_dust": "Shrine dust: %s%%",
   "death.attack.unlimitedvoid.fuga": "%s was consumed by Fuga",
-  "death.attack.unlimitedvoid.fuga.player": "%s was consumed by %s's Fuga"
+  "death.attack.unlimitedvoid.fuga.player": "%s was consumed by %s's Fuga",
+  "key.unlimitedvoid.blue": "Lapse: Blue (hold to charge)",
+  "key.unlimitedvoid.red": "Reversal: Red",
+  "key.unlimitedvoid.purple": "Hollow Purple",
+  "technique.unlimitedvoid.blue": "Blue",
+  "technique.unlimitedvoid.red": "Red",
+  "technique.unlimitedvoid.purple": "Hollow Purple",
+  "hud.unlimitedvoid.limitless": "%s [%s] · %s",
+  "subtitles.unlimitedvoid.limitless_charge": "Limitless charging",
+  "subtitles.unlimitedvoid.blue_cast": "Blue converges",
+  "subtitles.unlimitedvoid.red_cast": "Red detonates",
+  "subtitles.unlimitedvoid.purple_cast": "Hollow Purple launches",
+  "death.attack.unlimitedvoid.blue": "%s was struck by blue",
+  "death.attack.unlimitedvoid.blue.player": "%s was struck by %s using blue",
+  "death.attack.unlimitedvoid.red": "%s was struck by red",
+  "death.attack.unlimitedvoid.red.player": "%s was struck by %s using red",
+  "death.attack.unlimitedvoid.purple": "%s was struck by purple",
+  "death.attack.unlimitedvoid.purple.player": "%s was struck by %s using purple"
 }

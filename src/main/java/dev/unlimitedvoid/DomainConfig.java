@@ -13,6 +13,7 @@ public final class DomainConfig {
     public static final ForgeConfigSpec.BooleanValue FUGA_COMBAT;
     public static final ForgeConfigSpec.DoubleValue FUGA_RADIUS,FUGA_DAMAGE,FUGA_DUST_DAMAGE;
     public static final ForgeConfigSpec.IntValue FUGA_BALANCE_REVISION;
+    public static final ForgeConfigSpec.BooleanValue LIMITLESS_TERRAIN;
     static {
         ForgeConfigSpec.Builder b=new ForgeConfigSpec.Builder();
         SHRINE_RADIUS=b.comment("Open domain radius in blocks; 1 block is treated as 1 metre. Loaded targets only.").defineInRange("shrineRadius",200,16,200);
@@ -27,6 +28,7 @@ public final class DomainConfig {
         FUGA_DAMAGE=b.defineInRange("fugaBaseDamage",240.0,0,10000);
         FUGA_DUST_DAMAGE=b.comment("Maximum damage after consuming a fully charged own Shrine dust field.").defineInRange("fugaDustDamage",480.0,0,10000);
         FUGA_BALANCE_REVISION=b.comment("One-time migration of unmodified 1.1.0 Fuga defaults; custom values are preserved.").defineInRange("fugaBalanceRevision",0,0,1);
+        LIMITLESS_TERRAIN=b.comment("Allow Purple to break blocks, with Forge break events and per-tick limits. Independent of Shrine; off by default.").define("limitlessTerrainDamage",false);
         SPEC=b.build();
     }
 }

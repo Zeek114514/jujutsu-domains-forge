@@ -45,5 +45,22 @@
   "subtitles.unlimitedvoid.fuga_impact": "灶·开：爆燃",
   "hud.unlimitedvoid.fuga_dust": "御厨子粉尘：%s%%",
   "death.attack.unlimitedvoid.fuga": "%s 被「灶·开」焚尽了",
-  "death.attack.unlimitedvoid.fuga.player": "%s 被 %s 的「灶·开」焚尽了"
+  "death.attack.unlimitedvoid.fuga.player": "%s 被 %s 的「灶·开」焚尽了",
+  "key.unlimitedvoid.blue": "术式顺转·苍（按住蓄力）",
+  "key.unlimitedvoid.red": "术式反转·赫",
+  "key.unlimitedvoid.purple": "虚式·茈",
+  "technique.unlimitedvoid.blue": "苍",
+  "technique.unlimitedvoid.red": "赫",
+  "technique.unlimitedvoid.purple": "虚式·茈",
+  "hud.unlimitedvoid.limitless": "%s [%s] · %s",
+  "subtitles.unlimitedvoid.limitless_charge": "无下限：咒力汇聚",
+  "subtitles.unlimitedvoid.blue_cast": "苍：引力收束",
+  "subtitles.unlimitedvoid.red_cast": "赫：斥力爆发",
+  "subtitles.unlimitedvoid.purple_cast": "虚式·茈：射出",
+  "death.attack.unlimitedvoid.blue": "%s 被「苍」击倒了",
+  "death.attack.unlimitedvoid.blue.player": "%s 被 %s 的「苍」击倒了",
+  "death.attack.unlimitedvoid.red": "%s 被「赫」击倒了",
+  "death.attack.unlimitedvoid.red.player": "%s 被 %s 的「赫」击倒了",
+  "death.attack.unlimitedvoid.purple": "%s 被「虚式·茈」击倒了",
+  "death.attack.unlimitedvoid.purple.player": "%s 被 %s 的「虚式·茈」击倒了"
 }
