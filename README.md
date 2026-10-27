@@ -1,6 +1,6 @@
 # 咒术领域 · Jujutsu Domains
 
-> 当前正式版：**1.2.0**。灶·开伤害覆盖约200格半径火海，新增第一、第三人称领域结印。
+> 当前正式版：**1.2.1**。灶·开伤害覆盖约200格半径火海，领域结印使用原版方块手臂。
 
 [![Build](https://github.com/Zeek114514/jujutsu-domains-forge/actions/workflows/build.yml/badge.svg)](https://github.com/Zeek114514/jujutsu-domains-forge/actions/workflows/build.yml)
 [![Minecraft](https://img.shields.io/badge/Minecraft-1.20.1-62b47a)](https://www.minecraft.net/)
@@ -11,12 +11,12 @@
 
 无量空处以纯白空间与宇宙结界封锁战场，御厨子以升起的神龛、镜面地面和开放式斩击覆盖周围。新增灶·开从聚火、拉弓到爆燃展开，提供独立的台词、射出声与命中余响。灶·开现已接入服务端范围伤害及御厨子粉尘引爆；地形破坏仍默认关闭。
 
-[1.2.0验证记录](docs/DOMAIN_SEALS_VALIDATION.md) · [灶·开指南](docs/FUGA.md) · [开发进度](docs/PROGRESS.md) · [1.1.0验证记录](docs/FUGA_COMBAT_VALIDATION.md) · [Wiki](https://github.com/Zeek114514/jujutsu-domains-forge/wiki)
+[1.2.1验证记录](docs/VANILLA_SEALS_VALIDATION.md) · [灶·开指南](docs/FUGA.md) · [开发进度](docs/PROGRESS.md) · [1.1.0验证记录](docs/FUGA_COMBAT_VALIDATION.md) · [Wiki](https://github.com/Zeek114514/jujutsu-domains-forge/wiki)
 
 ## 下载和安装
 
 1. 安装 **Minecraft Java 1.20.1、Forge 47.4.10 或更高的 47.x、Java 17**。
-2. 前往 [Releases](https://github.com/Zeek114514/jujutsu-domains-forge/releases/latest)，下载 `unlimited-void-1.20.1-1.2.0.jar`。
+2. 前往 [Releases](https://github.com/Zeek114514/jujutsu-domains-forge/releases/latest)，下载 `unlimited-void-1.20.1-1.2.1.jar`。
 3. 放进当前游戏实例的 `mods` 文件夹。升级时移走旧版同名模组，避免重复加载，随后重启游戏。
 4. 多人游戏中客户端与服务端都要安装相同版本。
 
@@ -34,7 +34,7 @@
 | `H` | 灶·开：聚火、满蓄力、吟唱后射出火矢 |
 | `O` | 重置灶·开的独立冷却，不打断当前施放 |
 
-领域咏唱时自动结印：无量空处为右手交指，御厨子为双手结印，带独立手指模型。第一、第三人称均可见；咏唱结束或领域解除后恢复原持物。
+领域咏唱时自动摆出手势：五条单手抬到脸前，宿傩双手向中间靠拢，均使用原版方块手臂。第一、第三人称均可见；咏唱结束或领域解除后恢复原持物。
 
 按键可在游戏设置中修改。两种领域共用 40 秒熔断；完全成型后持续约 20 秒，解除时有约 2 秒过渡。
 
@@ -126,7 +126,7 @@ blocksDestroyedPerTick = 96
 ./gradlew --no-daemon build
 ```
 
-当前安装包在 `build/libs/unlimited-void-1.20.1-1.2.0.jar`。开发客户端使用 `./gradlew runClient`。自动构建运行时序、战斗/渲染预算和寻地共147项无窗口检查，不启动游戏。
+当前安装包在 `build/libs/unlimited-void-1.20.1-1.2.1.jar`。开发客户端使用 `./gradlew runClient`。自动构建运行时序、战斗/渲染预算和寻地共147项无窗口检查，不启动游戏。
 
 仓库已经包含运行所需的音频资源，正常构建无需重新加工音频。可选的素材处理脚本位于 `tools/`，依赖 Python 3 与 FFmpeg，来源见 [第三方素材说明](THIRD_PARTY_NOTICES.md)。
 
