@@ -1,6 +1,6 @@
 # 咒术领域 · Jujutsu Domains
 
-> 当前正式版：**1.5.0**。向空中的苍射入赫，或向赫射入苍，形成逐渐膨胀并大范围爆炸的自爆茈。
+> 当前正式版：**1.5.1**。灶·开现已默认使用粒子火焰、火矢拖尾和爆燃烟尘。向空中的苍射入赫，或向赫射入苍，形成逐渐膨胀并大范围爆炸的自爆茈。
 
 [![Build](https://github.com/Zeek114514/jujutsu-domains-forge/actions/workflows/build.yml/badge.svg)](https://github.com/Zeek114514/jujutsu-domains-forge/actions/workflows/build.yml)
 [![Minecraft](https://img.shields.io/badge/Minecraft-1.20.1-62b47a)](https://www.minecraft.net/)
@@ -16,13 +16,13 @@
 ## 下载和安装
 
 1. 安装 **Minecraft Java 1.20.1、Forge 47.4.10 或更高的 47.x、Java 17**。
-2. 前往 [Releases](https://github.com/Zeek114514/jujutsu-domains-forge/releases/latest)，下载 `unlimited-void-1.20.1-1.5.0.jar`。
+2. 前往 [Releases](https://github.com/Zeek114514/jujutsu-domains-forge/releases/latest)，下载 `unlimited-void-1.20.1-1.5.1.jar`。
 3. 放进当前游戏实例的 `mods` 文件夹。升级时移走旧版同名模组，避免重复加载，随后重启游戏。
 4. 多人游戏中客户端与服务端都要安装相同版本。
 
 升级时同时更新客户端和服务端；本版网络协议与旧预览版不同。
 
-开发依赖为Forge47.4.10；本版验证范围见[自爆茈记录](docs/PURPLE_DETONATION_VALIDATION.md)。此前记录按各自版本保留，不表示所有47.x、光影组合和硬件均已覆盖。御厨子血红天空/镜面的指定光影限制仍见[1.4.1记录](docs/SHRINE_SLASH_VALIDATION.md)。
+开发依赖为Forge47.4.10；本版验证范围见[灶·开粒子记录](docs/FUGA_PARTICLES_VALIDATION.md)，自爆茈沿用[1.5.0记录](docs/PURPLE_DETONATION_VALIDATION.md)。此前记录按各自版本保留，不表示所有47.x、光影组合和硬件均已覆盖。御厨子血红天空/镜面的指定光影限制仍见[1.4.1记录](docs/SHRINE_SLASH_VALIDATION.md)。
 
 ## 玩法
 
@@ -54,16 +54,16 @@
 ### 灶·开 · Fūga
 
 - 约 1.5 秒达到最大蓄力，在「Fuga」台词期间保持，约 2.7 秒射出；独立冷却 10 秒。
-- 三倍火弓与火矢、半径约 18 格的双环聚火圈，以及约 12 格高的三股旋涡。
-- 火矢射程最多 64 格；命中演出包括**直径约 400 格火海、约 240 格高火柱与最远约 300 格的三重冲击波**，爆燃约 6.6 秒。
+- 独立粒子组成聚火、火弓、火矢拖尾、上升火团、火星和烟尘，默认启用，无需额外启动参数。
+- 火矢射程最多 64 格；命中后地面火焰向外扩散，升起最高约 240 格的粒子火柱与烟尘，爆燃约 6.6 秒。
 - 台词、射出破空声、命中爆燃声分别触发。音效定位在对应发射点和命中点，远近落点按实际飞行时间衔接。
 - 左上角常驻显示按键与施放/冷却状态；取消施放、退出或切换世界时清理相关演出和音频。
 
-![灶·开满蓄力：火弓与聚火旋涡](docs/images/fuga-charge-preview.png)
+![灶·开满蓄力：火弓与聚火旋涡](docs/images/fuga-particles-charge-1.5.1.png)
 
-![灶·开大范围爆燃远景](docs/images/fuga-firestorm-preview.png)
+![灶·开大范围爆燃远景](docs/images/fuga-particles-burst-1.5.1.png)
 
-*Forge 47.4.20 独立测试世界中的预览版实机画面。实际可见范围受视距和地形遮挡影响；v1.1.0已加入伤害与御厨子粉尘强化，详见指南。*
+*1.5.1独立测试世界实机截图：Forge47.4.20、Oculus1.8.0、Embeddium0.3.31、Complementary Reimagined5.2.2。可见范围受视距、雾和地形遮挡影响。每客户端最多4500个存活粒子、每tick新建300个；这不是全硬件性能保证。*
 
 普通火矢默认伤害半径200格、中心240点生命值，边缘仍有60点；自己的御厨子粉尘满后可消耗并触发领域范围的强化爆燃，中心最大480点。每目标每次施放最多命中一次，支持队友、宠物、抗火和结界保护。
 

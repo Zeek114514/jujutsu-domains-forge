@@ -34,7 +34,7 @@ public final class FugaClient {
     private static int cooldown,dust;
     private static boolean casting;
     private FugaClient() {}
-    private static void clear(ClientLevel level){ClientFugaAudio.clear();EFFECTS.clear();cooldown=0;dust=0;casting=false;lastLevel=level;}
+    private static void clear(ClientLevel level){ClientFugaAudio.clear();EFFECTS.clear();FugaParticles.clear();cooldown=0;dust=0;casting=false;lastLevel=level;}
     public static void status(int ticks,boolean active,int powder){var level=Minecraft.getInstance().level;if(level!=lastLevel)clear(level);cooldown=ticks;casting=active;dust=powder;}
     /** Negative means no bow pose; the mixin is client-only and leaves other entities alone. */
     public static float drawProgress(UUID owner){
@@ -50,12 +50,12 @@ public final class FugaClient {
     public static void receive(UUID owner,int phase,Vec3 from,Vec3 to,int seed,int flight,long serverStart) {
         var mc=Minecraft.getInstance();if(mc.level==null)return;
         if(lastLevel!=mc.level)clear(mc.level);
-        if(phase==2){EFFECTS.remove(owner);ClientFugaAudio.stop(owner);return;}
+        if(phase==2){EFFECTS.remove(owner);ClientFugaAudio.stop(owner);FugaParticles.stop(owner);return;}
         Effect e=EFFECTS.get(owner);
-        if(e!=null&&e.start!=serverStart){ClientFugaAudio.stop(owner);EFFECTS.remove(owner);e=null;}
+        if(e!=null&&e.start!=serverStart){ClientFugaAudio.stop(owner);FugaParticles.stop(owner);EFFECTS.remove(owner);e=null;}
         boolean fresh=e==null;
         if(fresh){
-            if(EFFECTS.size()>=FugaTimeline.MAX_CASTS){var oldest=EFFECTS.keySet().iterator().next();EFFECTS.remove(oldest);ClientFugaAudio.stop(oldest);}
+            if(EFFECTS.size()>=FugaTimeline.MAX_CASTS){var oldest=EFFECTS.keySet().iterator().next();EFFECTS.remove(oldest);ClientFugaAudio.stop(oldest);FugaParticles.stop(oldest);}
             e=new Effect(owner,from,to,seed,serverStart);EFFECTS.put(owner,e);
             if(phase==0&&e.age(mc.level,0)<=4)ClientFugaAudio.play(owner,from);
         }
@@ -74,6 +74,7 @@ public final class FugaClient {
         while(PREVIEW.consumeClick())if(mc.screen==null&&!mc.isPaused())DomainNetwork.requestFuga();
         while(RESET.consumeClick())if(mc.screen==null&&!mc.isPaused())DomainNetwork.resetFuga();
         if(mc.isPaused())return;
+        if(FugaParticles.ENABLED)FugaParticles.begin();
         if(cooldown>0)cooldown--;
         EFFECTS.values().removeIf(e->e.age(mc.level,0)>FugaTimeline.CHARGE+e.flight+FugaTimeline.AFTERMATH+20);
         int terrainBudget=32;
@@ -83,6 +84,7 @@ public final class FugaClient {
             e.lastParticleTick=mc.level.getGameTime();
             if(e.released&&burst>=0&&terrainBudget>0){int used=e.resolveGround(mc.level,Math.max(1,32/Math.max(1,EFFECTS.size())));terrainBudget-=used;}
             if(e.released&&burst>=0&&!e.impactSoundPlayed){e.impactSoundPlayed=true;ClientFugaAudio.impact(e.owner,e.to);}
+            if(FugaParticles.ENABLED){FugaParticles.tick(e,EFFECTS.size());continue;}
             if(e.released&&burst<0){
                 Vec3 p=e.from.lerp(e.to,FugaTimeline.travel(age,e.flight));
                 mc.level.addParticle(ParticleTypes.FLAME,p.x,p.y,p.z,0,.012,0);
@@ -122,6 +124,7 @@ public final class FugaClient {
         event.setRoll(event.getRoll()+(float)(Math.sin(time*1.7)*shake*.6));
     }
     @SubscribeEvent public static void render(RenderLevelStageEvent event) {
+        if(FugaParticles.ENABLED)return;
         if(event.getStage()!=RenderLevelStageEvent.Stage.AFTER_PARTICLES||EFFECTS.isEmpty())return;
         var mc=Minecraft.getInstance();if(mc.level==null||mc.player==null)return;
         FugaRenderer.render(event,EFFECTS.values());
