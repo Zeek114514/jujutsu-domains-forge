@@ -14,6 +14,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class DomainSealItemMixin {
     @Inject(method={"render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V","m_6494_(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V"},at=@At("HEAD"),cancellable=true,remap=false)
     private void unlimitedvoid$seal(PoseStack poses,MultiBufferSource buffers,int light,LivingEntity player,float limb,float amount,float partial,float age,float yaw,float pitch,CallbackInfo callback){
-        if(DomainSeals.of(player.getUUID(),partial)!=null)callback.cancel();
+        if(DomainSeals.of(player.getUUID(),partial)!=null||dev.unlimitedvoid.client.LimitlessClient.pose(player.getUUID())!=null)callback.cancel();
     }
 }

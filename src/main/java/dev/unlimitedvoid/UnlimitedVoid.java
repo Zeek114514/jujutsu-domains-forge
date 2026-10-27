@@ -11,5 +11,6 @@ public final class UnlimitedVoid {
         DomainSounds.EVENTS.register(net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext.get().getModEventBus());
         DomainEntities.TYPES.register(net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext.get().getModEventBus());
         DomainNetwork.register();
+        dev.unlimitedvoid.network.LimitlessNetwork.register();
     }
 }

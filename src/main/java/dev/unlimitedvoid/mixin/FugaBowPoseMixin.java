@@ -16,6 +16,7 @@ public abstract class FugaBowPoseMixin {
     private void unlimitedvoid$fugaDraw(LivingEntity entity,float swing,float amount,float age,float yaw,float pitch,CallbackInfo callback){
         if(dev.unlimitedvoid.client.DomainSeals.renderingHands())return;
         if(dev.unlimitedvoid.client.FugaHands.rendering())return;
+        if(dev.unlimitedvoid.client.LimitlessHands.rendering())return;
         var seal=dev.unlimitedvoid.client.DomainSeals.of(entity.getUUID(),0);
         if(seal!=null){
             var model=(HumanoidModel<?>)(Object)this;float w=seal.weight();
@@ -28,6 +29,17 @@ public abstract class FugaBowPoseMixin {
                 model.leftArm.yRot+=(.60f-model.leftArm.yRot)*w;model.leftArm.zRot*=1-w;
             }
             return;
+        }
+        var technique=dev.unlimitedvoid.client.LimitlessClient.pose(entity.getUUID());
+        if(technique!=null){
+            var model=(HumanoidModel<?>)(Object)this;float w=technique.weight();
+            model.rightArm.xRot+=(model.head.xRot-1.5f-model.rightArm.xRot)*w;
+            model.rightArm.yRot+=(-.15f-model.rightArm.yRot)*w;model.rightArm.zRot*=1-w;
+            if(technique.kind()==dev.unlimitedvoid.LimitlessKind.PURPLE){
+                model.leftArm.xRot+=(model.head.xRot-1.5f-model.leftArm.xRot)*w;
+                model.leftArm.yRot+=(.65f-.5f*technique.progress()-model.leftArm.yRot)*w;model.leftArm.zRot*=1-w;
+                model.rightArm.yRot+=(-.65f+.5f*technique.progress()-model.rightArm.yRot)*w;
+            }return;
         }
         float draw=FugaClient.drawProgress(entity.getUUID());if(draw<0)return;
         var model=(HumanoidModel<?>)(Object)this;
