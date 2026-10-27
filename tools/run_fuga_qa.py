@@ -10,7 +10,7 @@ p.add_argument('--run-id',default=str(int(time.time())))
 p.add_argument('--compat-dir',help='Directory containing only Oculus and Embeddium test jars and the chosen shader zip')
 p.add_argument('--shader-pack',default='ComplementaryReimagined_r5.2.2.zip')
 p.add_argument('--test-jar',help='Explicit visual-test jar; otherwise use newest build/libs/*-visual-test.jar')
-p.add_argument('--suite',choices=['combat','seals','limitless','slashes'],default='combat')
+p.add_argument('--suite',choices=['combat','seals','limitless','slashes','combo'],default='combat')
 args=p.parse_args()
 if args.suite=='seals' and args.mode=='network':p.error('Seal suite uses one isolated client; choose plain or shader')
 if args.suite=='slashes' and args.mode=='network':p.error('Slash preview captures one client; choose plain or shader')
@@ -66,7 +66,7 @@ def launch(role):
    else:out.append(expand(arg))
   return out
  java=Path(args.java);assert java.exists(),'Pass --java pointing to a JDK17 java.exe'
- command=[str(java),'-Xmx1800M','-Duv.'+('slashTest' if args.suite=='slashes' else 'limitlessTest' if args.suite=='limitless' else 'sealTest' if args.suite=='seals' else 'fugaCombatTest')+'=true','-Duv.fugaNetwork='+str(args.mode=='network' and role=='host').lower(),'-Duv.fugaObserver='+str(role=='observer').lower(),'-Duv.shaderTest='+str(args.mode=='shader').lower(),'-Duv.readyFile='+str(root/'ready')]+arguments(d['arguments']['jvm'])+[d['mainClass']]+arguments(d['arguments']['game'])+['--width','960','--height','540']
+ command=[str(java),'-Xmx1800M','-Duv.'+('comboTest' if args.suite=='combo' else 'slashTest' if args.suite=='slashes' else 'limitlessTest' if args.suite=='limitless' else 'sealTest' if args.suite=='seals' else 'fugaCombatTest')+'=true','-Duv.fugaNetwork='+str(args.mode=='network' and role=='host').lower(),'-Duv.fugaObserver='+str(role=='observer').lower(),'-Duv.shaderTest='+str(args.mode=='shader').lower(),'-Duv.readyFile='+str(root/'ready')]+arguments(d['arguments']['jvm'])+[d['mainClass']]+arguments(d['arguments']['game'])+['--width','960','--height','540']
  log=(game/'console.log').open('w',encoding='utf-8')
  environment=os.environ.copy();environment['ALSOFT_DRIVERS']='null'
  proc=subprocess.Popen(command,cwd=game,stdout=log,stderr=subprocess.STDOUT,creationflags=0x08000000,env=environment)
@@ -83,9 +83,9 @@ try:
  host.wait(timeout=240);log.close()
  if observer:observer.wait(timeout=30);observerlog.close()
  text=(root/'host/console.log').read_text('utf-8',errors='replace')
- assert ('SHRINE_SLASH_PREVIEW_COMPLETE' if args.suite=='slashes' else 'LIMITLESS_TEST_COMPLETE' if args.suite=='limitless' else 'DOMAIN_SEAL_TEST_COMPLETE' if args.suite=='seals' else 'FUGA_COMBAT_TEST_COMPLETE') in text and 'FUGA_COMBAT_FAIL' not in text and 'DOMAIN_SEAL_FAIL' not in text and 'LIMITLESS_FAIL' not in text, 'Host test failed; inspect console.log'
+ assert ('PURPLE_COMBO_TEST_COMPLETE' if args.suite=='combo' else 'SHRINE_SLASH_PREVIEW_COMPLETE' if args.suite=='slashes' else 'LIMITLESS_TEST_COMPLETE' if args.suite=='limitless' else 'DOMAIN_SEAL_TEST_COMPLETE' if args.suite=='seals' else 'FUGA_COMBAT_TEST_COMPLETE') in text and all(marker not in text for marker in ['FUGA_COMBAT_FAIL','DOMAIN_SEAL_FAIL','LIMITLESS_FAIL','PURPLE_COMBO_FAIL']), 'Host test failed; inspect console.log'
  if observer:
-  text=(root/'observer/console.log').read_text('utf-8',errors='replace');assert ('LIMITLESS_OBSERVER_COMPLETE' if args.suite=='limitless' else 'FUGA_NETWORK_OBSERVER_COMPLETE') in text and 'FUGA_COMBAT_FAIL' not in text and 'LIMITLESS_FAIL' not in text
+  text=(root/'observer/console.log').read_text('utf-8',errors='replace');assert ('PURPLE_COMBO_OBSERVER_COMPLETE' if args.suite=='combo' else 'LIMITLESS_OBSERVER_COMPLETE' if args.suite=='limitless' else 'FUGA_NETWORK_OBSERVER_COMPLETE') in text and all(marker not in text for marker in ['FUGA_COMBAT_FAIL','LIMITLESS_FAIL','PURPLE_COMBO_FAIL'])
  print('FUGA_QA_PASS '+args.mode,flush=True)
 finally:
  # Only stop processes launched and retained by this isolated QA helper.

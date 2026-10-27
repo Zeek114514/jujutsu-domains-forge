@@ -53,6 +53,25 @@ void main(){
     float alpha=max(halo*.48,lens*(Kind>1.5?.72:.45));
     float t=nearest;
 
+    if(Kind>2.5){
+        // Expanding translucent energy shell; observers inside see the exit surface.
+        if(discriminant<=0.0)discard;
+        t=(-b-sqrt(discriminant))/a;if(t<=.02)t=(-b+sqrt(discriminant))/a;
+        if(t<=.02)discard;
+        vec3 normal=normalize(ray*t-Center);
+        float rim=pow(1.0-abs(dot(normal,ray)),2.2);
+        float veins=pow(.5+.5*sin(fbm(normal*8.0+time*.8)*25.0+time*8.0),8.0);
+        float flash=1.0-smoothstep(.20,.85,time);
+        vec3 plasma=mix(vec3(.25,.008,.82),vec3(1.3,.88,1.22),clamp(rim*.65+flash*.85,0.0,1.0));
+        color=mix(background(screen+bend*1.6)*vec3(.62,.40,.86),plasma,.55+flash*.40);
+        color+=vec3(.6,.2,1.0)*(rim*.8+veins*.30);
+        alpha=(.22+rim*.60+veins*.15+flash*.50)*Opacity;
+        vec4 projected=OrbProjection*OrbMat*vec4(ray*t,1.0);
+        float depth=clamp(projected.z/projected.w*.5+.5,0.0,1.0);
+        if(depth>texture(WorldDepth,screen).r+.000025)discard;
+        gl_FragDepth=depth;fragColor=vec4(min(color,vec3(1.35)),clamp(alpha,0.0,1.0));return;
+    }
+
     if(discriminant>0.0){
         t=(-b-sqrt(discriminant))/a;
         if(t<=.02)discard;

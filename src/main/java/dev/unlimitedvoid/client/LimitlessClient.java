@@ -49,9 +49,10 @@ public final class LimitlessClient {
             if(fresh){e=new Effect(s,lastSnapshot);EFFECTS.put(s.id(),e);}else{e.previous=e.position(0);e.received=lastSnapshot;e.state=s;}
             int age=(int)(lastSnapshot-s.start()),phaseAge=(int)(lastSnapshot-s.phaseStart());
             if(fresh&&s.phase()==0&&age<8)e.charge=e.sound(e.name("charge"),.4f);
+            if(fresh&&s.phase()==PurpleDetonation.GROWING&&phaseAge<8)e.charge=e.sound("purple_charge",.6f);
             e.voiceIfDue();
-            if(!e.launched&&s.phase()>=1){e.launched=true;e.stopCharge();if(s.phase()==1&&phaseAge<6)e.sound(e.name("cast"),.8f);}
-            if(!e.impacted&&s.phase()==2){e.impacted=true;if(phaseAge<6)e.sound(e.name("impact"),1);}
+            if(!e.launched&&s.phase()>=1&&s.phase()<PurpleDetonation.GROWING){e.launched=true;e.stopCharge();if(s.phase()==1&&phaseAge<6)e.sound(e.name("cast"),.8f);}
+            if(!e.impacted&&(s.phase()==2||s.phase()==PurpleDetonation.BLAST)){e.impacted=true;e.stopCharge();if(phaseAge<6)e.sound(e.name("impact"),1);}
         }
         var it=EFFECTS.entrySet().iterator();while(it.hasNext()){var e=it.next();if(!live.contains(e.getKey())){e.getValue().retire();it.remove();}}
     }
@@ -77,6 +78,19 @@ public final class LimitlessClient {
         for(var kind:LimitlessKind.values()){int i=kind.ordinal();Component state=Component.translatable(cooldowns[i]>0?"hud.unlimitedvoid.fuga_cooldown":"hud.unlimitedvoid.fuga_ready",(cooldowns[i]+19)/20);
             e.getGuiGraphics().drawString(mc.font,Component.translatable("hud.unlimitedvoid.limitless",Component.translatable("technique.unlimitedvoid."+kind.name().toLowerCase(Locale.ROOT)),keys[i].getTranslatedKeyMessage(),state),8,96+i*12,colors[i],true);
         }
+        for(var effect:EFFECTS.values())if(effect.state.owner().equals(mc.player.getUUID())&&effect.state.phase()>=PurpleDetonation.GROWING){
+            e.getGuiGraphics().drawString(mc.font,Component.translatable(effect.state.phase()==PurpleDetonation.GROWING?"hud.unlimitedvoid.purple_growing":"hud.unlimitedvoid.purple_blast"),8,136,0xE9B4FF,true);break;
+        }
+    }
+    @SubscribeEvent public static void shake(ViewportEvent.ComputeCameraAngles e){
+        var mc=Minecraft.getInstance();if(mc.level==null||mc.isPaused())return;double strength=0;
+        for(var effect:EFFECTS.values())if(effect.state.phase()==PurpleDetonation.BLAST){
+            double age=mc.level.getGameTime()+mc.getFrameTime()-effect.state.phaseStart();
+            double distance=effect.state.position().distanceTo(mc.gameRenderer.getMainCamera().getPosition());
+            strength=Math.max(strength,Math.max(0,1-age/24)*Math.max(0,1-distance/(effect.state.blastRadius()*1.6)));
+        }
+        float time=mc.level.getGameTime()+mc.getFrameTime(),weight=(float)(strength*mc.options.screenEffectScale().get());
+        e.setPitch(e.getPitch()+(float)Math.sin(time*2.3)*weight);e.setRoll(e.getRoll()+(float)Math.sin(time*1.8)*weight*.6f);
     }
     static final class Effect {
         LimitlessService.State state;Vec3 previous;long received;boolean launched,voiced,impacted;SoundInstance charge;final List<SoundInstance> sounds=new ArrayList<>();
@@ -91,7 +105,7 @@ public final class LimitlessClient {
         void stopCharge(){if(charge!=null){stopSound(charge);sounds.remove(charge);charge=null;}}
         void retire(){
             var mc=Minecraft.getInstance();var owner=owner(state.owner());long now=mc.level.getGameTime();
-            boolean natural=state.phase()==2&&now-state.phaseStart()>=(state.kind()==LimitlessKind.BLUE?78:15)&&owner!=null&&owner.isAlive()&&!owner.isSpectator();
+            boolean natural=(state.phase()==2&&now-state.phaseStart()>=(state.kind()==LimitlessKind.BLUE?78:15)||state.phase()==PurpleDetonation.BLAST&&now-state.phaseStart()>=PurpleDetonation.BLAST_TICKS-2)&&owner!=null&&owner.isAlive()&&!owner.isSpectator();
             for(var sound:sounds){
                 if(natural){
                     if(TAILS.size()>=32){var oldest=TAILS.keySet().iterator().next();stopSound(oldest);TAILS.remove(oldest);}

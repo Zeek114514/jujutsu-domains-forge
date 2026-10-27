@@ -1,7 +1,7 @@
 plugins {
     id 'net.minecraftforge.gradle' version '6.0.54'
 }
-version = '1.4.1'
+version = '1.5.0'
 group = 'dev.unlimitedvoid'
 base { archivesName = 'unlimited-void-1.20.1' }
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
@@ -54,6 +54,14 @@ tasks.register('validateFugaCombat', JavaExec) {
     jvmArgs '-Djava.awt.headless=true'
 }
 tasks.named('check') { dependsOn 'validateFugaCombat' }
+
+tasks.register('validatePurpleDetonation', JavaExec) {
+    dependsOn 'classes', 'validationClasses'
+    classpath = sourceSets.validation.runtimeClasspath
+    mainClass = 'dev.unlimitedvoid.PurpleDetonationCheck'
+    jvmArgs '-Djava.awt.headless=true'
+}
+tasks.named('check') { dependsOn 'validatePurpleDetonation' }
 
 // Explicit isolated-client instrumentation. Never included in the normal distributable.
 if (providers.gradleProperty('visualTest').getOrElse('false') == 'true') {
