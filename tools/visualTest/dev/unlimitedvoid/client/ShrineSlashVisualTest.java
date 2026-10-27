@@ -35,6 +35,12 @@ public final class ShrineSlashVisualTest {
         });}
         if(ticks>=198&&ticks<=278&&ticks%2==0){peak=Math.max(peak,ShrineRenderer.slashCount);capture(mc,String.format("frame-%04d.png",ticks));}
         if(ticks==216)capture(mc,"slashes.png");
+        if(ticks==220&&Boolean.getBoolean("uv.shaderTest"))try{
+            var manager=Class.forName("net.irisshaders.iris.Iris").getMethod("getPipelineManager").invoke(null);
+            var pipeline=manager.getClass().getMethod("getPipelineNullable").invoke(manager);
+            if(pipeline==null||!pipeline.getClass().getSimpleName().equals("IrisRenderingPipeline"))throw new AssertionError("shader pipeline inactive");
+            LogUtils.getLogger().info("SHRINE_SLASH_SHADER_ACTIVE");
+        }catch(ReflectiveOperationException failure){throw new RuntimeException(failure);}
         if(ticks==282){if(peak<=0||peak>180)throw new AssertionError("slash count budget "+peak);LogUtils.getLogger().info("SHRINE_SLASH_PREVIEW_COMPLETE peak={} captureOnly=true",peak);mc.stop();}
     }
     static void capture(Minecraft mc,String name){Screenshot.grab(mc.gameDirectory,name,mc.getMainRenderTarget(),c->{});}
