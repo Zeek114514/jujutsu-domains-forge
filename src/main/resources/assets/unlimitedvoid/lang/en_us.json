@@ -33,8 +33,8 @@
   "subtitles.unlimitedvoid.domain_collapse": "Domain dissolves",
   "subtitles.unlimitedvoid.shell_break": "Domain shell shatters",
   "message.unlimitedvoid.no_ground": "No supporting ground below you for Malevolent Shrine",
-  "key.unlimitedvoid.fuga": "Fuga (visual preview)",
-  "message.unlimitedvoid.fuga_preview": "Fuga visual preview: no damage or block changes; 10s cooldown",
+  "key.unlimitedvoid.fuga": "Fuga",
+  "message.unlimitedvoid.fuga_preview": "Fuga: 10s cooldown; a charged Shrine dust field empowers the blast",
   "key.unlimitedvoid.fuga_reset": "Reset Fuga cooldown",
   "hud.unlimitedvoid.fuga": "Fuga [%s] - %s  |  [%s] Reset cooldown",
   "hud.unlimitedvoid.fuga_ready": "Ready",
@@ -42,5 +42,8 @@
   "hud.unlimitedvoid.fuga_cooldown": "%s s cooldown",
   "subtitles.unlimitedvoid.fuga_open": "Fuga: Open",
   "subtitles.unlimitedvoid.fuga_launch": "Fuga arrow launched",
-  "subtitles.unlimitedvoid.fuga_impact": "Fuga detonates"
+  "subtitles.unlimitedvoid.fuga_impact": "Fuga detonates",
+  "hud.unlimitedvoid.fuga_dust": "Shrine dust: %s%%",
+  "death.attack.unlimitedvoid.fuga": "%s was consumed by Fuga",
+  "death.attack.unlimitedvoid.fuga.player": "%s was consumed by %s's Fuga"
 }

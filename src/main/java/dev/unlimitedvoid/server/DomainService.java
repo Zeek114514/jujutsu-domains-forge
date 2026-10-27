@@ -342,6 +342,8 @@ public final class DomainService {
         double radius=domain.radius(now);
         ShrineRules.cutTerrain(domain.level,caster,domain.center,radius,age,point->terrainCutAllowed(domain.level,point));
         if(age%10!=0) return;
+        // A visual dust field accumulates even with permanent terrain destruction disabled.
+        domain.dust=Math.min(dev.unlimitedvoid.FugaCombatRules.DUST_REQUIRED,domain.dust+10);
         AABB box=new AABB(domain.center.subtract(radius,radius,radius),domain.center.add(radius,radius,radius));
         int hit=0,audibleHits=0;
         for(Entity target:domain.level.getEntities((Entity)null,box,t->t!=caster && t.isAlive())) {
@@ -367,6 +369,30 @@ public final class DomainService {
         if (target instanceof ServerPlayer player && (player.isCreative() || player.isSpectator())) return false;
         if (caster.isAlliedTo(target)) return false;
         return !(target instanceof TamableAnimal tame && caster.getUUID().equals(tame.getOwnerUUID()));
+    }
+
+    public record FugaDust(UUID owner,Vec3 center,double radius){}
+    public static boolean fugaEligible(LivingEntity target,ServerPlayer caster){return eligible(target,caster);}
+    public static int fugaDust(UUID caster){
+        return DOMAINS.values().stream().filter(d->d.kind==DomainKind.SHRINE&&d.casterId.equals(caster)&&d.active(d.level.getServer().getTickCount()))
+            .mapToInt(d->d.dust).max().orElse(0);
+    }
+    public static FugaDust consumeFugaDust(ServerPlayer caster,Vec3 impact){
+        int now=caster.server.getTickCount();
+        for(Domain d:DOMAINS.values())if(d.kind==DomainKind.SHRINE&&d.casterId.equals(caster.getUUID())&&d.level==caster.serverLevel()
+            &&d.active(now)&&d.dust>=dev.unlimitedvoid.FugaCombatRules.DUST_REQUIRED&&impact.distanceToSqr(d.center)<=d.maxRadius*d.maxRadius&&!contested(d,impact,now)){
+            d.dust=0;return new FugaDust(d.owner,d.center,d.maxRadius);
+        }
+        return null;
+    }
+    public static boolean fugaContested(UUID owner,Vec3 point){
+        Domain d=DOMAINS.get(owner);return d!=null&&contested(d,point,d.level.getServer().getTickCount());
+    }
+    public static boolean fugaSheltered(ServerLevel level,Vec3 origin,Vec3 point){
+        int now=level.getServer().getTickCount();
+        for(Domain d:DOMAINS.values())if(d.level==level&&d.kind==DomainKind.VOID&&d.active(now)
+            &&origin.distanceToSqr(d.center)>d.maxRadius*d.maxRadius&&point.distanceToSqr(d.center)<d.maxRadius*d.maxRadius)return true;
+        return false;
     }
 
     /** Pull at most the small boundary gap; never teleport through a solid obstacle or load a new chunk. */
@@ -528,7 +554,7 @@ public final class DomainService {
     private static double ShrineGeometryY(Vec3 center,int age) {return center.y-1+10.27*DomainTimeline.rise(age)+0.08;}
     private static final class Domain {
         final UUID owner,casterId;final boolean generated;final ServerLevel level;final Vec3 center,axis;final int startedAt;final DomainKind kind;final float maxRadius;
-        int closingAt=-1;boolean sealAdded,lifting;
+        int closingAt=-1,dust;boolean sealAdded,lifting;
         Domain(UUID owner,UUID casterId,boolean generated,ServerLevel level,Vec3 center,Vec3 axis,int startedAt,DomainKind kind,float maxRadius){
             this.owner=owner;this.casterId=casterId;this.generated=generated;this.level=level;this.center=center;this.axis=axis;this.startedAt=startedAt;this.kind=kind;this.maxRadius=maxRadius;
         }

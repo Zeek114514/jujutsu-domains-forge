@@ -10,6 +10,8 @@ public final class DomainConfig {
     public static final ForgeConfigSpec.IntValue BLOCK_BUDGET;
     public static final ForgeConfigSpec.DoubleValue SOUND_VOLUME;
     public static final ForgeConfigSpec.BooleanValue DOMAIN_AMBIENCE;
+    public static final ForgeConfigSpec.BooleanValue FUGA_COMBAT;
+    public static final ForgeConfigSpec.DoubleValue FUGA_RADIUS,FUGA_DAMAGE,FUGA_DUST_DAMAGE;
     static {
         ForgeConfigSpec.Builder b=new ForgeConfigSpec.Builder();
         SHRINE_RADIUS=b.comment("Open domain radius in blocks; 1 block is treated as 1 metre. Loaded targets only.").defineInRange("shrineRadius",200,16,200);
@@ -19,6 +21,10 @@ public final class DomainConfig {
         BLOCK_BUDGET=b.comment("Maximum blocks destroyed per tick per shrine; block checks are also bounded.").defineInRange("blocksDestroyedPerTick",96,1,512);
         SOUND_VOLUME=b.comment("Master gain for this mod's custom sounds, also controlled by vanilla sound category sliders.").defineInRange("domainSoundVolume",0.8,0.0,1.0);
         DOMAIN_AMBIENCE=b.comment("Enable the quiet local ambience loop while inside a domain.").define("domainAmbience",true);
+        FUGA_COMBAT=b.comment("Enable server-authoritative Fuga entity damage. Does not enable block destruction.").define("fugaCombatEnabled",true);
+        FUGA_RADIUS=b.comment("Ordinary Fuga damage radius; the distant firestorm is visual.").defineInRange("fugaDamageRadius",16.0,1,64);
+        FUGA_DAMAGE=b.defineInRange("fugaBaseDamage",32.0,0,1000);
+        FUGA_DUST_DAMAGE=b.comment("Maximum damage after consuming a fully charged own Shrine dust field.").defineInRange("fugaDustDamage",80.0,0,1000);
         SPEC=b.build();
     }
 }

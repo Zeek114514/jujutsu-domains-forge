@@ -14,6 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class FugaBowPoseMixin {
     @Inject(method={"setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V","m_6973_(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V"},at=@At("RETURN"),remap=false)
     private void unlimitedvoid$fugaDraw(LivingEntity entity,float swing,float amount,float age,float yaw,float pitch,CallbackInfo callback){
+        if(dev.unlimitedvoid.client.FugaHands.rendering())return;
         float draw=FugaClient.drawProgress(entity.getUUID());if(draw<0)return;
         var model=(HumanoidModel<?>)(Object)this;
         ModelPart leftArm=model.leftArm,rightArm=model.rightArm,head=model.head;
