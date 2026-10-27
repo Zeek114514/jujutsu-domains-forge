@@ -37,10 +37,23 @@ public final class LimitlessVisualTest {
     static final Map<UUID,Float> damage=new ConcurrentHashMap<>();static final Map<UUID,Integer> hits=new ConcurrentHashMap<>();
     static int chargeSounds,blueSounds,redSounds,purpleSounds,voiceSounds,impactSounds;static net.minecraft.client.resources.sounds.SoundInstance lastVoice;static double blueInitial;
     static int breaks;
+    static FramebufferState caller;static int maxOrbQuads,orbFrames;static long orbBegin,orbNanos;
+    @SubscribeEvent(priority=net.minecraftforge.eventbus.api.EventPriority.HIGHEST) public static void beforeFrame(net.minecraftforge.client.event.RenderLevelStageEvent e){
+        if(Boolean.getBoolean("uv.limitlessTest")&&e.getStage()==net.minecraftforge.client.event.RenderLevelStageEvent.Stage.AFTER_PARTICLES){caller=FramebufferState.capture();orbBegin=System.nanoTime();}
+    }
+    @SubscribeEvent(priority=net.minecraftforge.eventbus.api.EventPriority.LOWEST) public static void afterFrame(net.minecraftforge.client.event.RenderLevelStageEvent e){
+        if(!Boolean.getBoolean("uv.limitlessTest")||e.getStage()!=net.minecraftforge.client.event.RenderLevelStageEvent.Stage.AFTER_PARTICLES||caller==null)return;
+        if(!caller.equals(FramebufferState.capture()))require(false,"sphere renderer preserves actual framebuffer and viewport");
+    }
     static volatile net.minecraft.client.sounds.SoundEngine voiceEngine;
     static volatile net.minecraft.client.sounds.ChannelAccess.ChannelHandle voiceHandle;
     static final Map<String,Integer> cueCounts=new ConcurrentHashMap<>();
     static volatile Boolean voiceStopped;
+    @SubscribeEvent public static void lateFrame(net.minecraftforge.client.event.RenderGuiEvent.Pre e){
+        if(!Boolean.getBoolean("uv.limitlessTest"))return;
+        if(!LimitlessRenderer.stateRestored)require(false,"late sphere draw preserves framebuffer and viewport");
+        if(LimitlessRenderer.quads()>0){maxOrbQuads=Math.max(maxOrbQuads,LimitlessRenderer.quads());orbFrames++;orbNanos+=LimitlessRenderer.drawNanos();}
+    }
     @SubscribeEvent public static void breaking(net.minecraftforge.event.level.BlockEvent.BreakEvent e){if(Boolean.getBoolean("uv.limitlessTest")){breaks++;LogUtils.getLogger().info("LIMITLESS_TERRAIN_BREAK {}",e.getPos());}}
     @SubscribeEvent public static void hurt(LivingHurtEvent e){if(!Boolean.getBoolean("uv.limitlessTest"))return;String kind=e.getSource().getMsgId();if(kind.equals("unlimitedvoid.blue")||kind.equals("unlimitedvoid.red")||kind.equals("unlimitedvoid.purple")){damage.merge(e.getEntity().getUUID(),e.getAmount(),Float::sum);hits.merge(e.getEntity().getUUID(),1,Integer::sum);}}
     @SubscribeEvent public static void sound(net.minecraftforge.client.event.sound.PlaySoundSourceEvent e){if(!Boolean.getBoolean("uv.limitlessTest"))return;if(e.getSound() instanceof LimitlessClient.Cue cue)cueCounts.merge(cue.cast+":"+e.getSound().getLocation().getPath(),1,Integer::sum);switch(e.getSound().getLocation().getPath()){case "limitless_charge"->chargeSounds++;case "blue_cast"->blueSounds++;case "red_cast"->redSounds++;case "purple_cast"->purpleSounds++;default->{String path=e.getSound().getLocation().getPath();if(path.endsWith("_charge"))chargeSounds++;if(path.endsWith("_voice")){voiceSounds++;lastVoice=e.getSound();voiceEngine=e.getEngine();}if(path.endsWith("_impact"))impactSounds++;}}}
@@ -57,6 +70,7 @@ public final class LimitlessVisualTest {
         if(Boolean.getBoolean("uv.cancelOnly")){micro(mc);return;}
         if(observer){observer(mc);return;}
         if(ticks==21&&Boolean.getBoolean("uv.fugaNetwork")&&mc.getSingleplayerServer().getPlayerList().getPlayerCount()<2){ticks--;return;}
+        if(Boolean.getBoolean("uv.orbProbe")&&ticks==100){LogUtils.getLogger().info("LIMITLESS_TEST_COMPLETE");mc.stop();return;}
         if(ticks==20){mc.getTutorial().setStep(net.minecraft.client.tutorial.TutorialSteps.NONE);server(mc,p->{
             var l=p.serverLevel();l.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false,p.server);l.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false,p.server);l.setDayTime(6000);p.teleportTo(l,0,-60,0,0,5);
             require(!DomainConfig.LIMITLESS_TERRAIN.get(),"terrain destruction off by default");p.setItemInHand(InteractionHand.MAIN_HAND,new ItemStack(Items.DIAMOND_SWORD));
@@ -64,7 +78,7 @@ public final class LimitlessVisualTest {
             if(Boolean.getBoolean("uv.fugaNetwork"))try{p.server.setUsesAuthentication(false);p.server.getConnection().startTcpServerListener(java.net.InetAddress.getByName("127.0.0.1"),25576);Files.writeString(Path.of(System.getProperty("uv.readyFile")),"ready");}catch(Exception e){throw new RuntimeException(e);}
         });}
         if(ticks==40){hold(GLFW.GLFW_KEY_Z,true);key(GLFW.GLFW_KEY_Z);}
-        if(ticks==65){require(LimitlessClient.pose(mc.player.getUUID())!=null,"Blue first-person pose active");capture(mc,"blue-charge.png");}
+        if(ticks==65){require(LimitlessRenderer.ready(),"analytic sphere shader loaded");require(LimitlessClient.pose(mc.player.getUUID())!=null,"Blue first-person pose active");capture(mc,"blue-charge.png");}
         if(ticks==90)hold(GLFW.GLFW_KEY_Z,false);
         if(ticks==110){capture(mc,"blue-attraction.png");server(mc,p->{
             var s=LimitlessService.snapshot(p).stream().filter(c->c.kind()==LimitlessKind.BLUE&&c.phase()==2).findFirst();require(s.isPresent(),"charged Blue anchors on ground");require(s.get().charge()==40,"held Blue reaches full charge");
@@ -77,10 +91,17 @@ public final class LimitlessVisualTest {
         if(ticks==229)capture(mc,"red-impact.png");
         if(ticks==245)server(mc,p->{require(damage.getOrDefault(red,0f)>35,"Red causes high damage");require(p.serverLevel().getEntity(red).getZ()>13,"Red knocks target away");require(!hits.containsKey(far),"Red local radius respected");discard(p,red,far);});
         if(ticks==265)server(mc,p->{p.teleportTo(p.serverLevel(),0,-60,0,0,0);purpleA=pig(p,0,14);purpleB=pig(p,0,28);purpleC=pig(p,0,46);behind=pig(p,0,70);for(int y=-61;y<=-54;y++)for(int x=-6;x<=6;x++)p.serverLevel().setBlockAndUpdate(new BlockPos(x,y,60),Blocks.STONE.defaultBlockState());});
+        if(ticks==270)server(mc,p->{for(int x=-10;x<=10;x++)for(int y=-61;y<=-45;y++)p.serverLevel().setBlockAndUpdate(new BlockPos(x,y,9),((x+y)%3==0?Blocks.BLUE_CONCRETE:Blocks.WHITE_CONCRETE).defaultBlockState());});
         if(ticks==280)key(GLFW.GLFW_KEY_C);
         if(ticks==310){capture(mc,"purple-blue-red.png");if(Boolean.getBoolean("uv.shaderTest"))try{var m=Class.forName("net.irisshaders.iris.Iris").getMethod("getPipelineManager").invoke(null);var p=m.getClass().getMethod("getPipelineNullable").invoke(m);require(p!=null&&p.getClass().getSimpleName().equals("IrisRenderingPipeline"),"real shader pipeline active");}catch(Exception e){require(false,"shader introspection "+e);}}
-        if(ticks==340)capture(mc,"purple-fusion.png");
+        if(ticks==330)capture(mc,"purple-contact.png");
+        if(ticks==335)server(mc,p->p.serverLevel().setBlockAndUpdate(new BlockPos(0,-59,1),Blocks.STONE.defaultBlockState()));
+        if(ticks==338)capture(mc,"purple-occlusion.png");
+        if(ticks==339)server(mc,p->p.serverLevel().setBlockAndUpdate(new BlockPos(0,-59,1),Blocks.AIR.defaultBlockState()));
+        if(ticks==344)capture(mc,"purple-fusion.png");
+        if(ticks==345)server(mc,p->{for(int x=-10;x<=10;x++)for(int y=-61;y<=-45;y++)p.serverLevel().setBlockAndUpdate(new BlockPos(x,y,9),Blocks.AIR.defaultBlockState());});
         if(ticks==352){mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);capture(mc,"purple-launch.png");}
+        if(ticks==364)capture(mc,"purple-flight.png");
         if(ticks==380){mc.options.setCameraType(CameraType.FIRST_PERSON);server(mc,p->{
             for(var id:new UUID[]{purpleA,purpleB,purpleC}){require(hits.getOrDefault(id,0)==1,"Purple hits path target exactly once");require(damage.getOrDefault(id,0f)==160,"Purple 160 HP damage");}
             require(!hits.containsKey(behind),"wall stops Purple");require(p.serverLevel().getBlockState(new BlockPos(0,-58,60)).is(Blocks.STONE),"terrain retained");
@@ -97,7 +118,7 @@ public final class LimitlessVisualTest {
         if(ticks==530)server(mc,p->p.setGameMode(GameType.SPECTATOR));
         if(ticks==535)probeVoice();
         if(ticks==545){hold(GLFW.GLFW_KEY_Z,false);require(LimitlessClient.pose(mc.player.getUUID())==null,"spectator cancellation clears pose");require(Boolean.TRUE.equals(voiceStopped)||voiceHandle!=null&&voiceHandle.isStopped(),"spectator cancellation leaves no playing voice channel");require(LimitlessClient.tailCount()==0,"spectator cancellation stops remaining tails");server(mc,p->require(!LimitlessService.casting(p.getUUID()),"spectator cancellation clears server cast"));}
-        if(ticks==560){LogUtils.getLogger().info("LIMITLESS_TEST_COMPLETE shader={} network={}",Boolean.getBoolean("uv.shaderTest"),Boolean.getBoolean("uv.fugaNetwork"));mc.stop();}
+        if(ticks==560){require(LimitlessRenderer.ready()&&maxOrbQuads<=32&&orbFrames>0,"sphere renderer remains healthy and bounded");LogUtils.getLogger().info("ORB_RENDER_STATS frames={} maxQuads={} meanCpuMs={}",orbFrames,maxOrbQuads,orbFrames==0?0:orbNanos/1e6/orbFrames);LogUtils.getLogger().info("LIMITLESS_TEST_COMPLETE shader={} network={}",Boolean.getBoolean("uv.shaderTest"),Boolean.getBoolean("uv.fugaNetwork"));mc.stop();}
     }
     static void probeVoice(){
             try{boolean found=false;for(var field:voiceEngine.getClass().getDeclaredFields())if(java.util.Map.class.isAssignableFrom(field.getType())){

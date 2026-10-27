@@ -318,6 +318,7 @@ public final class VoidClient {
 
         @SubscribeEvent
         public static void shaders(RegisterShadersEvent event) throws java.io.IOException {
+            event.registerShader(new ShaderInstance(event.getResourceProvider(),new ResourceLocation(UnlimitedVoid.ID,"limitless_orb"),DefaultVertexFormat.POSITION),LimitlessRenderer::setShader);
             event.registerShader(new ShaderInstance(event.getResourceProvider(),
                     new ResourceLocation(UnlimitedVoid.ID,"shrine_floor"),DefaultVertexFormat.POSITION),ShrineFloorRenderer::setShader);
             event.registerShader(new ShaderInstance(event.getResourceProvider(),

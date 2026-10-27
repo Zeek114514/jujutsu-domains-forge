@@ -55,7 +55,7 @@ public final class LimitlessClient {
         }
         var it=EFFECTS.entrySet().iterator();while(it.hasNext()){var e=it.next();if(!live.contains(e.getKey())){e.getValue().retire();it.remove();}}
     }
-    private static void clear(ClientLevel level){EFFECTS.values().forEach(Effect::stop);EFFECTS.clear();for(var sound:TAILS.keySet())stopSound(sound);TAILS.clear();cooldowns=new int[3];blueDown=false;lastLevel=level;}
+    private static void clear(ClientLevel level){EFFECTS.values().forEach(Effect::stop);EFFECTS.clear();for(var sound:TAILS.keySet())stopSound(sound);TAILS.clear();LimitlessRenderer.clear();cooldowns=new int[3];blueDown=false;lastLevel=level;}
     @SubscribeEvent public static void tick(TickEvent.ClientTickEvent e){
         if(e.phase!=TickEvent.Phase.END)return;var mc=Minecraft.getInstance();if(mc.level!=lastLevel)clear(mc.level);if(mc.level==null||mc.player==null)return;
         boolean usable=mc.screen==null&&!mc.isPaused();
@@ -71,7 +71,7 @@ public final class LimitlessClient {
         }
         if(mc.level.getGameTime()-lastSnapshot>30){EFFECTS.values().forEach(Effect::stop);EFFECTS.clear();}
     }
-    @SubscribeEvent public static void render(RenderLevelStageEvent e){if(e.getStage()==RenderLevelStageEvent.Stage.AFTER_PARTICLES&&!EFFECTS.isEmpty())LimitlessRenderer.render(e,EFFECTS.values());}
+    @SubscribeEvent public static void render(RenderLevelStageEvent e){if(e.getStage()==RenderLevelStageEvent.Stage.AFTER_PARTICLES)LimitlessRenderer.prepare(e,EFFECTS.values());}
     @SubscribeEvent public static void hud(RenderGuiEvent.Post e){var mc=Minecraft.getInstance();if(mc.player==null||mc.options.hideGui)return;
         var keys=new KeyMapping[]{BLUE,RED,PURPLE};int[] colors={0x75CFFF,0xFF7878,0xD596FF};
         for(var kind:LimitlessKind.values()){int i=kind.ordinal();Component state=Component.translatable(cooldowns[i]>0?"hud.unlimitedvoid.fuga_cooldown":"hud.unlimitedvoid.fuga_ready",(cooldowns[i]+19)/20);
