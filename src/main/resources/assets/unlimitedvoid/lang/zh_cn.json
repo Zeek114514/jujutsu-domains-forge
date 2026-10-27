@@ -62,5 +62,14 @@
   "death.attack.unlimitedvoid.red": "%s 被「赫」击倒了",
   "death.attack.unlimitedvoid.red.player": "%s 被 %s 的「赫」击倒了",
   "death.attack.unlimitedvoid.purple": "%s 被「虚式·茈」击倒了",
-  "death.attack.unlimitedvoid.purple.player": "%s 被 %s 的「虚式·茈」击倒了"
+  "death.attack.unlimitedvoid.purple.player": "%s 被 %s 的「虚式·茈」击倒了",
+  "subtitles.unlimitedvoid.blue_voice": "五条：苍",
+  "subtitles.unlimitedvoid.blue_charge": "蓄力：苍",
+  "subtitles.unlimitedvoid.blue_impact": "命中：苍",
+  "subtitles.unlimitedvoid.red_voice": "五条：赫",
+  "subtitles.unlimitedvoid.red_charge": "蓄力：赫",
+  "subtitles.unlimitedvoid.red_impact": "命中：赫",
+  "subtitles.unlimitedvoid.purple_voice": "五条：虚式·茈",
+  "subtitles.unlimitedvoid.purple_charge": "蓄力：虚式·茈",
+  "subtitles.unlimitedvoid.purple_impact": "命中：虚式·茈"
 }

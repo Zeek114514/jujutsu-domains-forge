@@ -5,6 +5,8 @@ import argparse,math,random,struct,subprocess,tempfile,wave,zlib
 from pathlib import Path
 p=argparse.ArgumentParser();p.add_argument('--ffmpeg',required=True);args=p.parse_args()
 root=Path(__file__).resolve().parents[1]/'src/main/resources/assets/unlimitedvoid'
+audio_output=Path(__file__).resolve().parents[1]/'build/synthesized-limitless-audio'
+audio_output.mkdir(parents=True,exist_ok=True)
 def chunk(kind,data):return struct.pack('>I',len(data))+kind+data+struct.pack('>I',zlib.crc32(kind+data)&0xffffffff)
 rows=[]
 for y in range(128):
@@ -31,5 +33,5 @@ for index,(name,duration) in enumerate([('limitless_charge',3.5),('blue_cast',1.
  with tempfile.TemporaryDirectory() as tmp:
   wav=Path(tmp)/'cue.wav'
   with wave.open(str(wav),'wb') as f:f.setnchannels(1);f.setsampwidth(2);f.setframerate(rate);f.writeframes(struct.pack('<'+'h'*len(samples),*samples))
-  subprocess.run([args.ffmpeg,'-y','-loglevel','error','-i',str(wav),'-c:a','libvorbis','-q:a','5',str(root/'sounds'/f'{name}.ogg')],check=True)
+  subprocess.run([args.ffmpeg,'-y','-loglevel','error','-i',str(wav),'-c:a','libvorbis','-q:a','5',str(audio_output/f'{name}.ogg')],check=True)
  print(name,duration)

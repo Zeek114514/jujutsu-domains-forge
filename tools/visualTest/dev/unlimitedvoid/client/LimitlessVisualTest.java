@@ -35,11 +35,15 @@ public final class LimitlessVisualTest {
     static boolean started;static volatile boolean failed;static int ticks,menus,retries;
     static UUID blue,ally,red,far,purpleA,purpleB,purpleC,behind;
     static final Map<UUID,Float> damage=new ConcurrentHashMap<>();static final Map<UUID,Integer> hits=new ConcurrentHashMap<>();
-    static int chargeSounds,blueSounds,redSounds,purpleSounds;static double blueInitial;
+    static int chargeSounds,blueSounds,redSounds,purpleSounds,voiceSounds,impactSounds;static net.minecraft.client.resources.sounds.SoundInstance lastVoice;static double blueInitial;
     static int breaks;
+    static volatile net.minecraft.client.sounds.SoundEngine voiceEngine;
+    static volatile net.minecraft.client.sounds.ChannelAccess.ChannelHandle voiceHandle;
+    static final Map<String,Integer> cueCounts=new ConcurrentHashMap<>();
+    static volatile Boolean voiceStopped;
     @SubscribeEvent public static void breaking(net.minecraftforge.event.level.BlockEvent.BreakEvent e){if(Boolean.getBoolean("uv.limitlessTest")){breaks++;LogUtils.getLogger().info("LIMITLESS_TERRAIN_BREAK {}",e.getPos());}}
     @SubscribeEvent public static void hurt(LivingHurtEvent e){if(!Boolean.getBoolean("uv.limitlessTest"))return;String kind=e.getSource().getMsgId();if(kind.equals("unlimitedvoid.blue")||kind.equals("unlimitedvoid.red")||kind.equals("unlimitedvoid.purple")){damage.merge(e.getEntity().getUUID(),e.getAmount(),Float::sum);hits.merge(e.getEntity().getUUID(),1,Integer::sum);}}
-    @SubscribeEvent public static void sound(net.minecraftforge.client.event.sound.PlaySoundSourceEvent e){if(!Boolean.getBoolean("uv.limitlessTest"))return;switch(e.getSound().getLocation().getPath()){case "limitless_charge"->chargeSounds++;case "blue_cast"->blueSounds++;case "red_cast"->redSounds++;case "purple_cast"->purpleSounds++;}}
+    @SubscribeEvent public static void sound(net.minecraftforge.client.event.sound.PlaySoundSourceEvent e){if(!Boolean.getBoolean("uv.limitlessTest"))return;if(e.getSound() instanceof LimitlessClient.Cue cue)cueCounts.merge(cue.cast+":"+e.getSound().getLocation().getPath(),1,Integer::sum);switch(e.getSound().getLocation().getPath()){case "limitless_charge"->chargeSounds++;case "blue_cast"->blueSounds++;case "red_cast"->redSounds++;case "purple_cast"->purpleSounds++;default->{String path=e.getSound().getLocation().getPath();if(path.endsWith("_charge"))chargeSounds++;if(path.endsWith("_voice")){voiceSounds++;lastVoice=e.getSound();voiceEngine=e.getEngine();}if(path.endsWith("_impact"))impactSounds++;}}}
     @SubscribeEvent public static void tick(TickEvent.ClientTickEvent event){
         if(!Boolean.getBoolean("uv.limitlessTest")||event.phase!=TickEvent.Phase.END)return;var mc=Minecraft.getInstance();GLFW.glfwHideWindow(mc.getWindow().getWindow());if(failed){mc.stop();return;}
         boolean observer=Boolean.getBoolean("uv.fugaObserver");
@@ -50,6 +54,7 @@ public final class LimitlessVisualTest {
             if(observer)connect(mc);else mc.createWorldOpenFlows().createFreshLevel("Limitless-QA-"+System.currentTimeMillis(),new LevelSettings("Limitless QA",GameType.CREATIVE,false,Difficulty.NORMAL,true,new GameRules(),WorldDataConfiguration.DEFAULT),new WorldOptions(12345,false,false),a->a.registryOrThrow(Registries.WORLD_PRESET).getHolderOrThrow(WorldPresets.FLAT).value().createWorldDimensions());
         }
         if(mc.player==null||mc.level==null||mc.screen!=null)return;ticks++;
+        if(Boolean.getBoolean("uv.cancelOnly")){micro(mc);return;}
         if(observer){observer(mc);return;}
         if(ticks==21&&Boolean.getBoolean("uv.fugaNetwork")&&mc.getSingleplayerServer().getPlayerList().getPlayerCount()<2){ticks--;return;}
         if(ticks==20){mc.getTutorial().setStep(net.minecraft.client.tutorial.TutorialSteps.NONE);server(mc,p->{
@@ -82,17 +87,35 @@ public final class LimitlessVisualTest {
             require(p.getHealth()==p.getMaxHealth(),"caster protected");require(p.getMainHandItem().is(Items.DIAMOND_SWORD),"inventory unchanged");
             LimitlessService.reset(p);require(LimitlessService.cooldown(p,LimitlessKind.PURPLE)==0,"server reset clears technique cooldowns");
         });}
-        if(ticks==390){require(blueSounds==1&&redSounds==1&&purpleSounds==1,"each launch cue once despite repeated snapshots");require(chargeSounds==3,"three charge cues");require(LimitlessClient.pose(mc.player.getUUID())==null,"cast pose clears");}
+        if(ticks==390){require(blueSounds==1&&redSounds==1&&purpleSounds==1,"each launch cue once despite repeated snapshots");require(chargeSounds==3,"three charge cues");require(voiceSounds==3,"three voice cues without snapshot replay");require(impactSounds==3,"three impact cues without snapshot replay");require(LimitlessClient.pose(mc.player.getUUID())==null,"cast pose clears");}
         if(ticks==395)server(mc,p->{p.teleportTo(p.serverLevel(),0,-60,50,0,0);DomainConfig.LIMITLESS_TERRAIN.set(true);for(int y=-61;y<=-54;y++)for(int x=-6;x<=6;x++)p.serverLevel().setBlockAndUpdate(new BlockPos(x,y,64),Blocks.BEDROCK.defaultBlockState());});
+        if(ticks==398)require(LimitlessClient.tailCount()>0,"impact tail survives normal visual fade");
         if(ticks==400)key(GLFW.GLFW_KEY_C);
         if(ticks==410)server(mc,p->{require(LimitlessService.casting(p.getUUID()),"second Purple charge accepted");LogUtils.getLogger().info("LIMITLESS_TERRAIN_CAST pos={} terrain={} states={}",p.position(),DomainConfig.LIMITLESS_TERRAIN.get(),LimitlessService.snapshot(p));});
         if(ticks==505)server(mc,p->{LogUtils.getLogger().info("LIMITLESS_TERRAIN_RESULT breaks={} state={} casts={}",breaks,p.serverLevel().getBlockState(new BlockPos(0,-58,60)),LimitlessService.snapshot(p));require(p.serverLevel().getBlockState(new BlockPos(0,-58,60)).isAir(),"opt-in Purple breaks stone along path");require(p.serverLevel().getBlockState(new BlockPos(0,-58,64)).is(Blocks.BEDROCK),"opt-in terrain respects unbreakable blocks");DomainConfig.LIMITLESS_TERRAIN.set(false);p.teleportTo(p.serverLevel(),0,-60,0,0,0);});
         if(ticks==520){hold(GLFW.GLFW_KEY_Z,true);key(GLFW.GLFW_KEY_Z);}
         if(ticks==530)server(mc,p->p.setGameMode(GameType.SPECTATOR));
-        if(ticks==545){hold(GLFW.GLFW_KEY_Z,false);require(LimitlessClient.pose(mc.player.getUUID())==null,"spectator cancellation clears pose");server(mc,p->require(!LimitlessService.casting(p.getUUID()),"spectator cancellation clears server cast"));}
+        if(ticks==535)probeVoice();
+        if(ticks==545){hold(GLFW.GLFW_KEY_Z,false);require(LimitlessClient.pose(mc.player.getUUID())==null,"spectator cancellation clears pose");require(Boolean.TRUE.equals(voiceStopped)||voiceHandle!=null&&voiceHandle.isStopped(),"spectator cancellation leaves no playing voice channel");require(LimitlessClient.tailCount()==0,"spectator cancellation stops remaining tails");server(mc,p->require(!LimitlessService.casting(p.getUUID()),"spectator cancellation clears server cast"));}
         if(ticks==560){LogUtils.getLogger().info("LIMITLESS_TEST_COMPLETE shader={} network={}",Boolean.getBoolean("uv.shaderTest"),Boolean.getBoolean("uv.fugaNetwork"));mc.stop();}
     }
-    static void observer(Minecraft mc){if(ticks==70){require(mc.getSingleplayerServer()==null,"real remote client");require(LimitlessClient.effectCount()>0,"remote receives Blue");capture(mc,"observer-blue.png");}if(ticks==300){require(LimitlessClient.effects().stream().anyMatch(e->e.state.kind()==LimitlessKind.PURPLE),"remote receives Purple fusion");capture(mc,"observer-purple-fusion.png");}if(ticks==400){LogUtils.getLogger().info("LIMITLESS_OBSERVER_COMPLETE");mc.stop();}}
+    static void probeVoice(){
+            try{boolean found=false;for(var field:voiceEngine.getClass().getDeclaredFields())if(java.util.Map.class.isAssignableFrom(field.getType())){
+                field.setAccessible(true);var value=((java.util.Map<?,?>)field.get(voiceEngine)).get(lastVoice);
+                if(value instanceof net.minecraft.client.sounds.ChannelAccess.ChannelHandle handle){voiceHandle=handle;found=true;if(handle.isStopped())voiceStopped=true;else handle.execute(channel->voiceStopped=!channel.playing());break;}
+            }if(!found)voiceStopped=true;require(true,"actual voice channel ownership checked");}catch(ReflectiveOperationException ex){throw new RuntimeException(ex);}
+
+    }
+    static void micro(Minecraft mc){
+        if(ticks==20)server(mc,p->{p.teleportTo(p.serverLevel(),0,-60,0,0,0);});
+        if(ticks==30){hold(GLFW.GLFW_KEY_Z,true);key(GLFW.GLFW_KEY_Z);}
+        if(ticks==35)server(mc,p->{p.setGameMode(GameType.SPECTATOR);LogUtils.getLogger().info("AUDIO_MICRO_SERVER spectator={} states={}",p.isSpectator(),LimitlessService.snapshot(p));});
+        if(ticks==40){LogUtils.getLogger().info("AUDIO_MICRO_CLIENT spectator={} effects={} tail={} lastVoice={}",mc.player.isSpectator(),LimitlessClient.effects().stream().map(e->e.state).toList(),LimitlessClient.tailCount(),lastVoice==null?null:lastVoice.getLocation());}
+        if(ticks==45)probeVoice();
+        if(ticks==50){LogUtils.getLogger().info("AUDIO_MICRO_PROBE quiet={} handleStopped={} effects={} canceled={}",voiceStopped,voiceHandle==null?null:voiceHandle.isStopped(),LimitlessClient.effectCount(),lastVoice instanceof LimitlessClient.Cue cue&&cue.isStopped());require(lastVoice instanceof LimitlessClient.Cue cue&&cue.isStopped(),"micro cue marked canceled");require(Boolean.TRUE.equals(voiceStopped)||voiceHandle!=null&&voiceHandle.isStopped(),"micro voice canceled");}
+        if(ticks==60){LogUtils.getLogger().info("LIMITLESS_TEST_COMPLETE");mc.stop();}
+    }
+    static void observer(Minecraft mc){if(ticks==70){require(mc.getSingleplayerServer()==null,"real remote client");require(LimitlessClient.effectCount()>0,"remote receives Blue");capture(mc,"observer-blue.png");}if(ticks==300){require(LimitlessClient.effects().stream().anyMatch(e->e.state.kind()==LimitlessKind.PURPLE),"remote receives Purple fusion");capture(mc,"observer-purple-fusion.png");}if(ticks==400){require(voiceSounds>=3&&chargeSounds>=3&&impactSounds>=3&&!cueCounts.isEmpty()&&cueCounts.values().stream().allMatch(n->n==1),"remote receives voices and effects without duplicate cue per cast");LogUtils.getLogger().info("LIMITLESS_OBSERVER_COMPLETE");mc.stop();}}
     static void connect(Minecraft mc){retries++;ConnectScreen.startConnecting(mc.screen,mc,ServerAddress.parseString("127.0.0.1:25576"),new ServerData("Limitless loopback QA","127.0.0.1:25576",false),false);}
     static UUID pig(ServerPlayer p,double x,double z){var e=EntityType.PIG.create(p.serverLevel());e.moveTo(x,-60,z,0,0);e.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0);e.getAttribute(Attributes.MAX_HEALTH).setBaseValue(500);e.setHealth(500);p.serverLevel().addFreshEntity(e);return e.getUUID();}
     static void discard(ServerPlayer p,UUID... ids){for(var id:ids){var e=p.serverLevel().getEntity(id);if(e!=null)e.discard();}}

@@ -1,0 +1,183 @@
+{
+  "sources": {
+    "blue": {
+      "file": "gojo-lapse-blue.mp3",
+      "page": "https://www.myinstants.com/en/instant/gojo-lapse-blue-19384/",
+      "download": "https://www.myinstants.com/media/sounds/gojo-lapse-blue.mp3",
+      "sha256": "1171c8be4f22c54b7182ece1f3dbbea613c31936f724506b8b66b87e33b2b2fe"
+    },
+    "red": {
+      "file": "gojo-reversal-red.mp3",
+      "page": "https://www.myinstants.com/en/instant/gojo-reversal-red-90179/",
+      "download": "https://www.myinstants.com/media/sounds/gojo-reversal-red.mp3",
+      "sha256": "05a25b5d8479a134b0dbc1bf694ed6228b7b749603b6ccd4b347b42186e8e1bc"
+    },
+    "purple": {
+      "file": "hollow-purple.mp3",
+      "page": "https://www.myinstants.com/en/instant/hollow-purple-6717/",
+      "download": "https://www.myinstants.com/media/sounds/hollow-purple.mp3",
+      "sha256": "8b38d71dfcd2cb99328bcefe35484e8bacfaa99d395db6eb234b91b6a90d48c3"
+    }
+  },
+  "clips": [
+    {
+      "event": "blue_voice",
+      "source": "blue",
+      "trim": [
+        9.55,
+        11.0
+      ],
+      "duration": 1.45,
+      "filter": "atrim=start=9.55:end=11.0,asetpts=PTS-STARTPTS,highpass=f=75,loudnorm=I=-18:TP=-3:LRA=7,alimiter=limit=0.88:level=false,afade=t=in:d=0.018,afade=t=out:st=1.3900:d=0.06",
+      "sha256": "cf22a99ac8bd6c7daf89f4d2ece33d39dc303d7df5d3f456db2ce37d68b64994",
+      "decoded_peak_db": -3.1,
+      "decoded_duration": "00:00:01.45"
+    },
+    {
+      "event": "red_voice",
+      "source": "red",
+      "trim": [
+        2.0,
+        3.1
+      ],
+      "duration": 1.1,
+      "filter": "atrim=start=2.0:end=3.1,asetpts=PTS-STARTPTS,highpass=f=75,loudnorm=I=-18:TP=-3:LRA=7,alimiter=limit=0.88:level=false,afade=t=in:d=0.018,afade=t=out:st=1.0400:d=0.06,volume=0.8",
+      "sha256": "f61004f66282fa6a8135da84a0abdbc716c00e4a4731aa380a3eaf9228e5f391",
+      "decoded_peak_db": -2.2,
+      "decoded_duration": "00:00:01.10"
+    },
+    {
+      "event": "purple_voice",
+      "source": "purple",
+      "trim": [
+        0,
+        2.15
+      ],
+      "duration": 2.15,
+      "filter": "atrim=start=0:end=2.15,asetpts=PTS-STARTPTS,highpass=f=75,loudnorm=I=-18:TP=-3:LRA=7,alimiter=limit=0.88:level=false,afade=t=in:d=0.018,afade=t=out:st=2.0900:d=0.06",
+      "sha256": "5948be8dfdf9d5f7581af0a40bafa467202ed77c9fa70b452257a93b0f249fc8",
+      "decoded_peak_db": -2.9,
+      "decoded_duration": "00:00:02.15"
+    },
+    {
+      "event": "blue_charge",
+      "source": "blue",
+      "trim": [
+        4.2,
+        5.8
+      ],
+      "duration": 1.6,
+      "filter": "atrim=start=4.2:end=5.8,asetpts=PTS-STARTPTS,highpass=f=75,loudnorm=I=-23:TP=-3:LRA=7,alimiter=limit=0.88:level=false,afade=t=in:d=0.018,afade=t=out:st=1.5400:d=0.06",
+      "sha256": "80d90183f4abf32e7be9631da05acc6eed704151edfdb29d0b268dacde71182e",
+      "decoded_peak_db": -9.2,
+      "decoded_duration": "00:00:01.60"
+    },
+    {
+      "event": "red_charge",
+      "source": "red",
+      "trim": [
+        3.6,
+        4.6
+      ],
+      "duration": 1.0,
+      "filter": "atrim=start=3.6:end=4.6,asetpts=PTS-STARTPTS,highpass=f=75,loudnorm=I=-23:TP=-3:LRA=7,alimiter=limit=0.88:level=false,afade=t=in:d=0.018,afade=t=out:st=0.9400:d=0.06",
+      "sha256": "921602f59e640bb8417e14668b6331900b281cccd7a267259098297e445f22ca",
+      "decoded_peak_db": -10.3,
+      "decoded_duration": "00:00:01.00"
+    },
+    {
+      "event": "purple_charge",
+      "source": "purple",
+      "trim": [
+        2.15,
+        4.0
+      ],
+      "duration": 1.85,
+      "filter": "atrim=start=2.15:end=4.0,asetpts=PTS-STARTPTS,highpass=f=75,loudnorm=I=-23:TP=-3:LRA=7,alimiter=limit=0.88:level=false,afade=t=in:d=0.018,afade=t=out:st=1.7900:d=0.06",
+      "sha256": "4b36162513367cdfaf8597bd3715930de79be43bafb948388063a24610bf2ced",
+      "decoded_peak_db": -9.5,
+      "decoded_duration": "00:00:01.85"
+    },
+    {
+      "event": "blue_cast",
+      "source": "blue",
+      "trim": [
+        11.0,
+        12.28
+      ],
+      "duration": 1.28,
+      "filter": "atrim=start=11.0:end=12.28,asetpts=PTS-STARTPTS,highpass=f=75,loudnorm=I=-23:TP=-3:LRA=7,alimiter=limit=0.88:level=false,afade=t=in:d=0.018,afade=t=out:st=1.2200:d=0.06",
+      "sha256": "bce55cf6d32f8bbd43a2161d2e1829b5eeff0b1231e58e089471df2b38fc54b9",
+      "decoded_peak_db": -8.7,
+      "decoded_duration": "00:00:01.28"
+    },
+    {
+      "event": "red_cast",
+      "source": "red",
+      "trim": [
+        3.4,
+        5.3
+      ],
+      "duration": 1.9,
+      "filter": "atrim=start=3.4:end=5.3,asetpts=PTS-STARTPTS,highpass=f=75,loudnorm=I=-23:TP=-3:LRA=7,alimiter=limit=0.88:level=false,afade=t=in:d=0.018,afade=t=out:st=1.8400:d=0.06",
+      "sha256": "7737d9cf48fea3ad2ecc417ff619ae10b9b93d2084decfe4062917e9c93a7a46",
+      "decoded_peak_db": -7.2,
+      "decoded_duration": "00:00:01.90"
+    },
+    {
+      "event": "purple_cast",
+      "source": "purple",
+      "trim": [
+        4.0,
+        7.0
+      ],
+      "duration": 3.0,
+      "filter": "atrim=start=4.0:end=7.0,asetpts=PTS-STARTPTS,highpass=f=75,loudnorm=I=-23:TP=-3:LRA=7,alimiter=limit=0.88:level=false,afade=t=in:d=0.018,afade=t=out:st=2.9400:d=0.06",
+      "sha256": "917c1b907bdf60f42511947ff966c42b3b06c2184a6dc44df1a4f37869f25e0e",
+      "decoded_peak_db": -7.3,
+      "decoded_duration": "00:00:03.00"
+    },
+    {
+      "event": "blue_impact",
+      "source": "blue",
+      "trim": [
+        11.55,
+        12.28
+      ],
+      "duration": 0.73,
+      "filter": "atrim=start=11.55:end=12.28,asetpts=PTS-STARTPTS,highpass=f=75,loudnorm=I=-18:TP=-3:LRA=7,alimiter=limit=0.88:level=false,afade=t=in:d=0.018,afade=t=out:st=0.6700:d=0.06",
+      "sha256": "1239fc8783261e63f3ac103506fc81455470e6134962112337a640a6e858fbb2",
+      "decoded_peak_db": -5.7,
+      "decoded_duration": "00:00:00.73"
+    },
+    {
+      "event": "red_impact",
+      "source": "red",
+      "trim": [
+        5.3,
+        8.85
+      ],
+      "duration": 3.55,
+      "filter": "atrim=start=5.3:end=8.85,asetpts=PTS-STARTPTS,highpass=f=75,loudnorm=I=-18:TP=-3:LRA=7,alimiter=limit=0.88:level=false,afade=t=in:d=0.018,afade=t=out:st=3.4900:d=0.06",
+      "sha256": "9dc9aa216f0d6cfb705ef8b0cd9aaaaec6c8773ac0c5b4e8d7453a7581df91e7",
+      "decoded_peak_db": -5.0,
+      "decoded_duration": "00:00:03.55"
+    },
+    {
+      "event": "purple_impact",
+      "source": "purple",
+      "trim": [
+        7.0,
+        11.35
+      ],
+      "duration": 4.35,
+      "filter": "atrim=start=7.0:end=11.35,asetpts=PTS-STARTPTS,highpass=f=75,loudnorm=I=-18:TP=-3:LRA=7,alimiter=limit=0.88:level=false,afade=t=in:d=0.018,afade=t=out:st=4.2900:d=0.06",
+      "sha256": "c0a499ca74cb50aca70eaf3f11c5bfb9dd5cbc65c40b9deb6e510f8132d85826",
+      "decoded_peak_db": -3.0,
+      "decoded_duration": "00:00:04.40"
+    }
+  ],
+  "manual_listening": false,
+  "alignment": "Local whisper.cpp base/small Japanese ASR for short Ao, Aka and Kyoshiki Murasaki callouts; approximate phonetic alignment, not human listening.",
+  "license": "Third-party character recordings requested by user. No general redistribution licence established; NOT MIT or CC0."
+}
