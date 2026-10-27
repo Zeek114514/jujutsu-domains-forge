@@ -83,16 +83,6 @@
     ],
     "subtitle": "subtitles.unlimitedvoid.fuga_impact"
   },
-  "limitless_charge": {
-    "sounds": [
-      {
-        "name": "unlimitedvoid:limitless_charge",
-        "preload": true,
-        "attenuation_distance": 128
-      }
-    ],
-    "subtitle": "subtitles.unlimitedvoid.limitless_charge"
-  },
   "blue_cast": {
     "sounds": [
       {
@@ -122,5 +112,95 @@
       }
     ],
     "subtitle": "subtitles.unlimitedvoid.purple_cast"
+  },
+  "blue_voice": {
+    "sounds": [
+      {
+        "name": "unlimitedvoid:blue_voice",
+        "preload": true,
+        "attenuation_distance": 96
+      }
+    ],
+    "subtitle": "subtitles.unlimitedvoid.blue_voice"
+  },
+  "blue_charge": {
+    "sounds": [
+      {
+        "name": "unlimitedvoid:blue_charge",
+        "preload": true,
+        "attenuation_distance": 128
+      }
+    ],
+    "subtitle": "subtitles.unlimitedvoid.blue_charge"
+  },
+  "blue_impact": {
+    "sounds": [
+      {
+        "name": "unlimitedvoid:blue_impact",
+        "preload": true,
+        "attenuation_distance": 128
+      }
+    ],
+    "subtitle": "subtitles.unlimitedvoid.blue_impact"
+  },
+  "red_voice": {
+    "sounds": [
+      {
+        "name": "unlimitedvoid:red_voice",
+        "preload": true,
+        "attenuation_distance": 96
+      }
+    ],
+    "subtitle": "subtitles.unlimitedvoid.red_voice"
+  },
+  "red_charge": {
+    "sounds": [
+      {
+        "name": "unlimitedvoid:red_charge",
+        "preload": true,
+        "attenuation_distance": 128
+      }
+    ],
+    "subtitle": "subtitles.unlimitedvoid.red_charge"
+  },
+  "red_impact": {
+    "sounds": [
+      {
+        "name": "unlimitedvoid:red_impact",
+        "preload": true,
+        "attenuation_distance": 128
+      }
+    ],
+    "subtitle": "subtitles.unlimitedvoid.red_impact"
+  },
+  "purple_voice": {
+    "sounds": [
+      {
+        "name": "unlimitedvoid:purple_voice",
+        "preload": true,
+        "attenuation_distance": 96
+      }
+    ],
+    "subtitle": "subtitles.unlimitedvoid.purple_voice"
+  },
+  "purple_charge": {
+    "sounds": [
+      {
+        "name": "unlimitedvoid:purple_charge",
+        "preload": true,
+        "attenuation_distance": 128
+      }
+    ],
+    "subtitle": "subtitles.unlimitedvoid.purple_charge"
+  },
+  "purple_impact": {
+    "sounds": [
+      {
+        "name": "unlimitedvoid:purple_impact",
+        "preload": true,
+        "attenuation_distance": 128
+      }
+    ],
+    "subtitle": "subtitles.unlimitedvoid.purple_impact"
   }
 }

@@ -47,7 +47,7 @@ public final class ClientDomainAudio {
         if(gain<=0) {event.setSound(null);return;}
         // Locally generated relative sounds already apply the gain. Server
         // positional cues receive each listener's own gain here.
-        if(sound.isRelative() || sound instanceof AbstractTickableSoundInstance || sound instanceof ClientFugaAudio.PositionalCue) return;
+        if(sound.isRelative() || sound instanceof AbstractTickableSoundInstance || sound instanceof ClientFugaAudio.PositionalCue || sound instanceof LimitlessClient.Cue) return;
         event.setSound(new GainSound(sound,gain));
     }
     /** Defer volume access until SoundEngine resolves the underlying sample. */

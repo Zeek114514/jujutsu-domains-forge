@@ -4,7 +4,7 @@
 
 ## 角色台词与相关音效
 
-1.3.0新增的`limitless_charge.ogg`、`blue_cast.ogg`、`red_cast.ogg`、`purple_cast.ogg`与`limitless_glow.png`由项目中的`tools/generate_limitless_assets.py`程序合成，没有采样第三方录音，采用项目MIT许可。它们不是动漫原声。下列既有第三方音频的许可边界保持独立。
+1.3.0的术式音频曾由`tools/generate_limitless_assets.py`程序合成。1.3.1按用户要求替换为Myinstants用户上传片段，拆成苍、赫、茈各自的语音、蓄力、发射和命中事件。其来源、裁剪和哈希见[新术式音频记录](requested_limitless/README.md)；未确认通用再分发许可，不属于MIT或CC0音频。`limitless_glow.png`和原合成生成器仍为项目MIT资产。
 
 - 五条展开台词：Soundboards.gg 的 Gojo Domain Expansion 公开音频。
 - 宿傩展开台词：Myinstants 的 Malevolent Shrine 同名公开候选片段；没有断言与此前参考站点文件完全一致。

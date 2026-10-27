@@ -62,5 +62,14 @@
   "death.attack.unlimitedvoid.red": "%s was struck by red",
   "death.attack.unlimitedvoid.red.player": "%s was struck by %s using red",
   "death.attack.unlimitedvoid.purple": "%s was struck by purple",
-  "death.attack.unlimitedvoid.purple.player": "%s was struck by %s using purple"
+  "death.attack.unlimitedvoid.purple.player": "%s was struck by %s using purple",
+  "subtitles.unlimitedvoid.blue_voice": "Blue voice",
+  "subtitles.unlimitedvoid.blue_charge": "Blue charge",
+  "subtitles.unlimitedvoid.blue_impact": "Blue impact",
+  "subtitles.unlimitedvoid.red_voice": "Red voice",
+  "subtitles.unlimitedvoid.red_charge": "Red charge",
+  "subtitles.unlimitedvoid.red_impact": "Red impact",
+  "subtitles.unlimitedvoid.purple_voice": "Purple voice",
+  "subtitles.unlimitedvoid.purple_charge": "Purple charge",
+  "subtitles.unlimitedvoid.purple_impact": "Purple impact"
 }

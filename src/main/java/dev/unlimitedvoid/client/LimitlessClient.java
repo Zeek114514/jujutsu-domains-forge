@@ -24,11 +24,15 @@ import java.util.*;
 public final class LimitlessClient {
     private static final KeyMapping BLUE=key("blue",GLFW.GLFW_KEY_Z),RED=key("red",GLFW.GLFW_KEY_X),PURPLE=key("purple",GLFW.GLFW_KEY_C);
     private static final Map<UUID,Effect> EFFECTS=new LinkedHashMap<>();
+    private record Tail(UUID owner,long expires){}
+    private static final Map<SoundInstance,Tail> TAILS=new LinkedHashMap<>();
     private static ClientLevel lastLevel;private static int[] cooldowns=new int[3];private static boolean blueDown;private static long lastSnapshot;
     public record Pose(LimitlessKind kind,float weight,float progress){}
     private static KeyMapping key(String name,int key){return new KeyMapping("key.unlimitedvoid."+name,InputConstants.Type.KEYSYM,key,"category.unlimitedvoid");}
     static Collection<Effect> effects(){return EFFECTS.values();}
     public static int effectCount(){return EFFECTS.size();}
+    static int tailCount(){return TAILS.size();}
+    private static net.minecraft.world.entity.player.Player owner(UUID id){var mc=Minecraft.getInstance();return mc.player!=null&&mc.player.getUUID().equals(id)?mc.player:mc.level.getPlayerByUUID(id);}
     public static Pose pose(UUID owner){
         var mc=Minecraft.getInstance();if(mc.level==null)return null;
         for(var e:EFFECTS.values())if(e.state.owner().equals(owner)){
@@ -44,12 +48,14 @@ public final class LimitlessClient {
             live.add(s.id());var e=EFFECTS.get(s.id());boolean fresh=e==null;
             if(fresh){e=new Effect(s,lastSnapshot);EFFECTS.put(s.id(),e);}else{e.previous=e.position(0);e.received=lastSnapshot;e.state=s;}
             int age=(int)(lastSnapshot-s.start()),phaseAge=(int)(lastSnapshot-s.phaseStart());
-            if(fresh&&s.phase()==0&&age<8)e.sound("limitless_charge",.6f);
-            if(!e.launched&&s.phase()>=1){e.launched=true;e.stop();if(s.phase()==1&&phaseAge<6)e.sound(s.kind().name().toLowerCase(Locale.ROOT)+"_cast",1);}
+            if(fresh&&s.phase()==0&&age<8)e.charge=e.sound(e.name("charge"),.4f);
+            e.voiceIfDue();
+            if(!e.launched&&s.phase()>=1){e.launched=true;e.stopCharge();if(s.phase()==1&&phaseAge<6)e.sound(e.name("cast"),.8f);}
+            if(!e.impacted&&s.phase()==2){e.impacted=true;if(phaseAge<6)e.sound(e.name("impact"),1);}
         }
-        var it=EFFECTS.entrySet().iterator();while(it.hasNext()){var e=it.next();if(!live.contains(e.getKey())){e.getValue().stop();it.remove();}}
+        var it=EFFECTS.entrySet().iterator();while(it.hasNext()){var e=it.next();if(!live.contains(e.getKey())){e.getValue().retire();it.remove();}}
     }
-    private static void clear(ClientLevel level){EFFECTS.values().forEach(Effect::stop);EFFECTS.clear();cooldowns=new int[3];blueDown=false;lastLevel=level;}
+    private static void clear(ClientLevel level){EFFECTS.values().forEach(Effect::stop);EFFECTS.clear();for(var sound:TAILS.keySet())stopSound(sound);TAILS.clear();cooldowns=new int[3];blueDown=false;lastLevel=level;}
     @SubscribeEvent public static void tick(TickEvent.ClientTickEvent e){
         if(e.phase!=TickEvent.Phase.END)return;var mc=Minecraft.getInstance();if(mc.level!=lastLevel)clear(mc.level);if(mc.level==null||mc.player==null)return;
         boolean usable=mc.screen==null&&!mc.isPaused();
@@ -58,6 +64,11 @@ public final class LimitlessClient {
         while(PURPLE.consumeClick())if(usable)LimitlessNetwork.request(LimitlessKind.PURPLE);
         if(blueDown&&(!BLUE.isDown()||!usable)){LimitlessNetwork.release();blueDown=false;}
         if(mc.isPaused())return;for(int i=0;i<3;i++)if(cooldowns[i]>0)cooldowns[i]--;
+        for(var effect:EFFECTS.values())effect.voiceIfDue();
+        var tails=TAILS.entrySet().iterator();while(tails.hasNext()){
+            var tail=tails.next();var owner=owner(tail.getValue().owner());
+            if(owner==null||!owner.isAlive()||owner.isSpectator()||mc.level.getGameTime()>=tail.getValue().expires()){stopSound(tail.getKey());tails.remove();}
+        }
         if(mc.level.getGameTime()-lastSnapshot>30){EFFECTS.values().forEach(Effect::stop);EFFECTS.clear();}
     }
     @SubscribeEvent public static void render(RenderLevelStageEvent e){if(e.getStage()==RenderLevelStageEvent.Stage.AFTER_PARTICLES&&!EFFECTS.isEmpty())LimitlessRenderer.render(e,EFFECTS.values());}
@@ -68,11 +79,37 @@ public final class LimitlessClient {
         }
     }
     static final class Effect {
-        LimitlessService.State state;Vec3 previous;long received;boolean launched;final List<SoundInstance> sounds=new ArrayList<>();
+        LimitlessService.State state;Vec3 previous;long received;boolean launched,voiced,impacted;SoundInstance charge;final List<SoundInstance> sounds=new ArrayList<>();
         Effect(LimitlessService.State state,long now){this.state=state;previous=state.position();received=now;}
         Vec3 position(float partial){var mc=Minecraft.getInstance();return previous.lerp(state.position(),Math.max(0,Math.min(1,(mc.level.getGameTime()+partial-received)/2.)));}
-        void sound(String name,float volume){var mc=Minecraft.getInstance();var p=state.position();var sound=new SimpleSoundInstance(new ResourceLocation(UnlimitedVoid.ID,name),SoundSource.PLAYERS,DomainSounds.gain(volume),1,RandomSource.create(),false,0,SoundInstance.Attenuation.LINEAR,p.x,p.y,p.z,false);sounds.add(sound);mc.getSoundManager().play(sound);}
-        void stop(){for(var s:sounds)Minecraft.getInstance().getSoundManager().stop(s);sounds.clear();}
+        String name(String suffix){return state.kind().name().toLowerCase(Locale.ROOT)+"_"+suffix;}
+        void voiceIfDue(){
+            if(voiced)return;var mc=Minecraft.getInstance();long age=mc.level.getGameTime()-state.start();int offset=state.kind()==LimitlessKind.PURPLE?26:0;
+            if(age<offset)return;voiced=true;if(state.phase()==0&&age<=offset+6)sound(name("voice"),.95f);
+        }
+        SoundInstance sound(String name,float volume){var mc=Minecraft.getInstance();var sound=new Cue(state.id(),name,state.position(),volume);sounds.add(sound);mc.getSoundManager().play(sound);return sound;}
+        void stopCharge(){if(charge!=null){stopSound(charge);sounds.remove(charge);charge=null;}}
+        void retire(){
+            var mc=Minecraft.getInstance();var owner=owner(state.owner());long now=mc.level.getGameTime();
+            boolean natural=state.phase()==2&&now-state.phaseStart()>=(state.kind()==LimitlessKind.BLUE?78:15)&&owner!=null&&owner.isAlive()&&!owner.isSpectator();
+            for(var sound:sounds){
+                if(natural){
+                    if(TAILS.size()>=32){var oldest=TAILS.keySet().iterator().next();stopSound(oldest);TAILS.remove(oldest);}
+                    TAILS.put(sound,new Tail(state.owner(),now+100));
+                }else stopSound(sound);
+            }sounds.clear();
+        }
+        void stop(){for(var s:sounds)stopSound(s);sounds.clear();}
+    }
+    /** Keep cue ownership explicit across asynchronous audio callbacks and tail cleanup. */
+    private static void stopSound(SoundInstance sound){if(sound instanceof Cue cue)cue.stopped=true;Minecraft.getInstance().getSoundManager().stop(sound);}
+    static final class Cue extends SimpleSoundInstance implements TickableSoundInstance {
+        private volatile boolean stopped;
+        @Override public void tick(){}
+        @Override public boolean isStopped(){return stopped;}
+        @Override public boolean canPlaySound(){return !stopped;}
+        final UUID cast;
+        Cue(UUID cast,String name,Vec3 p,float volume){super(new ResourceLocation(UnlimitedVoid.ID,name),name.endsWith("_voice")?SoundSource.VOICE:SoundSource.PLAYERS,DomainSounds.gain(volume),1,RandomSource.create(),false,0,SoundInstance.Attenuation.LINEAR,p.x,p.y,p.z,false);this.cast=cast;}
     }
     @Mod.EventBusSubscriber(modid=UnlimitedVoid.ID,value=Dist.CLIENT,bus=Mod.EventBusSubscriber.Bus.MOD)
     public static final class Registration {@SubscribeEvent public static void keys(RegisterKeyMappingsEvent e){e.register(BLUE);e.register(RED);e.register(PURPLE);}}

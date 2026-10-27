@@ -1,6 +1,6 @@
 # 咒术领域 · Jujutsu Domains
 
-> 当前正式版：**1.3.0**。新增五条悟的苍、赫与虚式·茈，保留原版方块手臂演出。
+> 当前正式版：**1.3.1**。苍、赫与茈加入网上搜集的日语出招短句及分阶段招式音效。
 
 [![Build](https://github.com/Zeek114514/jujutsu-domains-forge/actions/workflows/build.yml/badge.svg)](https://github.com/Zeek114514/jujutsu-domains-forge/actions/workflows/build.yml)
 [![Minecraft](https://img.shields.io/badge/Minecraft-1.20.1-62b47a)](https://www.minecraft.net/)
@@ -11,12 +11,12 @@
 
 无量空处以纯白空间与宇宙结界封锁战场，御厨子以升起的神龛、镜面地面和开放式斩击覆盖周围。新增灶·开从聚火、拉弓到爆燃展开，提供独立的台词、射出声与命中余响。灶·开现已接入服务端范围伤害及御厨子粉尘引爆；地形破坏仍默认关闭。
 
-[苍、赫、茈指南](docs/LIMITLESS.md) · [1.3.0验证](docs/LIMITLESS_VALIDATION.md) · [1.2.1手势记录](docs/VANILLA_SEALS_VALIDATION.md) · [灶·开指南](docs/FUGA.md) · [开发进度](docs/PROGRESS.md) · [1.1.0验证记录](docs/FUGA_COMBAT_VALIDATION.md) · [Wiki](https://github.com/Zeek114514/jujutsu-domains-forge/wiki)
+[1.3.1音频来源](requested_limitless/README.md) · [苍、赫、茈指南](docs/LIMITLESS.md) · [1.3.0验证](docs/LIMITLESS_VALIDATION.md) · [1.2.1手势记录](docs/VANILLA_SEALS_VALIDATION.md) · [灶·开指南](docs/FUGA.md) · [开发进度](docs/PROGRESS.md) · [1.1.0验证记录](docs/FUGA_COMBAT_VALIDATION.md) · [Wiki](https://github.com/Zeek114514/jujutsu-domains-forge/wiki)
 
 ## 下载和安装
 
 1. 安装 **Minecraft Java 1.20.1、Forge 47.4.10 或更高的 47.x、Java 17**。
-2. 前往 [Releases](https://github.com/Zeek114514/jujutsu-domains-forge/releases/latest)，下载 `unlimited-void-1.20.1-1.3.0.jar`。
+2. 前往 [Releases](https://github.com/Zeek114514/jujutsu-domains-forge/releases/latest)，下载 `unlimited-void-1.20.1-1.3.1.jar`。
 3. 放进当前游戏实例的 `mods` 文件夹。升级时移走旧版同名模组，避免重复加载，随后重启游戏。
 4. 多人游戏中客户端与服务端都要安装相同版本。
 
@@ -43,7 +43,7 @@
 
 ### 苍、赫与虚式·茈
 
-苍提供持续引力和伤害，赫提供爆发与击退，茈先将苍赫汇合，再以紫色能量球贯穿路径上的生物。三种术式分别冷却，使用原版方块手臂、自制光效和自制合成音效。默认保留地形，完整机制见[术式指南](docs/LIMITLESS.md)。
+苍提供持续引力和伤害，赫提供爆发与击退，茈先将苍赫汇合，再以紫色能量球贯穿路径上的生物。三种术式分别冷却，使用原版方块手臂、光效和分阶段的出招语音、招式音效。默认保留地形，完整机制见[术式指南](docs/LIMITLESS.md)。
 
 ### 灶·开 · Fūga
 
@@ -133,7 +133,7 @@ blocksDestroyedPerTick = 96
 ./gradlew --no-daemon build
 ```
 
-当前安装包在 `build/libs/unlimited-void-1.20.1-1.3.0.jar`。开发客户端使用 `./gradlew runClient`。自动构建运行时序、战斗/渲染预算和寻地共147项无窗口检查，不启动游戏。
+当前安装包在 `build/libs/unlimited-void-1.20.1-1.3.1.jar`。开发客户端使用 `./gradlew runClient`。自动构建运行时序、战斗/渲染预算和寻地共147项无窗口检查，不启动游戏。
 
 仓库已经包含运行所需的音频资源，正常构建无需重新加工音频。可选的素材处理脚本位于 `tools/`，依赖 Python 3 与 FFmpeg，来源见 [第三方素材说明](THIRD_PARTY_NOTICES.md)。
 
