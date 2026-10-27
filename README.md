@@ -1,6 +1,6 @@
 # 咒术领域 · Jujutsu Domains
 
-> 当前正式版：**1.4.0**。重做苍、赫、苍赫融合及虚式·茈的球体、流动能量和空间折射效果。
+> 当前正式版：**1.4.1**。御厨子的解与捌采用白色尖刃、红黑裂痕和短促交叉斩击。
 
 [![Build](https://github.com/Zeek114514/jujutsu-domains-forge/actions/workflows/build.yml/badge.svg)](https://github.com/Zeek114514/jujutsu-domains-forge/actions/workflows/build.yml)
 [![Minecraft](https://img.shields.io/badge/Minecraft-1.20.1-62b47a)](https://www.minecraft.net/)
@@ -16,13 +16,13 @@
 ## 下载和安装
 
 1. 安装 **Minecraft Java 1.20.1、Forge 47.4.10 或更高的 47.x、Java 17**。
-2. 前往 [Releases](https://github.com/Zeek114514/jujutsu-domains-forge/releases/latest)，下载 `unlimited-void-1.20.1-1.4.0.jar`。
+2. 前往 [Releases](https://github.com/Zeek114514/jujutsu-domains-forge/releases/latest)，下载 `unlimited-void-1.20.1-1.4.1.jar`。
 3. 放进当前游戏实例的 `mods` 文件夹。升级时移走旧版同名模组，避免重复加载，随后重启游戏。
 4. 多人游戏中客户端与服务端都要安装相同版本。
 
 升级时同时更新客户端和服务端；本版网络协议与旧预览版不同。
 
-开发依赖为Forge47.4.10；本版在47.4.20独立实例中完成战斗与指定光影组合检查，联网沿用1.3.1的双客户端记录。具体范围见验证记录，不表示所有47.x或光影组合均已覆盖。
+开发依赖为Forge47.4.10；本版在47.4.20独立实例中检查普通画面与指定光影斩击，战斗与联网沿用此前版本的记录。具体版本和范围见验证记录，不表示所有47.x或光影组合均已覆盖。
 
 ## 玩法
 
@@ -87,6 +87,9 @@
 - 屋脊达到人物脚底后托举；高于神龛最终高度的空中人物不会被突然拉下。
 - 青黑色镜面地面带流动雾纹，可反射神龛及附近生物。
 - 包含「解」「捌」、可配置咒力与外部结界破坏规则。地形破坏默认关闭。
+- 解以白色尖刃和红黑裂痕高速掠过，捌在生物附近交叉闪现。两端收尖，短暂出现后淡出。[斩击画面与验证](docs/SHRINE_SLASH_VALIDATION.md)
+
+![1.4.1御厨子斩击实机画面](docs/images/shrine-slashes-1.4.1.png)
 
 ### 对峙和演示指令
 
