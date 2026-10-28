@@ -1,7 +1,7 @@
 plugins {
     id 'net.minecraftforge.gradle' version '6.0.54'
 }
-version = '1.5.1'
+version = '1.6.0'
 group = 'dev.unlimitedvoid'
 base { archivesName = 'unlimited-void-1.20.1' }
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)

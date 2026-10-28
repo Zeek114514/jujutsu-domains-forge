@@ -73,5 +73,11 @@
   "subtitles.unlimitedvoid.purple_charge": "Purple charge",
   "subtitles.unlimitedvoid.purple_impact": "Purple impact",
   "hud.unlimitedvoid.purple_growing": "Blue + Red: Purple expanding",
-  "hud.unlimitedvoid.purple_blast": "Unlimited Purple: detonation"
+  "hud.unlimitedvoid.purple_blast": "Unlimited Purple: detonation",
+  "entity.unlimitedvoid.student_gojo": "Student Satoru Gojo",
+  "entity.unlimitedvoid.sukuna_16": "16-Finger Sukuna (Yuji)",
+  "item.unlimitedvoid.student_gojo_spawn_egg": "Student Gojo Spawn Egg",
+  "item.unlimitedvoid.sukuna_16_spawn_egg": "16-Finger Sukuna Spawn Egg",
+  "message.unlimitedvoid.student_gojo": "Student Gojo - Display NPC",
+  "message.unlimitedvoid.sukuna_16": "16-Finger Sukuna - Display NPC"
 }

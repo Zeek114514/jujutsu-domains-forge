@@ -18,3 +18,5 @@ python tools/run_fuga_qa.py --minecraft-root '你的Minecraft根目录' --versio
 `--suite slashes --mode plain|shader`采集御厨子斩痕。`--suite combo --mode plain|network|shader`检查空中自爆茈的两种融合顺序、范围/单次命中、队友与墙体保护、施术者反噬、旁观取消、空中球超时清理及音效去重；network追加真实TCP观察者，shader检查真实Iris管线。联网观察者首次握手超时可在3次尝试上限内重连；原失败运行不作为通过证据。
 
 `--suite particles --mode plain|shader`采集灶·开粒子并检查纹理、粒子上限及取消清理；shader额外断言真实Iris管线。它不替代`--suite combat`战斗回归。
+
+`--suite npcs --mode plain|shader`在独立新世界实际使用两种生成蛋，检查NPC同步、无游走/自动战斗、NBT保存/恢复及纹理，并采集正面/侧面截图；shader额外断言真实Iris管线。NBT恢复不是完整退出重开世界测试。

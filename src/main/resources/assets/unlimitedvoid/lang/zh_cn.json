@@ -73,5 +73,11 @@
   "subtitles.unlimitedvoid.purple_charge": "蓄力：虚式·茈",
   "subtitles.unlimitedvoid.purple_impact": "命中：虚式·茈",
   "hud.unlimitedvoid.purple_growing": "苍赫融合：茈正在膨胀",
-  "hud.unlimitedvoid.purple_blast": "自爆茈：冲击波扩散"
+  "hud.unlimitedvoid.purple_blast": "自爆茈：冲击波扩散",
+  "entity.unlimitedvoid.student_gojo": "高专五条悟",
+  "entity.unlimitedvoid.sukuna_16": "16指·虎皮宿傩",
+  "item.unlimitedvoid.student_gojo_spawn_egg": "高专五条悟生成蛋",
+  "item.unlimitedvoid.sukuna_16_spawn_egg": "16指·虎皮宿傩生成蛋",
+  "message.unlimitedvoid.student_gojo": "高专五条悟 · 展示NPC",
+  "message.unlimitedvoid.sukuna_16": "16指·虎皮宿傩 · 展示NPC"
 }

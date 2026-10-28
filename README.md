@@ -1,6 +1,6 @@
 # 咒术领域 · Jujutsu Domains
 
-> 当前正式版：**1.5.1**。灶·开现已默认使用粒子火焰、火矢拖尾和爆燃烟尘。向空中的苍射入赫，或向赫射入苍，形成逐渐膨胀并大范围爆炸的自爆茈。
+> 当前本地版本：**1.6.0**（新增展示NPC）；GitHub正式版仍为1.5.1。灶·开现已默认使用粒子火焰、火矢拖尾和爆燃烟尘。向空中的苍射入赫，或向赫射入苍，形成逐渐膨胀并大范围爆炸的自爆茈。
 
 [![Build](https://github.com/Zeek114514/jujutsu-domains-forge/actions/workflows/build.yml/badge.svg)](https://github.com/Zeek114514/jujutsu-domains-forge/actions/workflows/build.yml)
 [![Minecraft](https://img.shields.io/badge/Minecraft-1.20.1-62b47a)](https://www.minecraft.net/)
@@ -23,6 +23,10 @@
 升级时同时更新客户端和服务端；本版网络协议与旧预览版不同。
 
 开发依赖为Forge47.4.10；本版验证范围见[灶·开粒子记录](docs/FUGA_PARTICLES_VALIDATION.md)，自爆茈沿用[1.5.0记录](docs/PURPLE_DETONATION_VALIDATION.md)。此前记录按各自版本保留，不表示所有47.x、光影组合和硬件均已覆盖。御厨子血红天空/镜面的指定光影限制仍见[1.4.1记录](docs/SHRINE_SLASH_VALIDATION.md)。
+
+## 展示NPC（1.6.0本地版本）
+
+高专五条悟与16指虎皮宿傩，可在创造模式生成蛋栏生成，或使用`/summon unlimitedvoid:student_gojo`、`/summon unlimitedvoid:sukuna_16`。两者仅展示和看向玩家，不自动战斗或释放术式；可保存且不会自然消失，但可受到伤害。详见[NPC说明](docs/NPCS.md)。
 
 ## 玩法
 
