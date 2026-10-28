@@ -23,6 +23,7 @@ public final class NpcTechniqueService {
     private static final Map<UUID,Cast> CASTS=new LinkedHashMap<>();
     public static int activeCount(){return CASTS.size();}
     public static boolean detonating(JujutsuNpc npc){return CASTS.values().stream().anyMatch(c->c.owner==npc&&c.phase>=PurpleDetonation.GROWING);}
+    public static boolean charging(JujutsuNpc npc){return CASTS.values().stream().anyMatch(c->c.owner==npc&&c.phase==0);}
     public static boolean casting(JujutsuNpc npc){return CASTS.values().stream().anyMatch(c->c.owner==npc);}
     public static boolean enemy(JujutsuNpc npc,LivingEntity target){return target!=npc&&target.isAlive()&&!npc.isAlliedTo(target)&&(target instanceof Enemy||target instanceof JujutsuNpc other&&!other.isGojo()&&other.isAwakened());}
     public static boolean trueSukuna(LivingEntity target){return target instanceof JujutsuNpc n&&!n.isGojo()&&n.isAwakened();}

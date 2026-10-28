@@ -18,7 +18,9 @@ public final class JujutsuNpcRenderer extends HumanoidMobRenderer<JujutsuNpc,Pla
     private static final class TechniqueModel extends PlayerModel<JujutsuNpc> {
         TechniqueModel(net.minecraft.client.model.geom.ModelPart root,boolean slim){super(root,slim);}
         @Override public void setupAnim(JujutsuNpc npc,float swing,float amount,float age,float yaw,float pitch){
-            super.setupAnim(npc,swing,amount,age,yaw,pitch);var pose=LimitlessClient.pose(npc.getUUID());if(pose==null)return;
+            super.setupAnim(npc,swing,amount,age,yaw,pitch);
+            if(npc.punchKind()>=0){float t=npc.punchAge(age-npc.tickCount)/NpcMeleeRules.ANIMATION;float hit=(float)Math.sin(Math.PI*Math.max(0,Math.min(1,t)));rightArm.xRot=-.35f-1.5f*hit;rightArm.yRot=-.18f;body.yRot=-.12f*hit;rightSleeve.copyFrom(rightArm);return;}
+            var pose=LimitlessClient.pose(npc.getUUID());if(pose==null)return;
             float weight=pose.weight();rightArm.xRot=-1.35f*weight;rightArm.yRot=-.22f*weight;
             if(pose.kind()==LimitlessKind.PURPLE){leftArm.xRot=-1.35f*weight;leftArm.yRot=.22f*weight;}
             rightSleeve.copyFrom(rightArm);leftSleeve.copyFrom(leftArm);

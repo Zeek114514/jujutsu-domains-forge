@@ -16,11 +16,26 @@ import net.minecraftforge.fml.common.Mod;
 public final class JujutsuNpc extends PathfinderMob {
     private static final net.minecraft.network.syncher.EntityDataAccessor<Boolean> AWAKENED=net.minecraft.network.syncher.SynchedEntityData.defineId(JujutsuNpc.class,net.minecraft.network.syncher.EntityDataSerializers.BOOLEAN);
     private static final net.minecraft.network.syncher.EntityDataAccessor<Boolean> ASCENDED=net.minecraft.network.syncher.SynchedEntityData.defineId(JujutsuNpc.class,net.minecraft.network.syncher.EntityDataSerializers.BOOLEAN);
-    @Override protected void defineSynchedData(){super.defineSynchedData();entityData.define(AWAKENED,false);entityData.define(ASCENDED,false);}
+    @Override protected void defineSynchedData(){super.defineSynchedData();entityData.define(AWAKENED,false);entityData.define(ASCENDED,false);entityData.define(PUNCH_KIND,-1);entityData.define(PUNCH_START,0L);}
+    private static final net.minecraft.network.syncher.EntityDataAccessor<Integer> PUNCH_KIND=net.minecraft.network.syncher.SynchedEntityData.defineId(JujutsuNpc.class,net.minecraft.network.syncher.EntityDataSerializers.INT);
+    private static final net.minecraft.network.syncher.EntityDataAccessor<Long> PUNCH_START=net.minecraft.network.syncher.SynchedEntityData.defineId(JujutsuNpc.class,net.minecraft.network.syncher.EntityDataSerializers.LONG);
+    private java.util.UUID punchTarget;private boolean punchLanded;
+    public int punchKind(){long age=level().getGameTime()-entityData.get(PUNCH_START);return age>=0&&age<NpcMeleeRules.ANIMATION?entityData.get(PUNCH_KIND):-1;}
+    public float punchAge(float partial){return level().getGameTime()-entityData.get(PUNCH_START)+partial;}
+    public void beginPunch(LimitlessKind kind,java.util.UUID target){punchTarget=target;punchLanded=false;entityData.set(PUNCH_START,level().getGameTime());entityData.set(PUNCH_KIND,kind==LimitlessKind.RED?1:0);}
+    public void cancelPunch(){punchTarget=null;entityData.set(PUNCH_KIND,-1);}
+    private void punchTick(){
+        long age=level().getGameTime()-entityData.get(PUNCH_START);
+        if(age>=NpcMeleeRules.ANIMATION){punchTarget=null;entityData.set(PUNCH_KIND,-1);return;}
+        if(!punchLanded&&punchTarget!=null&&age>=NpcMeleeRules.WINDUP){
+            punchLanded=true;var target=((net.minecraft.server.level.ServerLevel)level()).getEntity(punchTarget);
+            if(target instanceof LivingEntity living)dev.unlimitedvoid.server.NpcMeleeService.impact(this,living,entityData.get(PUNCH_KIND)==1?LimitlessKind.RED:LimitlessKind.BLUE);
+        }
+    }
     private boolean awakeningBurstPending;
     private long reversalReadyAt,nextReversalAt;
     public boolean canReverse(){return !isGojo()||isAwakened();}
-    public void applyFormVitals(boolean refill){float before=getHealth(),maximum=getMaxHealth();getAttribute(Attributes.MAX_HEALTH).setBaseValue(NpcVitals.maximum(isGojo(),isAscended(),isShinjuku(),isAwakened()));setHealth(refill?getMaxHealth():NpcVitals.preserved(before,maximum,getMaxHealth()));}
+    public void applyFormVitals(boolean refill){float before=getHealth(),maximum=getMaxHealth();getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(isGojo()?.34:.2);getAttribute(Attributes.FOLLOW_RANGE).setBaseValue(isGojo()?32:16);getAttribute(Attributes.MAX_HEALTH).setBaseValue(NpcVitals.maximum(isGojo(),isAscended(),isShinjuku(),isAwakened()));setHealth(refill?getMaxHealth():NpcVitals.preserved(before,maximum,getMaxHealth()));}
     @Override public boolean hurt(net.minecraft.world.damagesource.DamageSource source,float amount){boolean hurt=super.hurt(source,amount);if(hurt&&amount>0){reversalReadyAt=level().getGameTime()+60;nextReversalAt=Math.max(nextReversalAt,reversalReadyAt);}return hurt;}
     private void reverseTick(){
         long now=level().getGameTime();if(!canReverse()||getHealth()>=getMaxHealth()||now<reversalReadyAt||now<nextReversalAt||isGojo()&&NpcCombatRules.lastResort(getHealth(),getMaxHealth())&&(!lastResortUsed||dev.unlimitedvoid.server.NpcTechniqueService.detonating(this)))return;
@@ -57,8 +72,8 @@ public final class JujutsuNpc extends PathfinderMob {
         super.aiStep();
         if(!level().isClientSide&&!isNoAi()){
             var viewer=getTarget()!=null?getTarget():level().getNearestPlayer(this,8);
-            if(viewer!=null){getLookControl().setLookAt(viewer,30,30);setYRot(getYHeadRot());setYBodyRot(getYHeadRot());}
-            if(isAlive())reverseTick();
+            if(viewer!=null){getLookControl().setLookAt(viewer,30,30);if(getNavigation().isDone()){setYRot(getYHeadRot());setYBodyRot(getYHeadRot());}}
+            if(isAlive()){punchTick();reverseTick();}
         }
     }
     @Override public boolean removeWhenFarAway(double distance){return false;}
@@ -83,10 +98,10 @@ public final class JujutsuNpc extends PathfinderMob {
     }
     @Mod.EventBusSubscriber(modid=UnlimitedVoid.ID,bus=Mod.EventBusSubscriber.Bus.MOD)
     public static final class Registration {
-        private static AttributeSupplier attributes(double hp){return Mob.createMobAttributes().add(Attributes.MAX_HEALTH,hp).add(Attributes.MOVEMENT_SPEED,.2).add(Attributes.FOLLOW_RANGE,16).add(Attributes.KNOCKBACK_RESISTANCE,1).build();}
+        private static AttributeSupplier attributes(double hp,boolean gojo){return Mob.createMobAttributes().add(Attributes.MAX_HEALTH,hp).add(Attributes.MOVEMENT_SPEED,gojo?.34:.2).add(Attributes.FOLLOW_RANGE,gojo?32:16).add(Attributes.KNOCKBACK_RESISTANCE,1).build();}
         @SubscribeEvent public static void attributes(EntityAttributeCreationEvent event){
-            event.put(DomainEntities.STUDENT_GOJO.get(),attributes(NpcVitals.STUDENT));event.put(DomainEntities.SUKUNA_16.get(),attributes(NpcVitals.SUKUNA));
-            event.put(DomainEntities.AWAKENED_GOJO.get(),attributes(NpcVitals.AWAKENED));event.put(DomainEntities.SHINJUKU_GOJO.get(),attributes(NpcVitals.SHINJUKU));event.put(DomainEntities.TRUE_SUKUNA.get(),attributes(NpcVitals.TRUE_SUKUNA));
+            event.put(DomainEntities.STUDENT_GOJO.get(),attributes(NpcVitals.STUDENT,true));event.put(DomainEntities.SUKUNA_16.get(),attributes(NpcVitals.SUKUNA,false));
+            event.put(DomainEntities.AWAKENED_GOJO.get(),attributes(NpcVitals.AWAKENED,true));event.put(DomainEntities.SHINJUKU_GOJO.get(),attributes(NpcVitals.SHINJUKU,true));event.put(DomainEntities.TRUE_SUKUNA.get(),attributes(NpcVitals.TRUE_SUKUNA,false));
         }
     }
 }
