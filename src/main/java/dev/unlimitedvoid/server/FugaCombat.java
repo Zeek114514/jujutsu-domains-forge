@@ -16,9 +16,9 @@ import java.util.*;
 public final class FugaCombat {
     private static final ResourceKey<DamageType> FIRE=ResourceKey.create(Registries.DAMAGE_TYPE,new ResourceLocation(UnlimitedVoid.ID,"fuga"));
     private FugaCombat(){}
-    public static int pulse(ServerPlayer caster,Vec3 origin,Vec3 impact,float burst,DomainService.FugaDust dust,Set<UUID> struck){
+    public static int pulse(LivingEntity caster,Vec3 origin,Vec3 impact,float burst,DomainService.FugaDust dust,Set<UUID> struck){
         if(!DomainConfig.FUGA_COMBAT.get()||!FugaCombatRules.hitWindow(burst)||struck.size()>=FugaCombatRules.TARGET_LIMIT)return 0;
-        var level=caster.serverLevel();double radius=dust==null?DomainConfig.FUGA_RADIUS.get():dust.radius();
+        var level=(net.minecraft.server.level.ServerLevel)caster.level();double radius=dust==null?DomainConfig.FUGA_RADIUS.get():dust.radius();
         double front=FugaCombatRules.front(burst,radius);if(front<=0)return 0;
         double maximum=dust==null?DomainConfig.FUGA_DAMAGE.get():DomainConfig.FUGA_DUST_DAMAGE.get();
         var source=new DamageSource(level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(FIRE),caster,caster);

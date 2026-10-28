@@ -40,10 +40,15 @@ public final class FugaService {
         if(CASTS.size()>=FugaTimeline.MAX_CASTS) return;
         Cast cast=new Cast(player,now);
         CASTS.put(player.getUUID(),cast); READY.put(player.getUUID(),now+FugaTimeline.COOLDOWN);
-        DomainNetwork.fugaStatus(player);
+        status(player);
         syncObservers(cast);
     }
-    private static Vec3 hand(ServerPlayer p) {
+    public static void cancel(UUID owner){var c=CASTS.remove(owner);if(c!=null)for(var p:c.level.players())if(c.listeners.contains(p.getUUID()))send(c,p,2);}
+    public static boolean request(dev.unlimitedvoid.entity.JujutsuNpc npc){
+        if(npc.isGojo()||!npc.isAlive()||npc.isNoAi()||DomainService.isCaptive(npc.getUUID())||DomainService.npcChanting(npc)||CASTS.containsKey(npc.getUUID())||CASTS.size()>=FugaTimeline.MAX_CASTS||npc.level().getServer().getTickCount()<READY.getOrDefault(npc.getUUID(),0))return false;
+        npc.cancelPunch();var c=new Cast(npc,npc.level().getServer().getTickCount());CASTS.put(npc.getUUID(),c);READY.put(npc.getUUID(),c.start+FugaTimeline.COOLDOWN);npc.getNavigation().stop();syncObservers(c);return true;
+    }
+    private static Vec3 hand(net.minecraft.world.entity.LivingEntity p) {
         Vec3 direction=p.getLookAngle();
         Vec3 right=direction.cross(new Vec3(0,1,0));
         if(right.lengthSqr()<.001)right=new Vec3(1,0,0);else right=right.normalize();
@@ -55,11 +60,11 @@ public final class FugaService {
         int now=server.getTickCount();
         Iterator<Cast> iterator=CASTS.values().iterator();
         while(iterator.hasNext()) {
-            Cast c=iterator.next();var player=server.getPlayerList().getPlayer(c.owner);
-            if(player==null || !player.isAlive() || player.isSpectator() || player.serverLevel()!=c.level || DomainService.isCaptive(c.owner)) {
+            Cast c=iterator.next();net.minecraft.world.entity.LivingEntity player=c.npc?(c.level.getEntity(c.owner) instanceof dev.unlimitedvoid.entity.JujutsuNpc n?n:null):server.getPlayerList().getPlayer(c.owner);
+            if(player==null || !player.isAlive() || player.isSpectator() || player.level()!=c.level || player instanceof dev.unlimitedvoid.entity.JujutsuNpc n&&(n.isNoAi()||DomainService.npcChanting(n)) || DomainService.isCaptive(c.owner)) {
                 for(var listener:c.level.players())if(c.listeners.contains(listener.getUUID()))send(c,listener,2);
                 iterator.remove();
-                if(player!=null)DomainNetwork.fugaStatus(player);continue;
+                if(player!=null)status(player);continue;
             }
             int age=now-c.start;
             if(!c.released && age>=FugaTimeline.CHARGE) {
@@ -86,18 +91,19 @@ public final class FugaService {
                 if(!c.impacted){
                     c.impacted=true;
                     if(dev.unlimitedvoid.DomainConfig.FUGA_COMBAT.get())c.dust=DomainService.consumeFugaDust(player,c.to);
-                    if(c.dust!=null){for(var listener:c.level.players())if(c.listeners.contains(listener.getUUID()))send(c,listener,3);DomainNetwork.fugaStatus(player);}
+                    if(c.dust!=null){for(var listener:c.level.players())if(c.listeners.contains(listener.getUUID()))send(c,listener,3);status(player);}
                 }
                 if(((int)burst)%4==0)FugaCombat.pulse(player,c.from,c.to,burst,c.dust,c.struck);
             }
             if(now%10==0)syncObservers(c);
-            if(c.released && age>=FugaTimeline.CHARGE+c.flight+FugaTimeline.AFTERMATH){iterator.remove();DomainNetwork.fugaStatus(player);}
+            if(c.released && age>=FugaTimeline.CHARGE+c.flight+FugaTimeline.AFTERMATH){iterator.remove();status(player);}
         }
         READY.entrySet().removeIf(e->now>=e.getValue());
         LAST_RESET.entrySet().removeIf(e->now-e.getValue()>200);
         if(now%20==0)for(var p:server.getPlayerList().getPlayers())DomainNetwork.fugaStatus(p);
     }
     @SubscribeEvent public static void stop(ServerStoppingEvent event) { CASTS.clear();READY.clear();LAST_RESET.clear(); }
+    private static void status(net.minecraft.world.entity.LivingEntity e){if(e instanceof ServerPlayer p)DomainNetwork.fugaStatus(p);}
     private static void send(Cast c,ServerPlayer p,int phase){DomainNetwork.fugaTo(p,c.owner,phase,c.from,c.to,c.seed,c.flight,c.startGameTime);}
     private static void syncObservers(Cast c){
         c.listeners.removeIf(id->c.level.getPlayerByUUID(id)==null);
@@ -107,9 +113,9 @@ public final class FugaService {
         }
     }
     private static final class Cast {
-        final UUID owner;final ServerLevel level;final int start,seed;
+        final UUID owner;final ServerLevel level;final int start,seed;final boolean npc;
         final long startGameTime;final java.util.Set<UUID> listeners=new java.util.HashSet<>(),struck=new java.util.HashSet<>();
         Vec3 from,to;int flight=1;boolean released,impacted;DomainService.FugaDust dust;
-        Cast(ServerPlayer p,int tick){owner=p.getUUID();level=p.serverLevel();start=tick;startGameTime=level.getGameTime();seed=p.getRandom().nextInt();from=hand(p);to=from;}
+        Cast(net.minecraft.world.entity.LivingEntity p,int tick){owner=p.getUUID();npc=p instanceof dev.unlimitedvoid.entity.JujutsuNpc;level=(ServerLevel)p.level();start=tick;startGameTime=level.getGameTime();seed=p.getRandom().nextInt();from=hand(p);to=from;}
     }
 }

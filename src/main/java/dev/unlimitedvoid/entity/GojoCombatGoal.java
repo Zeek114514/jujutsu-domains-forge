@@ -22,15 +22,15 @@ public final class GojoCombatGoal extends Goal {
         long now=npc.level().getGameTime();
         if(NpcCombatRules.lastResort(npc.getHealth(),npc.getMaxHealth())&&!npc.isAwakened())npc.awakenFromDanger();
         if(npc.awakeningBurstPending()){
-            npc.cancelPunch();NpcTechniqueService.cancel(npc);npc.getNavigation().stop();find();
+            DomainService.dismissNpc(npc);npc.cancelPunch();NpcTechniqueService.cancel(npc);npc.getNavigation().stop();find();
             if(NpcTechniqueService.instantPurple(npc,target)){npc.clearAwakeningBurst();ready=now+LimitlessKind.PURPLE.cooldown;}return;
         }
         if(NpcCombatRules.lastResort(npc.getHealth(),npc.getMaxHealth())&&!npc.lastResortUsed()){
-            npc.cancelPunch();NpcTechniqueService.cancel(npc);npc.getNavigation().stop();
+            DomainService.dismissNpc(npc);npc.cancelPunch();NpcTechniqueService.cancel(npc);npc.getNavigation().stop();
             if(NpcTechniqueService.start(npc,LimitlessKind.PURPLE,null,true))npc.markLastResort();return;
         }
         if(scan++%10==0||target==null||!NpcTechniqueService.enemy(npc,target))find();npc.setTarget(target);
-        if(target==null)return;boolean duel=npc.isShinjuku()&&NpcTechniqueService.trueSukuna(target);
+        if(target==null)return;if(DomainService.isCaptive(npc.getUUID())||DomainService.npcChanting(npc)){npc.getNavigation().stop();return;}if(NpcDomainService.spontaneous(npc))return;boolean duel=npc.isShinjuku()&&NpcTechniqueService.trueSukuna(target);
         if(duel&&!target.getUUID().equals(duelFocus)){npc.cancelPunch();NpcTechniqueService.cancel(npc);ready=0;duelFocus=target.getUUID();}
         if(!duel)duelFocus=null;
         npc.getLookControl().setLookAt(target,30,30);

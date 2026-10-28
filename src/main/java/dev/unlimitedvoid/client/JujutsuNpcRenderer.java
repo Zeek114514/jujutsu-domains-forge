@@ -27,11 +27,11 @@ public final class JujutsuNpcRenderer extends HumanoidMobRenderer<JujutsuNpc,Pla
         }
     }
     @Override public void render(JujutsuNpc entity,float yaw,float partial,PoseStack poses,MultiBufferSource buffers,int light){
-        model=(entity.isGojo()?!entity.isShinjuku():entity.isAwakened())?slim:classic;
+        model=(entity.isGojo()?!entity.isShinjuku():entity.isTrueSukuna())?slim:classic;
         super.render(entity,yaw,partial,poses,buffers,light);
     }
     @Override public ResourceLocation getTextureLocation(JujutsuNpc entity){
-        String name=entity.isGojo()?(entity.isShinjuku()?"shinjuku_gojo":entity.isAscended()?"awakened_gojo":"student_gojo"):(entity.isAwakened()?"true_sukuna":"sukuna_16");
+        String name=entity.isGojo()?(entity.isShinjuku()?"shinjuku_gojo":entity.isAscended()?"awakened_gojo":"student_gojo"):(entity.isTrueSukuna()?"true_sukuna":entity.isMegumi()?"megumi_sukuna":"sukuna_16");
         return new ResourceLocation(UnlimitedVoid.ID,"textures/entity/"+name+".png");
     }
 }

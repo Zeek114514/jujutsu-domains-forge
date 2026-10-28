@@ -16,6 +16,11 @@ public final class NpcCombatCheck {
         check(fists==80&&red==30,"melee bias and advanced fist mix");
         check(NpcMeleeRules.WINDUP>0&&NpcMeleeRules.WINDUP<NpcMeleeRules.ANIMATION&&NpcMeleeRules.ANIMATION<NpcMeleeRules.INTERVAL,"punch lands before recovery and next attack");
         check(NpcMeleeRules.REMOTE_INTERVAL>=160,"remote spells have eight second minimum cooldown");
+        int domains=0,fire=0,summons=0;
+        for(int roll=0;roll<1000;roll++){if(NpcBattleRules.domain(roll))domains++;if(NpcBattleRules.fuga(roll))fire++;if(NpcBattleRules.mahoraga(roll))summons++;}
+        check(domains==15&&fire==3&&summons==10,"bounded battle rare probabilities");
+        check(NpcBattleRules.INITIAL_DELAY>=200&&NpcBattleRules.ROLL_INTERVAL>=40,"rare roll cadence avoids per-tick spam");
+        check(NpcVitals.MEGUMI>40&&NpcVitals.MEGUMI<=1024,"Megumi health profile within vanilla limits");
         System.out.println("NPC combat rules: "+checks+" checks PASS");
     }
 }

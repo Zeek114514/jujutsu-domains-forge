@@ -28,5 +28,11 @@
     "source_sha256": "a7e21d828943e04f46f6555aa2881164571524d37d784f197b841555ad59b0b9",
     "output_sha256": "a7e21d828943e04f46f6555aa2881164571524d37d784f197b841555ad59b0b9",
     "model": "slim"
+  },
+  "megumi_sukuna": {
+    "source": "D:\\Internet Download\\Edge\\9fe0a0acbe645af7.png",
+    "source_sha256": "0a68ccad5ff90cd32bf6767fe10dcd8919c97d48a4420f91fc2263d0bafe5da4",
+    "output_sha256": "0a68ccad5ff90cd32bf6767fe10dcd8919c97d48a4420f91fc2263d0bafe5da4",
+    "model": "classic"
   }
 }

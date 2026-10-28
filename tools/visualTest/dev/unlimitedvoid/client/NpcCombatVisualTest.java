@@ -70,7 +70,7 @@ public final class NpcCombatVisualTest {
         if(ticks==460)capture(mc,"shinjuku-sukuna-purple.png");
         if(ticks==490)server(mc,p->{require(seen.contains(LimitlessKind.PURPLE)&&!seen.contains(LimitlessKind.BLUE)&&!seen.contains(LimitlessKind.RED),"Shinjuku prioritizes Purple against true Sukuna seen="+seen+" distance="+caster.distanceTo(duel)+" pos="+caster.position()+" target="+duel.position());require(duelClose,"Shinjuku approaches to point-blank range before Purple");require(duel.isAlive()&&duel.getHealth()<duel.getMaxHealth(),"high-health true Sukuna survives a real point-blank Purple hit");clear(p);duel=null;});
         if(ticks==510)server(mc,p->{caster=npc(p,DomainEntities.STUDENT_GOJO.get(),0,0,false);npc(p,DomainEntities.SUKUNA_16.get(),0,6,true);});
-        if(ticks==540)server(mc,p->{require(caster.getTarget()==null&&!NpcTechniqueService.casting(caster),"no attacks against player or initial Sukuna");require(p.getHealth()==20,"player still unharmed after all stages");});
+        if(ticks==540)server(mc,p->{require(caster.getTarget() instanceof JujutsuNpc enemy&&!enemy.isGojo(),"Gojo now recognizes initial Sukuna as an opponent");require(p.getHealth()==20,"player still unharmed after all stages");});
         if(ticks==550)server(mc,p->{
             clear(p);victim=husk(p,0,20);var group=new ArrayList<JujutsuNpc>();
             for(int i=0;i<9;i++)group.add(npc(p,DomainEntities.AWAKENED_GOJO.get(),-10+i*2,6,true));

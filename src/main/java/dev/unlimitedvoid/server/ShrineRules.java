@@ -28,7 +28,7 @@ public final class ShrineRules {
         }
         return target instanceof LivingEntity && !(target instanceof ArmorStand) ? DomainConfig.LIVING_ENERGY.get() : 0;
     }
-    public static double power(ServerPlayer caster) {
+    public static double power(LivingEntity caster) {
         return caster.getPersistentData().contains("uv_cursed_energy") ? Math.max(1,energy(caster)) : DomainConfig.CASTER_ENERGY.get();
     }
     public static float cleaveDamage(LivingEntity target,double power) {
@@ -36,8 +36,8 @@ public final class ShrineRules {
         if(power>=energy) return target.getMaxHealth()+target.getAbsorptionAmount()+4;
         return (float)Math.max(2,(target.getMaxHealth()+target.getAbsorptionAmount())*power/energy*0.35);
     }
-    public static DamageSource source(ServerPlayer caster,boolean cleave) {
-        var holder=caster.serverLevel().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE)
+    public static DamageSource source(LivingEntity caster,boolean cleave) {
+        var holder=caster.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE)
                 .getHolderOrThrow(cleave?CLEAVE:DISMANTLE);
         return new DamageSource(holder,caster,caster);
     }

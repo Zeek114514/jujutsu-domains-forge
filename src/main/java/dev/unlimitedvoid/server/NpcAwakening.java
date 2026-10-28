@@ -12,5 +12,6 @@ public final class NpcAwakening {
         if(event.getEntity() instanceof JujutsuNpc npc&&!npc.level().isClientSide&&npc.isGojo()&&!npc.isAwakened()&&event.getAmount()>0&&!event.getSource().is(DamageTypeTags.BYPASSES_INVULNERABILITY)&&NpcCombatRules.lastResort(Math.max(.001f,npc.getHealth()-event.getAmount()),npc.getMaxHealth())){
             if(npc.awakenFromDanger())event.setCanceled(true);
         }
+        if(event.getEntity() instanceof JujutsuNpc npc&&!npc.level().isClientSide&&npc.isMegumi()&&event.getAmount()>0&&!event.getSource().is(DamageTypeTags.BYPASSES_INVULNERABILITY)&&NpcCombatRules.lastResort(Math.max(.001f,npc.getHealth()-event.getAmount()),npc.getMaxHealth())){if(npc.becomeTrueSukuna())event.setCanceled(true);}
     }
 }

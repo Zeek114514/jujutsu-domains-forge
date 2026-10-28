@@ -13,6 +13,7 @@ public final class NpcClientRegistration {
         event.registerEntityRenderer(DomainEntities.STUDENT_GOJO.get(),c->new JujutsuNpcRenderer(c,true));
         event.registerEntityRenderer(DomainEntities.SUKUNA_16.get(),c->new JujutsuNpcRenderer(c,false));
         event.registerEntityRenderer(DomainEntities.SHINJUKU_GOJO.get(),c->new JujutsuNpcRenderer(c,true));
+        event.registerEntityRenderer(DomainEntities.MEGUMI_SUKUNA.get(),c->new JujutsuNpcRenderer(c,false));
         event.registerEntityRenderer(DomainEntities.TRUE_SUKUNA.get(),c->new JujutsuNpcRenderer(c,false));
     }
 }

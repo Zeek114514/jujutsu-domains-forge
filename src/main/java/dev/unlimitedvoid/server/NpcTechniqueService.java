@@ -25,8 +25,8 @@ public final class NpcTechniqueService {
     public static boolean detonating(JujutsuNpc npc){return CASTS.values().stream().anyMatch(c->c.owner==npc&&c.phase>=PurpleDetonation.GROWING);}
     public static boolean charging(JujutsuNpc npc){return CASTS.values().stream().anyMatch(c->c.owner==npc&&c.phase==0);}
     public static boolean casting(JujutsuNpc npc){return CASTS.values().stream().anyMatch(c->c.owner==npc);}
-    public static boolean enemy(JujutsuNpc npc,LivingEntity target){return target!=npc&&target.isAlive()&&!npc.isAlliedTo(target)&&(target instanceof Enemy||target instanceof JujutsuNpc other&&!other.isGojo()&&other.isAwakened());}
-    public static boolean trueSukuna(LivingEntity target){return target instanceof JujutsuNpc n&&!n.isGojo()&&n.isAwakened();}
+    public static boolean enemy(JujutsuNpc npc,LivingEntity target){return target!=npc&&target.isAlive()&&!npc.isAlliedTo(target)&&(target instanceof Enemy||target instanceof JujutsuNpc other&&npc.isGojo()!=other.isGojo());}
+    public static boolean trueSukuna(LivingEntity target){return target instanceof JujutsuNpc n&&n.isTrueSukuna();}
     public static void cancel(JujutsuNpc npc){CASTS.values().removeIf(c->c.owner==npc&&c.phase!=PurpleDetonation.BLAST);}
     public static boolean start(JujutsuNpc npc,LimitlessKind kind,LivingEntity target,boolean emergency){return start(npc,kind,target,emergency,false);}
     public static boolean instantPurple(JujutsuNpc npc,LivingEntity target){return start(npc,LimitlessKind.PURPLE,target,false,true);}
