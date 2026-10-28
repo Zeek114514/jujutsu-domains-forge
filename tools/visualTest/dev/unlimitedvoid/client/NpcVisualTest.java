@@ -52,7 +52,7 @@ public final class NpcVisualTest {
             for(var actor:actors){actor.setYRot(180);actor.setYBodyRot(180);actor.setYHeadRot(180);require(actor.isPersistenceRequired(),"persistent display actor");require(actor.getTarget()==null,"no combat target");}
             gojoStart=gojo.position();sukunaStart=sukuna.position();p.setItemInHand(InteractionHand.MAIN_HAND,ItemStack.EMPTY);
         });
-        if(ticks==35){mc.options.hideGui=true;mc.options.fov().set(55);camera(mc,0,-60,-6.3,0,6);}
+        if(ticks==35){mc.options.hideGui=true;mc.options.fov().set(45);camera(mc,0,-60,-3.8,0,8);}
         if(ticks==75)Screenshot.grab(mc.gameDirectory,"npc-front.png",mc.getMainRenderTarget(),c->{});
         if(ticks==90)mc.getSingleplayerServer().execute(()->{
             require(gojo.position().distanceToSqr(gojoStart)<.02&&sukuna.position().distanceToSqr(sukunaStart)<.02,"no wandering");
@@ -66,7 +66,11 @@ public final class NpcVisualTest {
         });
         if(ticks==80)camera(mc,5,-60,-5,45,6);
         if(ticks==85)Screenshot.grab(mc.gameDirectory,"npc-side.png",mc.getMainRenderTarget(),c->{});
-        if(ticks==145){
+        if(ticks==100){mc.options.fov().set(35);camera(mc,gojoStart.x,-60,-2.1,0,-3);}
+        if(ticks==120)Screenshot.grab(mc.gameDirectory,"npc-gojo-close.png",mc.getMainRenderTarget(),c->{});
+        if(ticks==125)camera(mc,sukunaStart.x,-60,-2.1,0,-3);
+        if(ticks==145)Screenshot.grab(mc.gameDirectory,"npc-sukuna-close.png",mc.getMainRenderTarget(),c->{});
+        if(ticks==170){
             require(mc.level.getEntitiesOfClass(JujutsuNpc.class,new AABB(-10,-65,-10,10,-50,10)).size()==3,"all actors synchronized to client");
             for(var name:new String[]{"student_gojo","sukuna_16"}){
                 var texture=new net.minecraft.resources.ResourceLocation(UnlimitedVoid.ID,"textures/entity/"+name+".png");
