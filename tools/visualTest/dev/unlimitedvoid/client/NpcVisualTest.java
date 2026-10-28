@@ -36,9 +36,9 @@ public final class NpcVisualTest {
         if(mc.player==null||mc.level==null||(mc.screen!=null&&ticks<210))return;if(warmup++<200)return;ticks++;
         if(ticks==5){require(mc.getEntityRenderDispatcher().getRenderer(DomainEntities.STUDENT_GOJO.get().create(mc.level))!=null,"Gojo renderer registered");require(mc.getEntityRenderDispatcher().getRenderer(DomainEntities.SUKUNA_16.get().create(mc.level))!=null,"Sukuna renderer registered");}
         if(ticks==6){
-            var four=java.util.Set.of(DomainItems.STUDENT_GOJO.get(),DomainItems.SUKUNA_16.get(),DomainItems.BLINDFOLD.get(),DomainItems.SUKUNA_FINGER.get(),DomainItems.SHINJUKU_GOJO.get(),DomainItems.TRUE_SUKUNA.get());
+            var four=java.util.Set.of(DomainItems.STUDENT_GOJO.get(),DomainItems.SUKUNA_16.get(),DomainItems.BLINDFOLD.get(),DomainItems.SUKUNA_FINGER.get(),DomainItems.SHINJUKU_GOJO.get(),DomainItems.TRUE_SUKUNA.get(),DomainItems.AWAKENED_GOJO.get());
             net.minecraft.world.item.CreativeModeTabs.tryRebuildTabContents(mc.player.connection.enabledFeatures(),true,mc.level.registryAccess());
-            var tab=DomainItems.JUJUTSU_TAB.get();require(tab.getDisplayItems().size()==6&&tab.getDisplayItems().stream().allMatch(st->four.contains(st.getItem())),"dedicated creative tab contains exactly all six mod items");
+            var tab=DomainItems.JUJUTSU_TAB.get();require(tab.getDisplayItems().size()==7&&tab.getDisplayItems().stream().allMatch(st->four.contains(st.getItem())),"dedicated creative tab contains exactly all seven mod items");
             for(var key:new net.minecraft.resources.ResourceKey[]{net.minecraft.world.item.CreativeModeTabs.SPAWN_EGGS,net.minecraft.world.item.CreativeModeTabs.INGREDIENTS}){
                 var vanilla=net.minecraft.core.registries.BuiltInRegistries.CREATIVE_MODE_TAB.get((net.minecraft.resources.ResourceKey<net.minecraft.world.item.CreativeModeTab>)key);
                 require(vanilla.getDisplayItems().stream().noneMatch(st->four.contains(st.getItem())),"mod items removed from vanilla category");
@@ -58,21 +58,21 @@ public final class NpcVisualTest {
             var actors=level.getEntitiesOfClass(JujutsuNpc.class,new AABB(-10,-65,-5,10,-50,5));
             require(actors.size()==2,"two NPCs spawned from eggs");
             gojo=actors.stream().filter(JujutsuNpc::isGojo).findFirst().orElseThrow();sukuna=actors.stream().filter(a->!a.isGojo()).findFirst().orElseThrow();
-            for(var actor:actors){actor.setYRot(180);actor.setYBodyRot(180);actor.setYHeadRot(180);require(actor.isPersistenceRequired(),"persistent display actor");require(actor.getTarget()==null,"no combat target");}
+            for(var actor:actors){actor.setNoAi(true);actor.setYRot(180);actor.setYBodyRot(180);actor.setYHeadRot(180);require(actor.isPersistenceRequired(),"persistent display actor");require(actor.getTarget()==null,"no combat target");}
             gojoStart=gojo.position();sukunaStart=sukuna.position();p.setItemInHand(InteractionHand.MAIN_HAND,ItemStack.EMPTY);
         });
         if(ticks==25)mc.getSingleplayerServer().execute(()->{
             var p=mc.getSingleplayerServer().getPlayerList().getPlayers().get(0);var level=p.serverLevel();
-            var eggs=new Item[]{DomainItems.SHINJUKU_GOJO.get(),DomainItems.TRUE_SUKUNA.get()};int x=20;
+            var eggs=new Item[]{DomainItems.SHINJUKU_GOJO.get(),DomainItems.TRUE_SUKUNA.get(),DomainItems.AWAKENED_GOJO.get()};int x=20;
             for(var egg:eggs){
                 var pos=new BlockPos(x,-61,0);level.setBlockAndUpdate(pos,Blocks.STONE.defaultBlockState());p.setItemInHand(InteractionHand.MAIN_HAND,new ItemStack(egg));
                 require(p.getMainHandItem().useOn(new UseOnContext(p,InteractionHand.MAIN_HAND,new BlockHitResult(new Vec3(x+.5,-60,.5),Direction.UP,pos,false))).consumesAction(),"advanced egg real use "+egg);
-                var npc=level.getEntitiesOfClass(JujutsuNpc.class,new AABB(x,-61,0,x+1,-56,1)).stream().findFirst().orElseThrow();
-                require(npc.isAwakened()&&npc.isGojo()==(x==20),"advanced egg directly spawns correct final form");
+                var npc=level.getEntitiesOfClass(JujutsuNpc.class,new AABB(x,-61,0,x+1,-56,1)).stream().findFirst().orElseThrow();npc.setNoAi(true);
+                require(npc.isAwakened()&&npc.isGojo()==(egg!=DomainItems.TRUE_SUKUNA.get()),"advanced egg directly spawns correct final form");
                 require(net.minecraftforge.common.ForgeSpawnEggItem.fromEntityType(npc.getType())==egg,"advanced type has correct pick-block egg");
                 var tag=new CompoundTag();npc.save(tag);tag.remove("UUID");var restored=(JujutsuNpc)EntityType.loadEntityRecursive(tag,level,a->a);require(restored!=null&&restored.getType()==npc.getType()&&restored.isAwakened(),"advanced identity and form persist in NBT");
                 tag.remove("Awakened");var defaulted=(JujutsuNpc)EntityType.loadEntityRecursive(tag,level,a->a);require(defaulted!=null&&defaulted.isAwakened(),"advanced type default does not require form NBT");
-                p.setItemInHand(InteractionHand.MAIN_HAND,new ItemStack(npc.isGojo()?DomainItems.BLINDFOLD.get():DomainItems.SUKUNA_FINGER.get()));npc.interact(p,InteractionHand.MAIN_HAND);require(p.getMainHandItem().getCount()==1,"advanced NPC repeat offering does not consume");
+                p.setItemInHand(InteractionHand.MAIN_HAND,new ItemStack(npc.isGojo()&&!npc.isAscended()?DomainItems.BLINDFOLD.get():DomainItems.SUKUNA_FINGER.get()));npc.interact(p,InteractionHand.MAIN_HAND);require(p.getMainHandItem().getCount()==1,"advanced NPC repeat or wrong offering does not consume");
                 if(npc.isGojo()){float health=npc.getHealth();require(!npc.hurt(level.damageSources().mobAttack(new net.minecraft.world.entity.monster.Zombie(level)),4)&&npc.getHealth()==health,"directly spawned Shinjuku inherits Infinity");}
                 x+=3;
             }
@@ -88,7 +88,7 @@ public final class NpcVisualTest {
             var attacker=new net.minecraft.world.entity.monster.Zombie(level);
             float health=gojo.getHealth();require(!gojo.hurt(level.damageSources().mobAttack(attacker),8)&&gojo.getHealth()==health,"Gojo Infinity blocks ordinary melee");
             require(!gojo.hurt(level.damageSources().arrow(infinityArrow,p),8)&&gojo.getHealth()==health,"Gojo Infinity blocks arrow damage");
-            require(sukuna.hurt(level.damageSources().mobAttack(attacker),3)&&sukuna.getHealth()<40,"Sukuna does not receive Gojo Infinity");sukuna.setHealth(40);
+            require(sukuna.hurt(level.damageSources().mobAttack(attacker),3)&&sukuna.getHealth()<sukuna.getMaxHealth(),"Sukuna does not receive Gojo Infinity");sukuna.setHealth(sukuna.getMaxHealth());
             gojo.invulnerableTime=0;require(gojo.hurt(level.damageSources().indirectMagic(p,p),2),"domain-style indirect magic is not blanket blocked");gojo.setHealth(health);gojo.invulnerableTime=0;
             DomainConfig.GOJO_INFINITY.set(false);
             try{require(gojo.hurt(level.damageSources().mobAttack(attacker),2),"Infinity config can disable defence");}finally{DomainConfig.GOJO_INFINITY.set(true);gojo.setHealth(health);gojo.invulnerableTime=0;}
@@ -99,7 +99,7 @@ public final class NpcVisualTest {
         if(ticks==75)Screenshot.grab(mc.gameDirectory,"npc-front.png",mc.getMainRenderTarget(),c->{});
         if(ticks==90)mc.getSingleplayerServer().execute(()->{
             require(gojo.position().distanceToSqr(gojoStart)<.02&&sukuna.position().distanceToSqr(sukunaStart)<.02,"no wandering");
-            require(gojo.getTarget()==null&&sukuna.getTarget()==null,"no automatic combat");
+            require(gojo.getTarget()==null&&sukuna.getTarget()==null,"controlled NoAI scene has no combat");
             var tag=new CompoundTag();require(gojo.save(tag),"NPC supports world save");tag.remove("UUID");
             var reloaded=EntityType.loadEntityRecursive(tag,gojo.level(),a->a);
             require(reloaded instanceof JujutsuNpc&&((JujutsuNpc)reloaded).isGojo(),"entity type restored from NBT");
@@ -116,13 +116,13 @@ public final class NpcVisualTest {
             require(!gojo.isAwakened()&&p.getMainHandItem().getCount()==3,"wrong item does not change Gojo or consume");
             p.setItemInHand(InteractionHand.MAIN_HAND,new ItemStack(DomainItems.BLINDFOLD.get(),3));sukuna.interact(p,InteractionHand.MAIN_HAND);
             require(!sukuna.isAwakened()&&p.getMainHandItem().getCount()==3,"wrong item does not change Sukuna or consume");
-            var gojoId=gojo.getUUID();var sukunaId=sukuna.getUUID();float health=gojo.getHealth();
+            var gojoId=gojo.getUUID();var sukunaId=sukuna.getUUID();float health=gojo.getHealth()/gojo.getMaxHealth();
             gojo.interact(p,InteractionHand.MAIN_HAND);require(gojo.isAwakened()&&p.getMainHandItem().getCount()==2,"blindfold transforms Gojo and consumes exactly one");
             gojo.interact(p,InteractionHand.MAIN_HAND);require(p.getMainHandItem().getCount()==2,"repeated Gojo interaction does not consume");
             p.setItemInHand(InteractionHand.MAIN_HAND,new ItemStack(DomainItems.SUKUNA_FINGER.get(),3));sukuna.interact(p,InteractionHand.MAIN_HAND);
             require(sukuna.isAwakened()&&p.getMainHandItem().getCount()==2,"finger transforms Sukuna and consumes exactly one");
             sukuna.interact(p,InteractionHand.MAIN_HAND);require(p.getMainHandItem().getCount()==2,"repeated Sukuna interaction does not consume");
-            require(gojo.getUUID().equals(gojoId)&&sukuna.getUUID().equals(sukunaId)&&gojo.getHealth()==health,"transform preserves identity and health");
+            require(gojo.getUUID().equals(gojoId)&&sukuna.getUUID().equals(sukunaId)&&Math.abs(gojo.getHealth()/gojo.getMaxHealth()-health)<.001,"transform preserves identity and health proportion");
             for(var actor:new JujutsuNpc[]{gojo,sukuna}){
                 var tag=new CompoundTag();actor.save(tag);tag.remove("UUID");var restored=EntityType.loadEntityRecursive(tag,actor.level(),a->a);
                 require(restored instanceof JujutsuNpc&&((JujutsuNpc)restored).isAwakened(),"transformed form survives NBT reload");
@@ -153,11 +153,11 @@ public final class NpcVisualTest {
         if(ticks==217)Screenshot.grab(mc.gameDirectory,"creative-tab.png",mc.getMainRenderTarget(),c->{});
         if(ticks==220)mc.setScreen(null);
         if(ticks==225){
-            var advanced=mc.level.getEntitiesOfClass(JujutsuNpc.class,new AABB(19,-62,-1,25,-56,2));require(advanced.size()==2&&advanced.stream().allMatch(JujutsuNpc::isAwakened),"advanced egg forms synchronize to client");
+            var advanced=mc.level.getEntitiesOfClass(JujutsuNpc.class,new AABB(19,-62,-1,28,-56,2));require(advanced.size()==3&&advanced.stream().allMatch(JujutsuNpc::isAwakened),"advanced egg forms synchronize to client");
             var clientActors=mc.level.getEntitiesOfClass(JujutsuNpc.class,new AABB(-10,-65,-10,10,-50,10));
             require(clientActors.stream().allMatch(JujutsuNpc::isAwakened),"transformed form synchronized to all client actors");
             require(mc.level.getEntitiesOfClass(JujutsuNpc.class,new AABB(-10,-65,-10,10,-50,10)).size()==3,"all actors synchronized to client");
-            for(var name:new String[]{"student_gojo","shinjuku_gojo","sukuna_16","true_sukuna"}){
+            for(var name:new String[]{"student_gojo","shinjuku_gojo","sukuna_16","true_sukuna","awakened_gojo"}){
                 var texture=new net.minecraft.resources.ResourceLocation(UnlimitedVoid.ID,"textures/entity/"+name+".png");
                 require(mc.getResourceManager().getResource(texture).isPresent(),"skin resource present "+name);
             }

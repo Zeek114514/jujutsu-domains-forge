@@ -12,15 +12,24 @@ import net.minecraft.resources.ResourceLocation;
 public final class JujutsuNpcRenderer extends HumanoidMobRenderer<JujutsuNpc,PlayerModel<JujutsuNpc>> {
     private final PlayerModel<JujutsuNpc> classic,slim;
     public JujutsuNpcRenderer(EntityRendererProvider.Context context,boolean gojo){
-        super(context,new PlayerModel<>(context.bakeLayer(ModelLayers.PLAYER),false),.45f);
-        classic=model;slim=new PlayerModel<>(context.bakeLayer(ModelLayers.PLAYER_SLIM),true);
+        super(context,new TechniqueModel(context.bakeLayer(ModelLayers.PLAYER),false),.45f);
+        classic=model;slim=new TechniqueModel(context.bakeLayer(ModelLayers.PLAYER_SLIM),true);
+    }
+    private static final class TechniqueModel extends PlayerModel<JujutsuNpc> {
+        TechniqueModel(net.minecraft.client.model.geom.ModelPart root,boolean slim){super(root,slim);}
+        @Override public void setupAnim(JujutsuNpc npc,float swing,float amount,float age,float yaw,float pitch){
+            super.setupAnim(npc,swing,amount,age,yaw,pitch);var pose=LimitlessClient.pose(npc.getUUID());if(pose==null)return;
+            float weight=pose.weight();rightArm.xRot=-1.35f*weight;rightArm.yRot=-.22f*weight;
+            if(pose.kind()==LimitlessKind.PURPLE){leftArm.xRot=-1.35f*weight;leftArm.yRot=.22f*weight;}
+            rightSleeve.copyFrom(rightArm);leftSleeve.copyFrom(leftArm);
+        }
     }
     @Override public void render(JujutsuNpc entity,float yaw,float partial,PoseStack poses,MultiBufferSource buffers,int light){
-        model=(entity.isGojo()?!entity.isAwakened():entity.isAwakened())?slim:classic;
+        model=(entity.isGojo()?!entity.isShinjuku():entity.isAwakened())?slim:classic;
         super.render(entity,yaw,partial,poses,buffers,light);
     }
     @Override public ResourceLocation getTextureLocation(JujutsuNpc entity){
-        String name=entity.isGojo()?(entity.isAwakened()?"shinjuku_gojo":"student_gojo"):(entity.isAwakened()?"true_sukuna":"sukuna_16");
+        String name=entity.isGojo()?(entity.isShinjuku()?"shinjuku_gojo":entity.isAscended()?"awakened_gojo":"student_gojo"):(entity.isAwakened()?"true_sukuna":"sukuna_16");
         return new ResourceLocation(UnlimitedVoid.ID,"textures/entity/"+name+".png");
     }
 }

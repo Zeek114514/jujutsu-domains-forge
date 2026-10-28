@@ -5,7 +5,7 @@ import hashlib,json,shutil
 SOURCE=Path(r'D:/Internet Download/Edge')
 ROOT=Path(__file__).resolve().parents[1]
 OUT=ROOT/'src/main/resources/assets/unlimitedvoid/textures/entity'
-files={'student_gojo':'skin_Suguru_Nobara_e459248157541bc5de80071429f3ed7f.png','shinjuku_gojo':'skin_Boy_Sweatpants_7e3d91008aeb1c4ca6635f00c9fa9088.png','sukuna_16':'b0059d77b9487888.png','true_sukuna':'720b8352ce7efeed.png'}
+files={'student_gojo':'skin_Suguru_Nobara_e459248157541bc5de80071429f3ed7f.png','shinjuku_gojo':'skin_Boy_Sweatpants_7e3d91008aeb1c4ca6635f00c9fa9088.png','sukuna_16':'b0059d77b9487888.png','true_sukuna':'720b8352ce7efeed.png','awakened_gojo':'skin_Anime_Jujutsu Kaisen_e4d8a245b9e687df4b4b286cfbf5c7f1.png'}
 records={}
 for name,filename in files.items():
  src=SOURCE/filename;im=Image.open(src).convert('RGBA');assert im.size==(64,64)
@@ -34,7 +34,7 @@ for name,filename in files.items():
   assert im.crop((0,0,64,16)).tobytes()==before.crop((0,0,64,16)).tobytes()
   for box in [(40,28,56,32),(32,60,48,64)]:assert im.crop(box).tobytes()==before.crop(box).tobytes()
   im.save(OUT/(name+'.png'));print('CLOTHING_ONLY_PASS',changed,'changed pixels; head/hands/UV untouched')
- records[name]={'source_filename':filename,'source_sha256':hashlib.sha256(src.read_bytes()).hexdigest(),'output_sha256':hashlib.sha256((OUT/(name+'.png')).read_bytes()).hexdigest(),'model':'slim' if name in ['student_gojo','true_sukuna'] else 'classic'}
+ records[name]={'source_filename':filename,'source_sha256':hashlib.sha256(src.read_bytes()).hexdigest(),'output_sha256':hashlib.sha256((OUT/(name+'.png')).read_bytes()).hexdigest(),'model':'slim' if name in ['student_gojo','true_sukuna','awakened_gojo'] else 'classic'}
 (ROOT/'docs/supplied-skins.json').write_text(json.dumps(records,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 # Small original pixel icons for the functional items, not resampled AI concept images.
 items=OUT.parent/'item';items.mkdir(exist_ok=True)

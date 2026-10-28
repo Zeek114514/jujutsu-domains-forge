@@ -22,5 +22,11 @@
     "source_sha256": "2bf4adba8393b5f466c114a90725421f27d1405a4975433f1f22b8acd6af8d25",
     "output_sha256": "2bf4adba8393b5f466c114a90725421f27d1405a4975433f1f22b8acd6af8d25",
     "model": "slim"
+  },
+  "awakened_gojo": {
+    "source_filename": "skin_Anime_Jujutsu Kaisen_e4d8a245b9e687df4b4b286cfbf5c7f1.png",
+    "source_sha256": "a7e21d828943e04f46f6555aa2881164571524d37d784f197b841555ad59b0b9",
+    "output_sha256": "a7e21d828943e04f46f6555aa2881164571524d37d784f197b841555ad59b0b9",
+    "model": "slim"
   }
 }

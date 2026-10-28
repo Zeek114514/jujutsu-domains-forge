@@ -9,6 +9,7 @@ import net.minecraftforge.fml.common.Mod;
 public final class NpcClientRegistration {
     @SubscribeEvent public static void registerNpcRenderers(EntityRenderersEvent.RegisterRenderers event){
         com.mojang.logging.LogUtils.getLogger().info("NPC renderers registering");
+        event.registerEntityRenderer(DomainEntities.AWAKENED_GOJO.get(),c->new JujutsuNpcRenderer(c,true));
         event.registerEntityRenderer(DomainEntities.STUDENT_GOJO.get(),c->new JujutsuNpcRenderer(c,true));
         event.registerEntityRenderer(DomainEntities.SUKUNA_16.get(),c->new JujutsuNpcRenderer(c,false));
         event.registerEntityRenderer(DomainEntities.SHINJUKU_GOJO.get(),c->new JujutsuNpcRenderer(c,true));

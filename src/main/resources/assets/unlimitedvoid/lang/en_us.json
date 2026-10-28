@@ -89,5 +89,8 @@
   "message.unlimitedvoid.npc_identity": "%s - Display NPC",
   "itemGroup.unlimitedvoid.jujutsu_domains": "Jujutsu Domains",
   "item.unlimitedvoid.shinjuku_gojo_spawn_egg": "Shinjuku Gojo Spawn Egg",
-  "item.unlimitedvoid.true_sukuna_spawn_egg": "True Form Sukuna Spawn Egg"
+  "item.unlimitedvoid.true_sukuna_spawn_egg": "True Form Sukuna Spawn Egg",
+  "entity.unlimitedvoid.awakened_gojo": "Awakened Gojo",
+  "item.unlimitedvoid.awakened_gojo_spawn_egg": "Awakened Gojo Spawn Egg",
+  "message.unlimitedvoid.npc_identity_health": "%s - Health %s/%s"
 }

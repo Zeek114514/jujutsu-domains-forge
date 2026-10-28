@@ -89,5 +89,8 @@
   "message.unlimitedvoid.npc_identity": "%s · 展示NPC",
   "itemGroup.unlimitedvoid.jujutsu_domains": "咒术领域",
   "item.unlimitedvoid.shinjuku_gojo_spawn_egg": "新宿五条悟生成蛋",
-  "item.unlimitedvoid.true_sukuna_spawn_egg": "原身宿傩生成蛋"
+  "item.unlimitedvoid.true_sukuna_spawn_egg": "原身宿傩生成蛋",
+  "entity.unlimitedvoid.awakened_gojo": "觉醒五条悟",
+  "item.unlimitedvoid.awakened_gojo_spawn_egg": "觉醒五条悟生成蛋",
+  "message.unlimitedvoid.npc_identity_health": "%s · 生命 %s/%s"
 }

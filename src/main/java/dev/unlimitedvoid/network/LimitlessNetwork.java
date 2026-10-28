@@ -12,7 +12,7 @@ import net.minecraftforge.network.*;
 import java.util.*;
 
 public final class LimitlessNetwork {
-    private static final String VERSION="2";
+    private static final String VERSION="3";
     private static final net.minecraftforge.network.simple.SimpleChannel CHANNEL=NetworkRegistry.newSimpleChannel(new ResourceLocation(UnlimitedVoid.ID,"limitless"),()->VERSION,VERSION::equals,VERSION::equals);
     private record Request(LimitlessKind kind){}
     private record Release(){}

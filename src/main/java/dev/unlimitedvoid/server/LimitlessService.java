@@ -26,12 +26,13 @@ public final class LimitlessService {
     public record State(UUID id,UUID owner,LimitlessKind kind,Vec3 position,Vec3 direction,int phase,int charge,long start,long phaseStart,float blastRadius){
         public State(UUID id,UUID owner,LimitlessKind kind,Vec3 position,Vec3 direction,int phase,int charge,long start,long phaseStart){this(id,owner,kind,position,direction,phase,charge,start,phaseStart,0);}
     }
+    public static int activeCount(){return CASTS.size();}
     public static boolean casting(UUID owner){return CASTS.values().stream().anyMatch(c->c.owner.equals(owner)&&c.phase==0);}
     public static int cooldown(ServerPlayer p,LimitlessKind kind){var ready=READY.get(p.getUUID());return ready==null?0:Math.max(0,ready[kind.ordinal()]-p.server.getTickCount());}
     public static void reset(ServerPlayer p){READY.remove(p.getUUID());sync(p);}
     private static boolean chanting(ServerPlayer p){return DomainService.snapshot(p).stream().anyMatch(d->d.owner().equals(p.getUUID())&&d.closing()<0&&d.age()<DomainTimeline.chant(d.kind()));}
     public static void request(ServerPlayer p,LimitlessKind kind){
-        if(!p.isAlive()||p.isSpectator()||DomainService.isCaptive(p.getUUID())||chanting(p)||FugaService.casting(p.getUUID())||casting(p.getUUID())||cooldown(p,kind)>0||CASTS.size()>=8)return;
+        if(!p.isAlive()||p.isSpectator()||DomainService.isCaptive(p.getUUID())||chanting(p)||FugaService.casting(p.getUUID())||casting(p.getUUID())||cooldown(p,kind)>0||CASTS.size()+NpcTechniqueService.activeCount()>=8)return;
         var c=new Cast(p,kind);CASTS.put(c.id,c);
         READY.computeIfAbsent(p.getUUID(),id->new int[3])[kind.ordinal()]=p.server.getTickCount()+kind.cooldown;
         syncAll(p.server);
@@ -179,7 +180,8 @@ public final class LimitlessService {
             if(c.level.destroyBlock(pos,false,p))broken++;
         }
     }
-    public static List<State> snapshot(ServerPlayer p){return CASTS.values().stream().filter(c->c.level==p.serverLevel()&&c.position.distanceToSqr(p.position())<256*256).map(c->new State(c.id,c.owner,c.kind,c.position,c.direction,c.phase,c.charge,c.start,c.phaseStart,c.blastRadius)).toList();}
+    public static List<State> snapshot(ServerPlayer p){var result=new ArrayList<State>();result.addAll(CASTS.values().stream().filter(c->c.level==p.serverLevel()&&c.position.distanceToSqr(p.position())<256*256).map(c->new State(c.id,c.owner,c.kind,c.position,c.direction,c.phase,c.charge,c.start,c.phaseStart,c.blastRadius)).toList());result.addAll(NpcTechniqueService.snapshot(p));return List.copyOf(result);}
+
     private static void sync(ServerPlayer p){LimitlessNetwork.sync(p,snapshot(p),cooldown(p,LimitlessKind.BLUE),cooldown(p,LimitlessKind.RED),cooldown(p,LimitlessKind.PURPLE));}
     private static void syncAll(net.minecraft.server.MinecraftServer server){for(var p:server.getPlayerList().getPlayers())sync(p);}
     @SubscribeEvent public static void logout(PlayerEvent.PlayerLoggedOutEvent e){UUID id=e.getEntity().getUUID();READY.remove(id);CASTS.values().removeIf(c->c.owner.equals(id));}
