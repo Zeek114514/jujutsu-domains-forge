@@ -22,3 +22,5 @@ python tools/run_fuga_qa.py --minecraft-root '你的Minecraft根目录' --versio
 `--suite npcs --mode plain|shader`在独立新世界实际使用两种生成蛋，检查NPC同步、无游走/自动战斗、NBT保存/恢复及纹理，并采集正面/侧面截图；shader额外断言真实Iris管线。NBT恢复不是完整退出重开世界测试。
 
 1.7.0的NPC套件追加真实右键物品变身、消耗/重复/错误物品、创造保留、实体身份保留、形态NBT往返、旧数据兼容及客户端状态同步检查，并采集变身前后截图。
+
+1.7.1的NPC套件追加独立创造栏/原版分类移除、真实Forge分页、五条近战与箭矢防御/减速、宿傩不共享防御、间接魔法/kill绕过、配置关闭和重力标记保留检查；截图creative-tab.png。

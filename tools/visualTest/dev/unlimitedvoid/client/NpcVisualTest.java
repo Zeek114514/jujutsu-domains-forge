@@ -27,14 +27,23 @@ import org.lwjgl.glfw.GLFW;
 @Mod.EventBusSubscriber(modid=UnlimitedVoid.ID,value=Dist.CLIENT)
 public final class NpcVisualTest {
     static boolean started;static int ticks,warmup;static JujutsuNpc gojo,sukuna;
-    static Vec3 gojoStart,sukunaStart;
+    static Vec3 gojoStart,sukunaStart;static net.minecraft.world.entity.projectile.Arrow infinityArrow;
     static void require(boolean ok,String message){if(!ok)throw new AssertionError("NPC_FAIL "+message);LogUtils.getLogger().info("NPC_PASS {}",message);}
     @SubscribeEvent public static void tick(TickEvent.ClientTickEvent e){
         if(!Boolean.getBoolean("uv.npcTest")||e.phase!=TickEvent.Phase.END)return;
         var mc=Minecraft.getInstance();GLFW.glfwHideWindow(mc.getWindow().getWindow());
         if(!started&&mc.screen instanceof TitleScreen){started=true;mc.createWorldOpenFlows().createFreshLevel("Npc-QA-"+System.currentTimeMillis(),new LevelSettings("NPC QA",GameType.CREATIVE,false,Difficulty.PEACEFUL,true,new GameRules(),WorldDataConfiguration.DEFAULT),new WorldOptions(12345,false,false),a->a.registryOrThrow(Registries.WORLD_PRESET).getHolderOrThrow(WorldPresets.FLAT).value().createWorldDimensions());}
-        if(mc.player==null||mc.level==null||mc.screen!=null)return;if(warmup++<200)return;ticks++;
+        if(mc.player==null||mc.level==null||(mc.screen!=null&&ticks<210))return;if(warmup++<200)return;ticks++;
         if(ticks==5){require(mc.getEntityRenderDispatcher().getRenderer(DomainEntities.STUDENT_GOJO.get().create(mc.level))!=null,"Gojo renderer registered");require(mc.getEntityRenderDispatcher().getRenderer(DomainEntities.SUKUNA_16.get().create(mc.level))!=null,"Sukuna renderer registered");}
+        if(ticks==6){
+            var four=java.util.Set.of(DomainItems.STUDENT_GOJO.get(),DomainItems.SUKUNA_16.get(),DomainItems.BLINDFOLD.get(),DomainItems.SUKUNA_FINGER.get());
+            net.minecraft.world.item.CreativeModeTabs.tryRebuildTabContents(mc.player.connection.enabledFeatures(),true,mc.level.registryAccess());
+            var tab=DomainItems.JUJUTSU_TAB.get();require(tab.getDisplayItems().size()==4&&tab.getDisplayItems().stream().allMatch(st->four.contains(st.getItem())),"dedicated creative tab contains exactly all four mod items");
+            for(var key:new net.minecraft.resources.ResourceKey[]{net.minecraft.world.item.CreativeModeTabs.SPAWN_EGGS,net.minecraft.world.item.CreativeModeTabs.INGREDIENTS}){
+                var vanilla=net.minecraft.core.registries.BuiltInRegistries.CREATIVE_MODE_TAB.get((net.minecraft.resources.ResourceKey<net.minecraft.world.item.CreativeModeTab>)key);
+                require(vanilla.getDisplayItems().stream().noneMatch(st->four.contains(st.getItem())),"mod items removed from vanilla category");
+            }
+        }
         if(ticks==10)mc.getSingleplayerServer().execute(()->{
             var p=mc.getSingleplayerServer().getPlayerList().getPlayers().get(0);var level=p.serverLevel();
             level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false,p.server);level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false,p.server);level.setDayTime(6000);p.teleportTo(level,0,-60,-6,0,0);
@@ -53,6 +62,23 @@ public final class NpcVisualTest {
             gojoStart=gojo.position();sukunaStart=sukuna.position();p.setItemInHand(InteractionHand.MAIN_HAND,ItemStack.EMPTY);
         });
         if(ticks==35){mc.options.hideGui=true;mc.options.fov().set(45);camera(mc,0,-60,-3.8,0,8);}
+        if(ticks==45)mc.getSingleplayerServer().execute(()->{
+            infinityArrow=new net.minecraft.world.entity.projectile.Arrow(gojo.level(),gojo.getX(),gojo.getY()+1.25,gojo.getZ()-3);
+            infinityArrow.setDeltaMovement(0,0,1.4);gojo.level().addFreshEntity(infinityArrow);
+        });
+        if(ticks==60)mc.getSingleplayerServer().execute(()->{
+            var p=mc.getSingleplayerServer().getPlayerList().getPlayers().get(0);var level=p.serverLevel();
+            var attacker=new net.minecraft.world.entity.monster.Zombie(level);
+            float health=gojo.getHealth();require(!gojo.hurt(level.damageSources().mobAttack(attacker),8)&&gojo.getHealth()==health,"Gojo Infinity blocks ordinary melee");
+            require(!gojo.hurt(level.damageSources().arrow(infinityArrow,p),8)&&gojo.getHealth()==health,"Gojo Infinity blocks arrow damage");
+            require(sukuna.hurt(level.damageSources().mobAttack(attacker),3)&&sukuna.getHealth()<40,"Sukuna does not receive Gojo Infinity");sukuna.setHealth(40);
+            gojo.invulnerableTime=0;require(gojo.hurt(level.damageSources().indirectMagic(p,p),2),"domain-style indirect magic is not blanket blocked");gojo.setHealth(health);gojo.invulnerableTime=0;
+            DomainConfig.GOJO_INFINITY.set(false);
+            try{require(gojo.hurt(level.damageSources().mobAttack(attacker),2),"Infinity config can disable defence");}finally{DomainConfig.GOJO_INFINITY.set(true);gojo.setHealth(health);gojo.invulnerableTime=0;}
+            require(infinityArrow.isAlive()&&infinityArrow.getZ()<gojo.getZ()-.4&&infinityArrow.getDeltaMovement().length()<.6,"incoming arrow slows before contacting Gojo");
+            require(!infinityArrow.isNoGravity(),"Infinity does not permanently modify projectile gravity");
+            var dummy=DomainEntities.STUDENT_GOJO.get().create(level);dummy.moveTo(12,-60,4,0,0);level.addFreshEntity(dummy);dummy.hurt(level.damageSources().genericKill(),Float.MAX_VALUE);require(!dummy.isAlive(),"kill bypass remains functional");dummy.discard();
+        });
         if(ticks==75)Screenshot.grab(mc.gameDirectory,"npc-front.png",mc.getMainRenderTarget(),c->{});
         if(ticks==90)mc.getSingleplayerServer().execute(()->{
             require(gojo.position().distanceToSqr(gojoStart)<.02&&sukuna.position().distanceToSqr(sukunaStart)<.02,"no wandering");
@@ -67,6 +93,7 @@ public final class NpcVisualTest {
         if(ticks==80)camera(mc,5,-60,-5,45,6);
         if(ticks==85)Screenshot.grab(mc.gameDirectory,"npc-side.png",mc.getMainRenderTarget(),c->{});
         if(ticks==100)mc.getSingleplayerServer().execute(()->{
+            infinityArrow.discard();
             var p=mc.getSingleplayerServer().getPlayerList().getPlayers().get(0);p.setGameMode(GameType.SURVIVAL);
             p.setItemInHand(InteractionHand.MAIN_HAND,new ItemStack(DomainItems.SUKUNA_FINGER.get(),3));gojo.interact(p,InteractionHand.MAIN_HAND);
             require(!gojo.isAwakened()&&p.getMainHandItem().getCount()==3,"wrong item does not change Gojo or consume");
@@ -96,7 +123,19 @@ public final class NpcVisualTest {
         if(ticks==165)Screenshot.grab(mc.gameDirectory,"npc-gojo-close.png",mc.getMainRenderTarget(),c->{});
         if(ticks==175)camera(mc,sukunaStart.x,-60,-2.1,0,-3);
         if(ticks==195)Screenshot.grab(mc.gameDirectory,"npc-sukuna-close.png",mc.getMainRenderTarget(),c->{});
-        if(ticks==220){
+        if(ticks==210){
+            mc.setScreen(new net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen(mc.player,mc.player.connection.enabledFeatures(),true));
+        }
+        if(ticks==214){
+            var screen=mc.screen;
+            if(screen instanceof net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen creative){
+                try{var field=screen.getClass().getDeclaredField("pages");field.setAccessible(true);for(var value:(java.util.List<?>)field.get(screen)){var page=(net.minecraftforge.client.gui.CreativeTabsScreenPage)value;if(page.getVisibleTabs().contains(DomainItems.JUJUTSU_TAB.get())){creative.setCurrentPage(page);break;}}require(creative.getCurrentPage().getVisibleTabs().contains(DomainItems.JUJUTSU_TAB.get()),"custom tab visible on real Forge creative page");}catch(ReflectiveOperationException ex){throw new RuntimeException(ex);}
+                try{for(var method:screen.getClass().getDeclaredMethods())if(method.getParameterCount()==1&&method.getParameterTypes()[0]==net.minecraft.world.item.CreativeModeTab.class&&method.getReturnType()==void.class){method.setAccessible(true);method.invoke(screen,DomainItems.JUJUTSU_TAB.get());break;}}catch(ReflectiveOperationException ex){throw new RuntimeException(ex);}
+            }
+        }
+        if(ticks==217)Screenshot.grab(mc.gameDirectory,"creative-tab.png",mc.getMainRenderTarget(),c->{});
+        if(ticks==220)mc.setScreen(null);
+        if(ticks==225){
             var clientActors=mc.level.getEntitiesOfClass(JujutsuNpc.class,new AABB(-10,-65,-10,10,-50,10));
             require(clientActors.stream().allMatch(JujutsuNpc::isAwakened),"transformed form synchronized to all client actors");
             require(mc.level.getEntitiesOfClass(JujutsuNpc.class,new AABB(-10,-65,-10,10,-50,10)).size()==3,"all actors synchronized to client");

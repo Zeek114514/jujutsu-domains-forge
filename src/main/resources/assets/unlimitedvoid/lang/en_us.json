@@ -86,5 +86,6 @@
   "item.unlimitedvoid.sukuna_finger": "Sukuna’s Finger",
   "message.unlimitedvoid.npc_transformed": "Transformed into: %s",
   "message.unlimitedvoid.npc_already_transformed": "Already transformed. No item consumed.",
-  "message.unlimitedvoid.npc_identity": "%s - Display NPC"
+  "message.unlimitedvoid.npc_identity": "%s - Display NPC",
+  "itemGroup.unlimitedvoid.jujutsu_domains": "Jujutsu Domains"
 }

@@ -1,6 +1,6 @@
 # 咒术领域 · Jujutsu Domains
 
-> 当前本地版本：**1.7.0**（原版皮肤与物品变身）；GitHub正式版仍为1.5.1。灶·开现已默认使用粒子火焰、火矢拖尾和爆燃烟尘。向空中的苍射入赫，或向赫射入苍，形成逐渐膨胀并大范围爆炸的自爆茈。
+> 当前本地版本：**1.7.1**（独立创造栏与五条被动防御）；GitHub正式版仍为1.5.1。灶·开现已默认使用粒子火焰、火矢拖尾和爆燃烟尘。向空中的苍射入赫，或向赫射入苍，形成逐渐膨胀并大范围爆炸的自爆茈。
 
 [![Build](https://github.com/Zeek114514/jujutsu-domains-forge/actions/workflows/build.yml/badge.svg)](https://github.com/Zeek114514/jujutsu-domains-forge/actions/workflows/build.yml)
 [![Minecraft](https://img.shields.io/badge/Minecraft-1.20.1-62b47a)](https://www.minecraft.net/)
@@ -24,9 +24,9 @@
 
 开发依赖为Forge47.4.10；本版验证范围见[灶·开粒子记录](docs/FUGA_PARTICLES_VALIDATION.md)，自爆茈沿用[1.5.0记录](docs/PURPLE_DETONATION_VALIDATION.md)。此前记录按各自版本保留，不表示所有47.x、光影组合和硬件均已覆盖。御厨子血红天空/镜面的指定光影限制仍见[1.4.1记录](docs/SHRINE_SLASH_VALIDATION.md)。
 
-## 皮肤NPC与变身（1.7.0本地版本）
+## 皮肤NPC与变身（1.7.1本地版本）
 
-改为用户提供的原版玩家皮肤，去掉此前自制模型。手持眼罩右键高专五条，变为新宿五条；手持宿傩的手指右键虎皮宿傩，变为原身皮肤。初次生存交付消耗一个，重复交付不消耗，状态随实体保存。仍无自动战斗。生成方式、服装修改与测试范围见[NPC说明](docs/NPCS.md)。
+改为用户提供的原版玩家皮肤，去掉此前自制模型。手持眼罩右键高专五条，变为新宿五条；手持宿傩的手指右键虎皮宿傩，变为原身皮肤。初次生存交付消耗一个，重复交付不消耗，状态随实体保存。新增独立【咒术领域】创造栏，收纳全部四个物品。五条默认拥有阻挡普通近战/投射物并减速来袭投射物的被动“无限”，领域伤害与特殊绕过不统一免疫。仍无自动战斗。生成方式、服装修改与测试范围见[NPC说明](docs/NPCS.md)。
 
 ## 玩法
 

@@ -86,5 +86,6 @@
   "item.unlimitedvoid.sukuna_finger": "宿傩的手指",
   "message.unlimitedvoid.npc_transformed": "已变身为：%s",
   "message.unlimitedvoid.npc_already_transformed": "已经完成变身，不再消耗物品。",
-  "message.unlimitedvoid.npc_identity": "%s · 展示NPC"
+  "message.unlimitedvoid.npc_identity": "%s · 展示NPC",
+  "itemGroup.unlimitedvoid.jujutsu_domains": "咒术领域"
 }
