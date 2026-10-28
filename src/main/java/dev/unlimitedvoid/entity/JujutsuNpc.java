@@ -18,10 +18,11 @@ public final class JujutsuNpc extends PathfinderMob {
     @Override protected void defineSynchedData(){super.defineSynchedData();entityData.define(AWAKENED,false);}
     public boolean isAwakened(){return entityData.get(AWAKENED);}
     @Override public void addAdditionalSaveData(net.minecraft.nbt.CompoundTag tag){super.addAdditionalSaveData(tag);tag.putBoolean("Awakened",isAwakened());}
-    @Override public void readAdditionalSaveData(net.minecraft.nbt.CompoundTag tag){super.readAdditionalSaveData(tag);entityData.set(AWAKENED,tag.getBoolean("Awakened"));}
+    @Override public void readAdditionalSaveData(net.minecraft.nbt.CompoundTag tag){super.readAdditionalSaveData(tag);entityData.set(AWAKENED,tag.contains("Awakened")?tag.getBoolean("Awakened"):isAdvancedType());}
     @Override protected Component getTypeName(){return Component.translatable(isGojo()?(isAwakened()?"entity.unlimitedvoid.shinjuku_gojo":"entity.unlimitedvoid.student_gojo"):(isAwakened()?"entity.unlimitedvoid.true_sukuna":"entity.unlimitedvoid.sukuna_16"));}
-    public JujutsuNpc(EntityType<? extends JujutsuNpc> type,Level level){super(type,level);setPersistenceRequired();}
-    public boolean isGojo(){return getType()==DomainEntities.STUDENT_GOJO.get();}
+    public JujutsuNpc(EntityType<? extends JujutsuNpc> type,Level level){super(type,level);setPersistenceRequired();entityData.set(AWAKENED,isAdvancedType());}
+    public boolean isGojo(){return getType()==DomainEntities.STUDENT_GOJO.get()||getType()==DomainEntities.SHINJUKU_GOJO.get();}
+    private boolean isAdvancedType(){return getType()==DomainEntities.SHINJUKU_GOJO.get()||getType()==DomainEntities.TRUE_SUKUNA.get();}
     @Override protected void registerGoals(){
         goalSelector.addGoal(0,new FloatGoal(this));
         goalSelector.addGoal(1,new LookAtPlayerGoal(this,Player.class,8,1.0f));
@@ -59,6 +60,7 @@ public final class JujutsuNpc extends PathfinderMob {
             var attributes=Mob.createMobAttributes().add(Attributes.MAX_HEALTH,40).add(Attributes.MOVEMENT_SPEED,.2)
                 .add(Attributes.FOLLOW_RANGE,16).add(Attributes.KNOCKBACK_RESISTANCE,1).build();
             event.put(DomainEntities.STUDENT_GOJO.get(),attributes);event.put(DomainEntities.SUKUNA_16.get(),attributes);
+            event.put(DomainEntities.SHINJUKU_GOJO.get(),attributes);event.put(DomainEntities.TRUE_SUKUNA.get(),attributes);
         }
     }
 }

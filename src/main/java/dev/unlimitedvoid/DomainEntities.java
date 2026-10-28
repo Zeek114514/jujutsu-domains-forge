@@ -12,6 +12,8 @@ public final class DomainEntities {
                     .clientTrackingRange(16).updateInterval(200).build("unlimitedvoid:shrine"));
     public static final RegistryObject<EntityType<JujutsuNpc>> STUDENT_GOJO=npc("student_gojo");
     public static final RegistryObject<EntityType<JujutsuNpc>> SUKUNA_16=npc("sukuna_16");
+    public static final RegistryObject<EntityType<JujutsuNpc>> SHINJUKU_GOJO=npc("shinjuku_gojo");
+    public static final RegistryObject<EntityType<JujutsuNpc>> TRUE_SUKUNA=npc("true_sukuna");
     private static RegistryObject<EntityType<JujutsuNpc>> npc(String name){
         return TYPES.register(name,()->EntityType.Builder.<JujutsuNpc>of(JujutsuNpc::new,MobCategory.CREATURE)
             .sized(.6f,1.95f).clientTrackingRange(10).updateInterval(3).build(UnlimitedVoid.ID+":"+name));

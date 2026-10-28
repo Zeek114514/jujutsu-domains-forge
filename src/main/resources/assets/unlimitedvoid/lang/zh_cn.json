@@ -87,5 +87,7 @@
   "message.unlimitedvoid.npc_transformed": "已变身为：%s",
   "message.unlimitedvoid.npc_already_transformed": "已经完成变身，不再消耗物品。",
   "message.unlimitedvoid.npc_identity": "%s · 展示NPC",
-  "itemGroup.unlimitedvoid.jujutsu_domains": "咒术领域"
+  "itemGroup.unlimitedvoid.jujutsu_domains": "咒术领域",
+  "item.unlimitedvoid.shinjuku_gojo_spawn_egg": "新宿五条悟生成蛋",
+  "item.unlimitedvoid.true_sukuna_spawn_egg": "原身宿傩生成蛋"
 }
