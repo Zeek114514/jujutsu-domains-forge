@@ -1,7 +1,7 @@
-"""Generate original 256x256 NPC atlases at four pixels per model texel."""
+"""Historical 1.6.x concept atlases. Writes to ignored Artifacts, never overwrites supplied skins."""
 from pathlib import Path
 from PIL import Image,ImageDraw
-OUT=Path(__file__).resolve().parents[1]/'src/main/resources/assets/unlimitedvoid/textures/entity'
+OUT=Path(__file__).resolve().parents[1]/'Artifacts/legacy-npc-atlases'
 OUT.mkdir(parents=True,exist_ok=True)
 for gojo,name in [(True,'student_gojo'),(False,'sukuna_16')]:
  im=Image.new('RGBA',(256,256));d=ImageDraw.Draw(im)

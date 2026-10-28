@@ -79,5 +79,12 @@
   "item.unlimitedvoid.student_gojo_spawn_egg": "高专五条悟生成蛋",
   "item.unlimitedvoid.sukuna_16_spawn_egg": "16指·虎皮宿傩生成蛋",
   "message.unlimitedvoid.student_gojo": "高专五条悟 · 展示NPC",
-  "message.unlimitedvoid.sukuna_16": "16指·虎皮宿傩 · 展示NPC"
+  "message.unlimitedvoid.sukuna_16": "16指·虎皮宿傩 · 展示NPC",
+  "entity.unlimitedvoid.shinjuku_gojo": "新宿五条悟",
+  "entity.unlimitedvoid.true_sukuna": "原身宿傩",
+  "item.unlimitedvoid.blindfold": "眼罩",
+  "item.unlimitedvoid.sukuna_finger": "宿傩的手指",
+  "message.unlimitedvoid.npc_transformed": "已变身为：%s",
+  "message.unlimitedvoid.npc_already_transformed": "已经完成变身，不再消耗物品。",
+  "message.unlimitedvoid.npc_identity": "%s · 展示NPC"
 }

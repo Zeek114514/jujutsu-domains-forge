@@ -66,13 +66,41 @@ public final class NpcVisualTest {
         });
         if(ticks==80)camera(mc,5,-60,-5,45,6);
         if(ticks==85)Screenshot.grab(mc.gameDirectory,"npc-side.png",mc.getMainRenderTarget(),c->{});
-        if(ticks==100){mc.options.fov().set(35);camera(mc,gojoStart.x,-60,-2.1,0,-3);}
-        if(ticks==120)Screenshot.grab(mc.gameDirectory,"npc-gojo-close.png",mc.getMainRenderTarget(),c->{});
-        if(ticks==125)camera(mc,sukunaStart.x,-60,-2.1,0,-3);
-        if(ticks==145)Screenshot.grab(mc.gameDirectory,"npc-sukuna-close.png",mc.getMainRenderTarget(),c->{});
-        if(ticks==170){
+        if(ticks==100)mc.getSingleplayerServer().execute(()->{
+            var p=mc.getSingleplayerServer().getPlayerList().getPlayers().get(0);p.setGameMode(GameType.SURVIVAL);
+            p.setItemInHand(InteractionHand.MAIN_HAND,new ItemStack(DomainItems.SUKUNA_FINGER.get(),3));gojo.interact(p,InteractionHand.MAIN_HAND);
+            require(!gojo.isAwakened()&&p.getMainHandItem().getCount()==3,"wrong item does not change Gojo or consume");
+            p.setItemInHand(InteractionHand.MAIN_HAND,new ItemStack(DomainItems.BLINDFOLD.get(),3));sukuna.interact(p,InteractionHand.MAIN_HAND);
+            require(!sukuna.isAwakened()&&p.getMainHandItem().getCount()==3,"wrong item does not change Sukuna or consume");
+            var gojoId=gojo.getUUID();var sukunaId=sukuna.getUUID();float health=gojo.getHealth();
+            gojo.interact(p,InteractionHand.MAIN_HAND);require(gojo.isAwakened()&&p.getMainHandItem().getCount()==2,"blindfold transforms Gojo and consumes exactly one");
+            gojo.interact(p,InteractionHand.MAIN_HAND);require(p.getMainHandItem().getCount()==2,"repeated Gojo interaction does not consume");
+            p.setItemInHand(InteractionHand.MAIN_HAND,new ItemStack(DomainItems.SUKUNA_FINGER.get(),3));sukuna.interact(p,InteractionHand.MAIN_HAND);
+            require(sukuna.isAwakened()&&p.getMainHandItem().getCount()==2,"finger transforms Sukuna and consumes exactly one");
+            sukuna.interact(p,InteractionHand.MAIN_HAND);require(p.getMainHandItem().getCount()==2,"repeated Sukuna interaction does not consume");
+            require(gojo.getUUID().equals(gojoId)&&sukuna.getUUID().equals(sukunaId)&&gojo.getHealth()==health,"transform preserves identity and health");
+            for(var actor:new JujutsuNpc[]{gojo,sukuna}){
+                var tag=new CompoundTag();actor.save(tag);tag.remove("UUID");var restored=EntityType.loadEntityRecursive(tag,actor.level(),a->a);
+                require(restored instanceof JujutsuNpc&&((JujutsuNpc)restored).isAwakened(),"transformed form survives NBT reload");
+                tag.remove("Awakened");var legacy=EntityType.loadEntityRecursive(tag,actor.level(),a->a);
+                require(legacy instanceof JujutsuNpc&&!((JujutsuNpc)legacy).isAwakened(),"legacy NPC NBT defaults to first form");
+            }
+            p.setGameMode(GameType.CREATIVE);p.setItemInHand(InteractionHand.MAIN_HAND,new ItemStack(DomainItems.BLINDFOLD.get()));
+            var extra=p.serverLevel().getEntitiesOfClass(JujutsuNpc.class,new AABB(4,-62,-1,6,-57,1)).stream().filter(a->a!=gojo&&a!=sukuna).findFirst().orElseThrow();
+            extra.interact(p,InteractionHand.MAIN_HAND);require(extra.isAwakened()&&p.getMainHandItem().getCount()==1,"creative transforms without consuming");
+            p.setItemInHand(InteractionHand.MAIN_HAND,ItemStack.EMPTY);
+        });
+        if(ticks==115){mc.options.fov().set(45);camera(mc,0,-60,-3.8,0,8);}
+        if(ticks==135)Screenshot.grab(mc.gameDirectory,"npc-transformed.png",mc.getMainRenderTarget(),c->{});
+        if(ticks==145){mc.options.fov().set(35);camera(mc,gojoStart.x,-60,-2.1,0,-3);}
+        if(ticks==165)Screenshot.grab(mc.gameDirectory,"npc-gojo-close.png",mc.getMainRenderTarget(),c->{});
+        if(ticks==175)camera(mc,sukunaStart.x,-60,-2.1,0,-3);
+        if(ticks==195)Screenshot.grab(mc.gameDirectory,"npc-sukuna-close.png",mc.getMainRenderTarget(),c->{});
+        if(ticks==220){
+            var clientActors=mc.level.getEntitiesOfClass(JujutsuNpc.class,new AABB(-10,-65,-10,10,-50,10));
+            require(clientActors.stream().allMatch(JujutsuNpc::isAwakened),"transformed form synchronized to all client actors");
             require(mc.level.getEntitiesOfClass(JujutsuNpc.class,new AABB(-10,-65,-10,10,-50,10)).size()==3,"all actors synchronized to client");
-            for(var name:new String[]{"student_gojo","sukuna_16"}){
+            for(var name:new String[]{"student_gojo","shinjuku_gojo","sukuna_16","true_sukuna"}){
                 var texture=new net.minecraft.resources.ResourceLocation(UnlimitedVoid.ID,"textures/entity/"+name+".png");
                 require(mc.getResourceManager().getResource(texture).isPresent(),"skin resource present "+name);
             }

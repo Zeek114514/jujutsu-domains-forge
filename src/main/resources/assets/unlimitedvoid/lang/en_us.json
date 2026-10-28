@@ -79,5 +79,12 @@
   "item.unlimitedvoid.student_gojo_spawn_egg": "Student Gojo Spawn Egg",
   "item.unlimitedvoid.sukuna_16_spawn_egg": "16-Finger Sukuna Spawn Egg",
   "message.unlimitedvoid.student_gojo": "Student Gojo - Display NPC",
-  "message.unlimitedvoid.sukuna_16": "16-Finger Sukuna - Display NPC"
+  "message.unlimitedvoid.sukuna_16": "16-Finger Sukuna - Display NPC",
+  "entity.unlimitedvoid.shinjuku_gojo": "Shinjuku Gojo",
+  "entity.unlimitedvoid.true_sukuna": "True Form Sukuna",
+  "item.unlimitedvoid.blindfold": "Blindfold",
+  "item.unlimitedvoid.sukuna_finger": "Sukuna’s Finger",
+  "message.unlimitedvoid.npc_transformed": "Transformed into: %s",
+  "message.unlimitedvoid.npc_already_transformed": "Already transformed. No item consumed.",
+  "message.unlimitedvoid.npc_identity": "%s - Display NPC"
 }

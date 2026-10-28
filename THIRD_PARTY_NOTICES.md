@@ -23,3 +23,7 @@ CC0-1.0 基础录音来自 greyfeather、Merrick079、hedonfire。来源、哈�
 Minecraft 与 Forge 通过开发依赖获取，不将游戏本体或完整 Forge 发行版提交进仓库。Gradle Wrapper 与构建依赖受各自许可约束；Gradle 许可见 https://github.com/gradle/gradle/blob/master/LICENSE ，Forge 许可见 https://github.com/MinecraftForge/MinecraftForge/blob/1.20.x/LICENSE.txt 。
 
 本项目是非官方同人模组。若对素材使用有疑问，请通过仓库 Issues 联系维护者。
+
+## 本地1.7.0用户提供的Minecraft皮肤
+
+四张64×64皮肤由用户提供，仅接入本地模组；源文件及哈希记录见docs/supplied-skins.json。作者与公开再分发许可尚未核验，不将这些图片标为项目原创或MIT素材。三张保持原样，虎皮宿傩仅定点修改服装。新增眼罩与手指功能图标为项目程序绘制。该本地版本未公开上传GitHub。

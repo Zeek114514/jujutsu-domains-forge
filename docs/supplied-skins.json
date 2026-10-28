@@ -1,0 +1,26 @@
+{
+  "student_gojo": {
+    "source_filename": "skin_Suguru_Nobara_e459248157541bc5de80071429f3ed7f.png",
+    "source_sha256": "a8ec8755ee1e667978f28399d9f79a619eb03406699cf9433bf9650939375e3b",
+    "output_sha256": "a8ec8755ee1e667978f28399d9f79a619eb03406699cf9433bf9650939375e3b",
+    "model": "slim"
+  },
+  "shinjuku_gojo": {
+    "source_filename": "skin_Boy_Sweatpants_7e3d91008aeb1c4ca6635f00c9fa9088.png",
+    "source_sha256": "02dc18e7c88ccd7732e4e9f6a44712abca54510556584ab60d03e75d01fecdb6",
+    "output_sha256": "02dc18e7c88ccd7732e4e9f6a44712abca54510556584ab60d03e75d01fecdb6",
+    "model": "classic"
+  },
+  "sukuna_16": {
+    "source_filename": "b0059d77b9487888.png",
+    "source_sha256": "4ea54ad1612edaae6d9f684f3bc7d6bf5c8c6e8cf2b2a5b0cd2f16fb525b924e",
+    "output_sha256": "d75dbde05d319f80629758629593744894df7d17e67515b9392ee970031c762c",
+    "model": "classic"
+  },
+  "true_sukuna": {
+    "source_filename": "720b8352ce7efeed.png",
+    "source_sha256": "2bf4adba8393b5f466c114a90725421f27d1405a4975433f1f22b8acd6af8d25",
+    "output_sha256": "2bf4adba8393b5f466c114a90725421f27d1405a4975433f1f22b8acd6af8d25",
+    "model": "slim"
+  }
+}

@@ -20,3 +20,5 @@ python tools/run_fuga_qa.py --minecraft-root '你的Minecraft根目录' --versio
 `--suite particles --mode plain|shader`采集灶·开粒子并检查纹理、粒子上限及取消清理；shader额外断言真实Iris管线。它不替代`--suite combat`战斗回归。
 
 `--suite npcs --mode plain|shader`在独立新世界实际使用两种生成蛋，检查NPC同步、无游走/自动战斗、NBT保存/恢复及纹理，并采集正面/侧面截图；shader额外断言真实Iris管线。NBT恢复不是完整退出重开世界测试。
+
+1.7.0的NPC套件追加真实右键物品变身、消耗/重复/错误物品、创造保留、实体身份保留、形态NBT往返、旧数据兼容及客户端状态同步检查，并采集变身前后截图。
