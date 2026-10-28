@@ -16,10 +16,13 @@ import net.minecraftforge.fml.common.Mod;
 public final class JujutsuNpc extends PathfinderMob {
     private static final net.minecraft.network.syncher.EntityDataAccessor<Boolean> AWAKENED=net.minecraft.network.syncher.SynchedEntityData.defineId(JujutsuNpc.class,net.minecraft.network.syncher.EntityDataSerializers.BOOLEAN);
     private static final net.minecraft.network.syncher.EntityDataAccessor<Boolean> ASCENDED=net.minecraft.network.syncher.SynchedEntityData.defineId(JujutsuNpc.class,net.minecraft.network.syncher.EntityDataSerializers.BOOLEAN);
-    @Override protected void defineSynchedData(){super.defineSynchedData();entityData.define(AWAKENED,false);entityData.define(ASCENDED,false);entityData.define(PUNCH_KIND,-1);entityData.define(PUNCH_START,0L);entityData.define(MEGUMI,false);}
+    @Override protected void defineSynchedData(){super.defineSynchedData();entityData.define(AWAKENED,false);entityData.define(ASCENDED,false);entityData.define(PUNCH_KIND,-1);entityData.define(PUNCH_START,0L);entityData.define(MEGUMI,false);entityData.define(MAHORAGA_POSE,-100L);}
     private static final net.minecraft.network.syncher.EntityDataAccessor<Integer> PUNCH_KIND=net.minecraft.network.syncher.SynchedEntityData.defineId(JujutsuNpc.class,net.minecraft.network.syncher.EntityDataSerializers.INT);
     private static final net.minecraft.network.syncher.EntityDataAccessor<Long> PUNCH_START=net.minecraft.network.syncher.SynchedEntityData.defineId(JujutsuNpc.class,net.minecraft.network.syncher.EntityDataSerializers.LONG);
     private static final net.minecraft.network.syncher.EntityDataAccessor<Boolean> MEGUMI=net.minecraft.network.syncher.SynchedEntityData.defineId(JujutsuNpc.class,net.minecraft.network.syncher.EntityDataSerializers.BOOLEAN);
+    private static final net.minecraft.network.syncher.EntityDataAccessor<Long> MAHORAGA_POSE=net.minecraft.network.syncher.SynchedEntityData.defineId(JujutsuNpc.class,net.minecraft.network.syncher.EntityDataSerializers.LONG);
+    public boolean summoningMahoraga(){long age=level().getGameTime()-entityData.get(MAHORAGA_POSE);return age>=0&&age<60;}
+    public void beginMahoragaSummon(java.util.UUID id){getPersistentData().putUUID("uv_mahoraga_uuid",id);entityData.set(MAHORAGA_POSE,level().getGameTime());cancelPunch();getNavigation().stop();}
     private long domainReadyAt;private int summonDelay;private long nextSummonAt;
     public boolean isMegumi(){return !isGojo()&&entityData.get(MEGUMI)&&!entityData.get(AWAKENED);}
     public boolean isTrueSukuna(){return !isGojo()&&entityData.get(AWAKENED);}
@@ -111,6 +114,7 @@ public final class JujutsuNpc extends PathfinderMob {
     public static final class Registration {
         private static AttributeSupplier attributes(double hp,boolean gojo){return Mob.createMobAttributes().add(Attributes.MAX_HEALTH,hp).add(Attributes.MOVEMENT_SPEED,gojo?.34:.2).add(Attributes.FOLLOW_RANGE,gojo?32:16).add(Attributes.KNOCKBACK_RESISTANCE,1).build();}
         @SubscribeEvent public static void attributes(EntityAttributeCreationEvent event){
+            event.put(DomainEntities.MAHORAGA.get(),MahoragaEntity.attributes());
             event.put(DomainEntities.STUDENT_GOJO.get(),attributes(NpcVitals.STUDENT,true));event.put(DomainEntities.SUKUNA_16.get(),attributes(NpcVitals.SUKUNA,false));
             event.put(DomainEntities.AWAKENED_GOJO.get(),attributes(NpcVitals.AWAKENED,true));event.put(DomainEntities.SHINJUKU_GOJO.get(),attributes(NpcVitals.SHINJUKU,true));event.put(DomainEntities.TRUE_SUKUNA.get(),attributes(NpcVitals.TRUE_SUKUNA,false));event.put(DomainEntities.MEGUMI_SUKUNA.get(),attributes(NpcVitals.MEGUMI,false));
         }

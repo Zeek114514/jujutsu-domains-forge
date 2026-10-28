@@ -8,7 +8,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.sounds.SoundSource;
 /** NPC attacks protect players and allies and never modify terrain. Ordinary attacks respect Infinity. */
 public final class SukunaCombatService {
-    private static boolean allowed(JujutsuNpc n,LivingEntity t){return !n.isGojo()&&n.isAlive()&&!n.isNoAi()&&!DomainService.isCaptive(n.getUUID())&&!DomainService.npcChanting(n)&&!FugaService.casting(n.getUUID())&&NpcTechniqueService.enemy(n,t)&&n.hasLineOfSight(t);}
+    private static boolean allowed(JujutsuNpc n,LivingEntity t){return !n.isGojo()&&!n.summoningMahoraga()&&n.isAlive()&&!n.isNoAi()&&!DomainService.isCaptive(n.getUUID())&&!DomainService.npcChanting(n)&&!FugaService.casting(n.getUUID())&&NpcTechniqueService.enemy(n,t)&&n.hasLineOfSight(t);}
     public static boolean punch(JujutsuNpc n,LivingEntity t){if(!allowed(n,t)||n.punchKind()>=0||n.distanceToSqr(t)>NpcMeleeRules.REACH*NpcMeleeRules.REACH)return false;n.beginStrike(t.getUUID());return true;}
     public static void impact(JujutsuNpc n,LivingEntity t){if(!allowed(n,t)||n.distanceToSqr(t)>2.8*2.8)return;n.swing(net.minecraft.world.InteractionHand.MAIN_HAND,true);if(t.hurt(n.damageSources().mobAttack(n),18)){t.knockback(.35,n.getX()-t.getX(),n.getZ()-t.getZ());((ServerLevel)n.level()).sendParticles(net.minecraft.core.particles.ParticleTypes.CRIT,t.getX(),t.getY()+1,t.getZ(),5,.2,.3,.2,.05);}}
     public static boolean slash(JujutsuNpc n,LivingEntity t){
@@ -22,7 +22,7 @@ public final class SukunaCombatService {
         return true;
     }
     public static boolean summon(JujutsuNpc n,LivingEntity t){
-        if(!n.isMegumi()||!allowed(n,t)||!n.summonReady())return false;
+        if(!n.isMegumi()||n.getPersistentData().hasUUID("uv_mahoraga_uuid")||!allowed(n,t)||!n.summonReady())return false;
         n.summonAttempted();var event=new MahoragaSummonEvent(n,t);net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);return event.summoned();
     }
     private SukunaCombatService(){}

@@ -15,11 +15,11 @@ public final class SukunaCombatGoal extends Goal {
     @Override public void tick(){
         if(npc.isMegumi()&&NpcCombatRules.lastResort(npc.getHealth(),npc.getMaxHealth()))npc.becomeTrueSukuna();
         if(scan++%10==0||target==null||!NpcTechniqueService.enemy(npc,target))find();npc.setTarget(target);
-        if(DomainService.isCaptive(npc.getUUID())||DomainService.npcChanting(npc)||FugaService.casting(npc.getUUID())){npc.getNavigation().stop();return;}
+        if(npc.summoningMahoraga()||DomainService.isCaptive(npc.getUUID())||DomainService.npcChanting(npc)||FugaService.casting(npc.getUUID())){npc.getNavigation().stop();return;}
         if(target==null)return;npc.getLookControl().setLookAt(target,30,30);
         if(NpcDomainService.spontaneous(npc))return;
         long now=npc.level().getGameTime();
-        if(now>=rareAt){rareAt=now+NpcBattleRules.ROLL_INTERVAL;if(NpcBattleRules.fuga(npc.getRandom().nextInt(1000))&&FugaService.request(npc))return;if(npc.isMegumi()&&NpcBattleRules.mahoraga(npc.getRandom().nextInt(1000)))SukunaCombatService.summon(npc,target);}
+        if(now>=rareAt){rareAt=now+NpcBattleRules.ROLL_INTERVAL;if(NpcBattleRules.fuga(npc.getRandom().nextInt(1000))&&FugaService.request(npc))return;if(npc.isMegumi()&&NpcBattleRules.mahoraga(npc.getRandom().nextInt(1000))&&SukunaCombatService.summon(npc,target))return;}
         if(now<ready||npc.punchKind()>=0)return;double distance=npc.distanceToSqr(target);
         if(distance>NpcMeleeRules.REACH*NpcMeleeRules.REACH){npc.getNavigation().moveTo(target,1.4);if(distance<24*24&&npc.hasLineOfSight(target)&&npc.getRandom().nextInt(100)<35&&SukunaCombatService.slash(npc,target))ready=now+30;return;}
         npc.getNavigation().stop();

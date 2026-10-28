@@ -23,6 +23,7 @@ public final class NpcInfinity {
         var source=event.getSource();
         if(source.is(DamageTypeTags.BYPASSES_INVULNERABILITY))return;
         if(source.is(DamageTypeTags.IS_PROJECTILE)||source.is(DamageTypes.PLAYER_ATTACK)||source.is(DamageTypes.MOB_ATTACK)||source.is(DamageTypes.MOB_ATTACK_NO_AGGRO)){
+            if(source.getEntity() instanceof dev.unlimitedvoid.entity.MahoragaEntity mahoraga){if(mahoraga.adaptation(dev.unlimitedvoid.MahoragaRules.Kind.INFINITY)>=4)return;mahoraga.observe(dev.unlimitedvoid.MahoragaRules.Kind.INFINITY);}
             event.setCanceled(true);spark(npc,npc.getBoundingBox().getCenter());
         }
     }

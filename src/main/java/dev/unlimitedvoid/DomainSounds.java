@@ -17,6 +17,7 @@ public final class DomainSounds {
     public static final RegistryObject<SoundEvent> SHELL_BREAK=event("shell_break");
     public static final RegistryObject<SoundEvent> VOID_AMBIENCE=event("void_ambience");
     public static final RegistryObject<SoundEvent> SHRINE_AMBIENCE=event("shrine_ambience");
+    public static final RegistryObject<SoundEvent> MAHORAGA_TURN=event("mahoraga_turn");
     private static RegistryObject<SoundEvent> event(String name) {
         return EVENTS.register(name,()->SoundEvent.createVariableRangeEvent(new ResourceLocation(UnlimitedVoid.ID,name)));
     }

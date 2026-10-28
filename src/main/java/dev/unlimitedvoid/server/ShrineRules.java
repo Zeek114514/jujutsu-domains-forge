@@ -32,6 +32,7 @@ public final class ShrineRules {
         return caster.getPersistentData().contains("uv_cursed_energy") ? Math.max(1,energy(caster)) : DomainConfig.CASTER_ENERGY.get();
     }
     public static float cleaveDamage(LivingEntity target,double power) {
+        if(target instanceof dev.unlimitedvoid.entity.MahoragaEntity)return (float)Math.max(12,Math.min(96,48*power/100));
         double energy=Math.max(1,energy(target));
         if(power>=energy) return target.getMaxHealth()+target.getAbsorptionAmount()+4;
         return (float)Math.max(2,(target.getMaxHealth()+target.getAbsorptionAmount())*power/energy*0.35);

@@ -25,7 +25,7 @@ public final class NpcTechniqueService {
     public static boolean detonating(JujutsuNpc npc){return CASTS.values().stream().anyMatch(c->c.owner==npc&&c.phase>=PurpleDetonation.GROWING);}
     public static boolean charging(JujutsuNpc npc){return CASTS.values().stream().anyMatch(c->c.owner==npc&&c.phase==0);}
     public static boolean casting(JujutsuNpc npc){return CASTS.values().stream().anyMatch(c->c.owner==npc);}
-    public static boolean enemy(JujutsuNpc npc,LivingEntity target){return target!=npc&&target.isAlive()&&!npc.isAlliedTo(target)&&(target instanceof Enemy||target instanceof JujutsuNpc other&&npc.isGojo()!=other.isGojo());}
+    public static boolean enemy(JujutsuNpc npc,LivingEntity target){return target!=npc&&target.isAlive()&&!npc.isAlliedTo(target)&&(target instanceof Enemy||target instanceof dev.unlimitedvoid.entity.MahoragaEntity m&&npc.isGojo()&&!m.dismissing()||target instanceof JujutsuNpc other&&npc.isGojo()!=other.isGojo());}
     public static boolean trueSukuna(LivingEntity target){return target instanceof JujutsuNpc n&&n.isTrueSukuna();}
     public static void cancel(JujutsuNpc npc){CASTS.values().removeIf(c->c.owner==npc&&c.phase!=PurpleDetonation.BLAST);}
     public static boolean start(JujutsuNpc npc,LimitlessKind kind,LivingEntity target,boolean emergency){return start(npc,kind,target,emergency,false);}
@@ -73,12 +73,12 @@ public final class NpcTechniqueService {
     private static DamageSource source(Cast c){var key=ResourceKey.create(Registries.DAMAGE_TYPE,new ResourceLocation(UnlimitedVoid.ID,c.kind.name().toLowerCase(Locale.ROOT)));return new DamageSource(c.level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(key),c.owner,c.owner);}
     private static void field(Cast c,int age){int scanned=0;for(var t:targets(c,8)){
         if(scanned++>=128)break;var delta=c.position.subtract(t.getBoundingBox().getCenter());double distance=delta.length();if(distance>8||!exposed(c,t))continue;
-        if(distance>.05){t.setDeltaMovement(t.getDeltaMovement().scale(.65).add(delta.normalize().scale(.12+.28*(1-distance/8))));t.hurtMarked=true;}
+        if(distance>.05){t.setDeltaMovement(t.getDeltaMovement().scale(.65).add(delta.normalize().scale((.12+.28*(1-distance/8))*MahoragaService.force(t,dev.unlimitedvoid.MahoragaRules.Kind.BLUE))));t.hurtMarked=true;}
         if(age%10==0)t.hurt(source(c),4);
     }}
     private static void red(Cast c){int scanned=0;for(var t:targets(c,6)){
         if(scanned++>=128)break;double d=t.getBoundingBox().getCenter().distanceTo(c.position);if(d>6||!exposed(c,t))continue;
-        t.hurt(source(c),(float)(72*(1-.45*d/6)));t.setDeltaMovement(t.position().subtract(c.position).normalize().scale(2).add(0,.5,0));t.hurtMarked=true;
+        t.hurt(source(c),(float)(72*(1-.45*d/6)));t.setDeltaMovement(t.position().subtract(c.position).normalize().scale(2).add(0,.5,0).scale(MahoragaService.force(t,dev.unlimitedvoid.MahoragaRules.Kind.RED)));t.hurtMarked=true;
     }}
     private static void purple(Cast c,Vec3 from,Vec3 to){int scanned=0;for(var t:c.level.getEntitiesOfClass(LivingEntity.class,new AABB(from,to).inflate(4.5),e->enemy(c.owner,e)&&!c.struck.contains(e.getUUID()))){
         if(scanned++>=128||c.struck.size()>=512)break;

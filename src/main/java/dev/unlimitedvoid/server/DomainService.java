@@ -306,7 +306,7 @@ public final class DomainService {
         for (UUID id : List.copyOf(CAPTIVES.keySet())) {
             Captive captive = CAPTIVES.get(id);
             Domain domain = DOMAINS.get(captive.owner);
-            if (domain == null || !domain.active(now) || contested(domain,captive.entity.getBoundingBox().getCenter(),now) || captive.entity.isRemoved() || !captive.entity.isAlive()
+            if (captive.entity instanceof dev.unlimitedvoid.entity.MahoragaEntity m&&m.adaptation(dev.unlimitedvoid.MahoragaRules.Kind.VOID)>=4 || domain == null || !domain.active(now) || contested(domain,captive.entity.getBoundingBox().getCenter(),now) || captive.entity.isRemoved() || !captive.entity.isAlive()
                     || captive.entity.level() != domain.level) release(id);
         }
         for (Domain domain : DOMAINS.values()) {
@@ -321,6 +321,7 @@ public final class DomainService {
                     candidate -> eligible(candidate, caster))) {
                 Vec3 middle = target.getBoundingBox().getCenter();
                 if (middle.distanceToSqr(domain.center) > reach * reach || contested(domain,middle,now)) continue;
+                if(target instanceof dev.unlimitedvoid.entity.MahoragaEntity m&&m.adaptation(dev.unlimitedvoid.MahoragaRules.Kind.VOID)>=4)continue;
                 UUID id = target.getUUID();
                 if (CAPTIVES.containsKey(id) || CAPTIVES.size() >= MAX_CAPTIVES) continue;
                 Vec3 anchor = safeEntry(domain, target, radius);

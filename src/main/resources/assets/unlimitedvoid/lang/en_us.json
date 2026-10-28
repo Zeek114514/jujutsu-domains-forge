@@ -94,5 +94,7 @@
   "item.unlimitedvoid.awakened_gojo_spawn_egg": "Awakened Gojo Spawn Egg",
   "message.unlimitedvoid.npc_identity_health": "%s - Health %s/%s",
   "entity.unlimitedvoid.megumi_sukuna": "Shinjuku Sukuna (Megumi Vessel)",
-  "item.unlimitedvoid.megumi_sukuna_spawn_egg": "Shinjuku Sukuna Spawn Egg"
+  "item.unlimitedvoid.megumi_sukuna_spawn_egg": "Shinjuku Sukuna Spawn Egg",
+  "entity.unlimitedvoid.mahoraga": "Eight-Handled Sword Divergent Sila Divine General Mahoraga",
+  "item.unlimitedvoid.mahoraga_spawn_egg": "Mahoraga Spawn Egg"
 }

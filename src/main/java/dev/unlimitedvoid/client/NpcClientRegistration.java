@@ -7,7 +7,9 @@ import net.minecraftforge.fml.common.Mod;
 /** Keep event registration independent of the renderer superclass initialization. */
 @Mod.EventBusSubscriber(modid=UnlimitedVoid.ID,value=Dist.CLIENT,bus=Mod.EventBusSubscriber.Bus.MOD)
 public final class NpcClientRegistration {
+    @SubscribeEvent public static void layers(EntityRenderersEvent.RegisterLayerDefinitions event){event.registerLayerDefinition(MahoragaModel.LAYER,MahoragaModel::layer);}
     @SubscribeEvent public static void registerNpcRenderers(EntityRenderersEvent.RegisterRenderers event){
+        event.registerEntityRenderer(DomainEntities.MAHORAGA.get(),MahoragaRenderer::new);
         com.mojang.logging.LogUtils.getLogger().info("NPC renderers registering");
         event.registerEntityRenderer(DomainEntities.AWAKENED_GOJO.get(),c->new JujutsuNpcRenderer(c,true));
         event.registerEntityRenderer(DomainEntities.STUDENT_GOJO.get(),c->new JujutsuNpcRenderer(c,true));

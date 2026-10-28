@@ -149,7 +149,7 @@ public final class LimitlessService {
         double radius=c.kind.radius(c.charge);int scanned=0;
         for(var t:targets(c,p,radius)){
             if(scanned++>=128)break;Vec3 delta=c.position.subtract(t.getBoundingBox().getCenter());double distance=delta.length();if(distance>radius)continue;
-            if(delta.lengthSqr()>.01){Vec3 velocity=t.getDeltaMovement().scale(.65).add(delta.normalize().scale(.12+.28*(1-distance/radius)));t.setDeltaMovement(velocity);t.hurtMarked=true;}
+            if(delta.lengthSqr()>.01){Vec3 velocity=t.getDeltaMovement().scale(.65).add(delta.normalize().scale((.12+.28*(1-distance/radius))*MahoragaService.force(t,dev.unlimitedvoid.MahoragaRules.Kind.BLUE)));t.setDeltaMovement(velocity);t.hurtMarked=true;}
             if(age%10==0)t.hurt(source(c,p),(float)(c.kind.damage+2*LimitlessKind.power(c.charge)));
         }
     }
@@ -157,7 +157,7 @@ public final class LimitlessService {
         for(var t:targets(c,p,c.kind.radius)){
             if(scanned++>=128)break;Vec3 delta=t.getBoundingBox().getCenter().subtract(c.position);double distance=delta.length();if(distance>c.kind.radius)continue;
             t.hurt(source(c,p),(float)(c.kind.damage*(1-.45*distance/c.kind.radius)));
-            Vec3 away=distance<.05?c.direction:delta.normalize();away=away.add(c.direction.scale(.8)).normalize();t.setDeltaMovement(away.scale(2.4).add(0,.65,0));t.hurtMarked=true;
+            Vec3 away=distance<.05?c.direction:delta.normalize();away=away.add(c.direction.scale(.8)).normalize();t.setDeltaMovement(away.scale(2.4).add(0,.65,0).scale(MahoragaService.force(t,dev.unlimitedvoid.MahoragaRules.Kind.RED)));t.hurtMarked=true;
         }
     }
     private static void sweep(Cast c,ServerPlayer p,Vec3 from,Vec3 to){
