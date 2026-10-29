@@ -31,7 +31,12 @@ public final class MahoragaModel extends HierarchicalModel<MahoragaEntity> {
         var vertebrae=ivory();for(int i=0;i<7;i++)vertebrae.addBox(-1.2f,-22+i*2.3f,5.5f,2.4f,1.3f,1);body.addOrReplaceChild("vertebrae",vertebrae,PartPose.ZERO);
         body.addOrReplaceChild("back_lats",ivory().addBox(-10.5f,-20,2.5f,6.5f,6,3).addBox(4,-20,2.5f,6.5f,6,3).addBox(-8.5f,-14,2.5f,4.5f,5,2).addBox(4,-14,2.5f,4.5f,5,2),PartPose.ZERO);
         body.addOrReplaceChild("sash",dark().addBox(-6.8f,-2,-4.8f,13.6f,5,9.6f).addBox(-3,2,-6.8f,6,14,1.2f).addBox(1,2,-7.5f,3,11,1.3f),PartPose.ZERO);
-        var trim=dark().addBox(-8,-20.6f,-7.5f,16,.7f,.7f);for(int i=0;i<5;i++){float x=-7.5f+i*3.5f,y=-21+Math.abs(2-i)*.5f;trim.addBox(x,y,-8,2.3f,2.3f,.7f).addBox(x+.85f,y+2,-7.9f,.7f,2,.6f);}body.addOrReplaceChild("chest_chain",trim,PartPose.ZERO);var holes=ivory();for(int i=0;i<5;i++){float x=-7.5f+i*3.5f,y=-21+Math.abs(2-i)*.5f;holes.addBox(x+.55f,y+.55f,-8.2f,1.2f,1.2f,.5f);}body.addOrReplaceChild("chain_insets",holes,PartPose.ZERO);
+        body.addOrReplaceChild("neckline",ivory().addBox(-8.8f,-22,-7.3f,17.6f,.7f,.6f),PartPose.ZERO);
+        for(int i=0;i<9;i++){
+            float x=(i-4)*1.75f,y=-20.5f+(4-Math.abs(i-4))*1.02f;
+            var link=dark().addBox(-1.2f,-.8f,-.16f,2.4f,.3f,.32f).addBox(-1.2f,.5f,-.16f,2.4f,.3f,.32f).addBox(-1.2f,-.5f,-.16f,.3f,1,.32f).addBox(.9f,-.5f,-.16f,.3f,1,.32f);
+            body.addOrReplaceChild("chain_link_"+i,link,PartPose.offsetAndRotation(x,y,-7.45f,0,0,i<4?.36f:i>4?-.36f:0));
+        }
         var armR=root.addOrReplaceChild("right_arm",ivory().addBox(-4.2f,-2,-4.6f,8.4f,12,9.2f),PartPose.offset(-14,-13,0));
         var armL=root.addOrReplaceChild("left_arm",ivory().addBox(-4.2f,-2,-4.6f,8.4f,12,9.2f),PartPose.offset(14,-13,0));
         for(var arm:new PartDefinition[]{armR,armL}){
@@ -45,15 +50,24 @@ public final class MahoragaModel extends HierarchicalModel<MahoragaEntity> {
         var blade=armR.getChild("forearm").getChild("extermination_blade");
         blade.addOrReplaceChild("blade_spine",gray().addBox(-2,-.5f,-1.25f,2,19,.5f).addBox(-1.5f,18,-1,1,5,.4f),PartPose.ZERO);
         blade.addOrReplaceChild("blade_guard",bronze().addBox(-4.7f,-1.8f,-1.5f,8.4f,1.5f,3),PartPose.ZERO);
-        var head=root.addOrReplaceChild("head",ivory().addBox(-4,-10,-4,8,8,8).addBox(-4.6f,-2.2f,-4.8f,9.2f,4,8.8f),PartPose.offset(0,-17,0));
-        head.addOrReplaceChild("blind_brow",ivory().addBox(-4.4f,-8.5f,-5,8.8f,5.8f,1.7f).addBox(-1.2f,-11,-4,2.4f,8,8.6f),PartPose.ZERO);
+        var head=root.addOrReplaceChild("head",ivory().addBox(-4,-10,-4,8,8,8).addBox(-4.2f,-2.2f,-4.8f,8.4f,2.8f,8.4f).addBox(-3.3f,.6f,-4.5f,6.6f,1.8f,7.4f),PartPose.offset(0,-17,0));
+        head.addOrReplaceChild("blind_brow",ivory().addBox(-4.4f,-8.5f,-5,8.8f,5.8f,1.7f).addBox(-.8f,-10.7f,-4,1.6f,7.7f,8.2f),PartPose.ZERO);
         head.addOrReplaceChild("cheekbones",ivory().addBox(-5,-3.8f,-5,2.1f,2.5f,2).addBox(2.9f,-3.8f,-5,2.1f,2.5f,2).addBox(-3.6f,1,-4.5f,7.2f,1.4f,6),PartPose.ZERO);
         head.addOrReplaceChild("brow_seam",gray().addBox(-.25f,-9.7f,-5.1f,.5f,6,.35f),PartPose.ZERO);
         head.addOrReplaceChild("mouth",dark().addBox(-4.05f,-2.6f,-5.35f,8.1f,2.3f,.6f),PartPose.ZERO);
         var teeth=ivory();for(int i=0;i<8;i++)teeth.addBox(-3.8f+i*.96f,-2.4f,-5.8f,.72f,1.6f,.55f);head.addOrReplaceChild("teeth",teeth,PartPose.ZERO);
+        head.addOrReplaceChild("brow_bridge",ivory().addBox(-5.7f,-6.5f,-5.6f,11.4f,1.6f,1.3f),PartPose.ZERO);
         for(int side:new int[]{-1,1})for(int tier=0;tier<2;tier++){
-            var fin=ivory().addBox(side<0?-6:0,-1,-1.4f,6,2.4f,3.2f).addBox(side<0?-9:6,-.7f,-1.1f,3,1.4f,2.2f).addBox(side<0?-11:9,-.45f,-.65f,2,.9f,1.3f);
-            head.addOrReplaceChild("fin_"+side+"_"+tier,fin,PartPose.offsetAndRotation(side*3.8f,-6+tier*4,0,0,0,side*(tier==0?-.20f:.13f)));
+            // Several connected, tapering cuboids sweep outward then curl upward.
+            float[] lengths=tier==0?new float[]{5,5,4,3}:new float[]{4.5f,4,3.5f,2};
+            float[] angles=tier==0?new float[]{-.16f,-.30f,-.52f,-.85f}:new float[]{.10f,-.06f,-.28f,-.70f};
+            float x=side*3.8f,y=tier==0?-7.4f:-3.6f;
+            for(int j=0;j<lengths.length;j++){
+                float length=lengths[j],angle=angles[j],thick=(tier==0?2.7f:2.2f)-j*.55f;
+                var horn=ivory().addBox(side<0?-length:0,-thick/2,-thick*.62f,length,thick,thick*1.24f);
+                head.addOrReplaceChild("horn_"+side+"_"+tier+"_"+j,horn,PartPose.offsetAndRotation(x,y,tier==0?-.1f:-1.2f,0,0,side*angle));
+                x+=side*(float)Math.cos(angle)*length;y+=(float)Math.sin(angle)*length;
+            }
         }
         for(int side:new int[]{-1,1}){
             var leg=root.addOrReplaceChild(side<0?"right_leg":"left_leg",cloth().addBox(-4,0,-4,8,13,8).addBox(-4.2f,2,-4.3f,8.4f,8,8.6f),PartPose.offset(side*4.5f,7,0));
@@ -72,6 +86,10 @@ public final class MahoragaModel extends HierarchicalModel<MahoragaEntity> {
     @Override public void setupAnim(MahoragaEntity entity,float swing,float amount,float age,float yaw,float pitch){
         root.getAllParts().forEach(ModelPart::resetPose);float partial=age-entity.tickCount;
         root.y=(1-entity.emergence(partial))*60;head.yRot=yaw*(float)Math.PI/180*.45f;head.xRot=pitch*(float)Math.PI/180*.35f;
+        // Lengthen legs and torso while preserving head width and the planted feet.
+        body.y=-1.6f;body.yScale=1.2f;head.y=-28.4f;wheelMount.y=-47.5f;
+        right.y=left.y=-23.5f;right.yScale=left.yScale=1.15f;
+        rightLeg.y=leftLeg.y=1;rightLeg.yScale=leftLeg.yScale=23f/17f;
         right.zRot=.10f;left.zRot=-.10f;right.xRot=(float)Math.cos(swing*.6662)*.45f*amount;left.xRot=-right.xRot;rightLeg.xRot=(float)Math.cos(swing*.6662)*.8f*amount;leftLeg.xRot=-rightLeg.xRot;
         body.xRot=.035f;wheel.yRot=entity.wheelAngle(partial);wheelMount.y+=(float)Math.sin(age*.07)*.25f;
         float hit=(float)Math.sin(entity.attackProgress(partial)*Math.PI);if(entity.attackType()>0){right.xRot-=hit*1.6f;right.zRot+=hit*.5f;body.yRot=-hit*.15f;}
