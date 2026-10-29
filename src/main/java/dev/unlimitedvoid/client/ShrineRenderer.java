@@ -225,7 +225,7 @@ public final class ShrineRenderer {
         }
     }
     private static float slashFade(double life){return dev.unlimitedvoid.DomainTimeline.smooth((float)(life/.10))*(1-dev.unlimitedvoid.DomainTimeline.smooth((float)((life-.32)/.52)));}
-    private static void blade(VertexConsumer b,Matrix4f m,Vec3 center,Vec3 direction,Vec3 viewer,double length,double width,float alpha,boolean black){
+    public static void blade(VertexConsumer b,Matrix4f m,Vec3 center,Vec3 direction,Vec3 viewer,double length,double width,float alpha,boolean black){
         Vec3 cross=direction.cross(center.subtract(viewer)).normalize();if(cross.lengthSqr()<.01)return;
         Vec3 start=center.subtract(direction.scale(length*.5)),end=center.add(direction.scale(length*.5));
         slashCount++;

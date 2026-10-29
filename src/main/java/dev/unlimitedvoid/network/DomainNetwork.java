@@ -21,11 +21,12 @@ import java.util.UUID;
 
 /** The client requests activation only. Position, membership, damage and timing are server-owned. */
 public final class DomainNetwork {
-    private static final String VERSION = "13";
+    private static final String VERSION = "14";
     private static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(UnlimitedVoid.ID, "domain"), () -> VERSION, VERSION::equals, VERSION::equals);
 
     public record DomainState(UUID owner, Vec3 center, Vec3 axis, float radius, int age, int remaining, DomainKind kind, float maxRadius, float integrity, int closing) {}
+    private record NpcSlash(UUID owner,Vec3 from,Vec3 to,boolean cleave,long start) {}
     private record Toggle() {}
     private record Cycle() {}
     private record Reset() {}
@@ -37,6 +38,10 @@ public final class DomainNetwork {
     private record Snapshot(List<DomainState> states, boolean captive, DomainKind selected, int cooldown) {}
 
     public static void register() {
+        CHANNEL.messageBuilder(NpcSlash.class,9,NetworkDirection.PLAY_TO_CLIENT)
+            .encoder((m,b)->{b.writeUUID(m.owner());vector(b,m.from());vector(b,m.to());b.writeBoolean(m.cleave());b.writeLong(m.start());})
+            .decoder(b->{var m=new NpcSlash(b.readUUID(),vector(b),vector(b),b.readBoolean(),b.readLong());if(!Double.isFinite(m.from().lengthSqr())||!Double.isFinite(m.to().lengthSqr())||m.from().distanceToSqr(m.to())>40*40||m.start()<0)throw new IllegalArgumentException("Invalid NPC slash");return m;})
+            .consumerMainThread((m,c)->DistExecutor.unsafeRunWhenOn(Dist.CLIENT,()->()->dev.unlimitedvoid.client.NpcSlashes.receive(m.from(),m.to(),m.cleave(),m.start()))).add();
         CHANNEL.messageBuilder(FugaReset.class,7,NetworkDirection.PLAY_TO_SERVER)
                 .encoder((m,b)->{}).decoder(b->new FugaReset())
                 .consumerMainThread((m,c)->{var p=c.get().getSender();if(p!=null)dev.unlimitedvoid.server.FugaService.resetCooldown(p);}).add();
@@ -89,6 +94,10 @@ public final class DomainNetwork {
                         ()->()->dev.unlimitedvoid.client.ClientDomainAudio.playExpansion(message.caster(),message.kind(),message.center(),message.radius()))).add();
     }
 
+    public static void npcSlash(net.minecraft.server.level.ServerLevel level,UUID owner,Vec3 from,Vec3 to,boolean cleave){
+        var message=new NpcSlash(owner,from,to,cleave,level.getGameTime());
+        for(var p:level.players())if(p.distanceToSqr(from)<128*128)CHANNEL.send(PacketDistributor.PLAYER.with(()->p),message);
+    }
     public static void announceExpansion(ServerPlayer caster,DomainKind kind,Vec3 center,float radius){
         announceExpansion(caster.serverLevel(),caster.getUUID(),kind,center,radius);
     }

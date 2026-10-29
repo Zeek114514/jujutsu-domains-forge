@@ -1,7 +1,7 @@
 plugins {
     id 'net.minecraftforge.gradle' version '6.0.54'
 }
-version = '1.5.1'
+version = '1.10.0'
 group = 'dev.unlimitedvoid'
 base { archivesName = 'unlimited-void-1.20.1' }
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
@@ -68,3 +68,19 @@ if (providers.gradleProperty('visualTest').getOrElse('false') == 'true') {
     sourceSets.main.java.srcDir 'tools/visualTest'
     tasks.named('jar', Jar) { archiveClassifier = 'visual-test' }
 }
+
+tasks.register('validateNpcCombat', JavaExec) {
+    dependsOn 'classes', 'validationClasses'
+    classpath = sourceSets.validation.runtimeClasspath
+    mainClass = 'dev.unlimitedvoid.NpcCombatCheck'
+    jvmArgs '-Djava.awt.headless=true'
+}
+tasks.named('check') { dependsOn 'validateNpcCombat' }
+
+tasks.register('validateMahoraga', JavaExec) {
+    dependsOn 'classes', 'validationClasses'
+    classpath = sourceSets.validation.runtimeClasspath
+    mainClass = 'dev.unlimitedvoid.MahoragaRulesCheck'
+    jvmArgs '-Djava.awt.headless=true'
+}
+tasks.named('check') { dependsOn 'validateMahoraga' }

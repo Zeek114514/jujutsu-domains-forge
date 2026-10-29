@@ -32,7 +32,7 @@ public final class LimitlessClient {
     static Collection<Effect> effects(){return EFFECTS.values();}
     public static int effectCount(){return EFFECTS.size();}
     static int tailCount(){return TAILS.size();}
-    private static net.minecraft.world.entity.player.Player owner(UUID id){var mc=Minecraft.getInstance();return mc.player!=null&&mc.player.getUUID().equals(id)?mc.player:mc.level.getPlayerByUUID(id);}
+    private static net.minecraft.world.entity.LivingEntity owner(UUID id){var mc=Minecraft.getInstance();if(mc.player!=null&&mc.player.getUUID().equals(id))return mc.player;for(var entity:mc.level.entitiesForRendering())if(entity.getUUID().equals(id)&&entity instanceof net.minecraft.world.entity.LivingEntity living)return living;return null;}
     public static Pose pose(UUID owner){
         var mc=Minecraft.getInstance();if(mc.level==null)return null;
         for(var e:EFFECTS.values())if(e.state.owner().equals(owner)){

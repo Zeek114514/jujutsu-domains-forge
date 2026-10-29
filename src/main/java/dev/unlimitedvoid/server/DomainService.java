@@ -117,8 +117,8 @@ public final class DomainService {
         syncAll(operator.getServer());return count;
     }
     private static boolean contested(Domain domain,Vec3 point,int now) {
-        for(Domain other:DOMAINS.values())if(other!=domain && other.level==domain.level && other.kind!=domain.kind && other.active(now)
-            && point.distanceToSqr(other.center)<other.radius(now)*other.radius(now))return true;
+        for(Domain other:DOMAINS.values())if(other!=domain && other.level==domain.level && other.kind!=domain.kind && (other.active(now)||(other.closingAt<0&&(domain.npc||other.npc)))
+            && point.distanceToSqr(other.center)<Math.pow((domain.npc||other.npc)?other.maxRadius:other.radius(now),2))return true;
         return false;
     }
     public static boolean terrainCutAllowed(ServerLevel level,Vec3 point) {
@@ -130,7 +130,7 @@ public final class DomainService {
     /** External shell hit; the range test uses the sphere surface, not its center. */
     public static boolean strikeBarrier(ServerLevel level,UUID owner,Vec3 origin,double range,double power) {
         Domain barrier=DOMAINS.get(owner);
-        if(barrier==null || barrier.kind!=DomainKind.VOID || barrier.level!=level || !barrier.active(level.getServer().getTickCount())) return false;
+        if(barrier==null || barrier.kind!=DomainKind.VOID || barrier.level!=level || (barrier.closingAt>=0||!barrier.sealAdded)) return false;
         double distance=barrier.center.distanceTo(origin);
         if(distance<=barrier.maxRadius || distance-barrier.maxRadius>range) return false;
         float hp=BARRIER_HP.getOrDefault(owner,100f);
@@ -150,11 +150,18 @@ public final class DomainService {
         boolean changed=false;
         for(Domain shrine:List.copyOf(DOMAINS.values())) {
             if(shrine.kind!=DomainKind.SHRINE || !shrine.active(now) || (now-shrine.startedAt)%10!=0) continue;
-            ServerPlayer attacker=server.getPlayerList().getPlayer(shrine.casterId);
+            LivingEntity attacker=caster(shrine);
             if(attacker==null) continue;
             for(Domain barrier:List.copyOf(DOMAINS.values())) {
                 if(barrier.kind!=DomainKind.VOID || barrier.owner.equals(shrine.owner)) continue;
-                changed|=strikeBarrier(shrine.level,barrier.owner,shrine.center,shrine.radius(now),ShrineRules.power(attacker));
+                Vec3 origin=shrine.center;
+                if(shrine.center.distanceToSqr(barrier.center)<=barrier.maxRadius*barrier.maxRadius){
+                    Vec3 direction=shrine.center.subtract(barrier.center);if(direction.lengthSqr()<.01)direction=new Vec3(shrine.axis.x,0,shrine.axis.z);if(direction.lengthSqr()<.01)direction=new Vec3(1,0,0);
+                    origin=barrier.center.add(direction.normalize().scale(barrier.maxRadius+1));
+                    // The OPEN field reaches the outside shell even with its shrine inside it.
+                    if(origin.distanceToSqr(shrine.center)>shrine.radius(now)*shrine.radius(now))continue;
+                }
+                changed|=strikeBarrier(shrine.level,barrier.owner,origin,shrine.radius(now),ShrineRules.power(attacker));
             }
         }
         return changed;
@@ -223,10 +230,33 @@ public final class DomainService {
         DOMAINS.put(id, new Domain(id, id, false, player.serverLevel(), center, axis, now, kind, kind==DomainKind.SHRINE ? DomainConfig.SHRINE_RADIUS.get() : 16));
         READY_AT.put(id, now + COOLDOWN);
         DomainNetwork.announceExpansion(player,kind,center,kind==DomainKind.SHRINE?DomainConfig.SHRINE_RADIUS.get():16);
+        NpcDomainService.respond(player.serverLevel(),kind,center,kind==DomainKind.SHRINE?DomainConfig.SHRINE_RADIUS.get():16);
         player.displayClientMessage(Component.translatable("message.unlimitedvoid.expand_kind", Component.translatable(kind.translation)), true);
         syncAll(server);
     }
 
+    private static LivingEntity caster(Domain d){
+        if(d.npc){var e=d.level.getEntity(d.casterId);return e instanceof dev.unlimitedvoid.entity.JujutsuNpc n&&n.isAlive()&&!n.isNoAi()?n:null;}
+        return d.level.getServer().getPlayerList().getPlayer(d.casterId);
+    }
+    public static boolean npcFamilyDomain(ServerLevel level,DomainKind kind){return DOMAINS.values().stream().anyMatch(d->d.npc&&d.level==level&&d.kind==kind&&d.closingAt<0);}
+    public static boolean npcChanting(dev.unlimitedvoid.entity.JujutsuNpc npc){var d=DOMAINS.get(npc.getUUID());return d!=null&&d.closingAt<0&&npc.level().getServer().getTickCount()-d.startedAt<=DomainTimeline.casterRelease(d.kind);}
+    public static void dismissNpc(dev.unlimitedvoid.entity.JujutsuNpc npc){var d=DOMAINS.get(npc.getUUID());if(d!=null&&d.npc)dismiss(d.owner);}
+    /** Reserve the family slot before broadcasting; recursive counter-expansions see this reservation. */
+    public static boolean expandNpc(dev.unlimitedvoid.entity.JujutsuNpc npc,boolean counter){
+        if(!(npc.level() instanceof ServerLevel level)||!npc.isAlive()||npc.isNoAi()||isCaptive(npc.getUUID())||(!counter&&!npc.domainReady())||DOMAINS.containsKey(npc.getUUID())||DOMAINS.size()>=MAX_DOMAINS)return false;
+        DomainKind kind=npc.isGojo()?DomainKind.VOID:DomainKind.SHRINE;
+        if(npcFamilyDomain(level,kind))return false;
+        Vec3 center=npc.position().add(0,1,0),axis=npc.getLookAngle().add(0,.12,0).normalize();
+        if(kind==DomainKind.SHRINE){var ground=ShrinePlacement.center(level,center);if(ground.isEmpty())return false;center=ground.get();}
+        int now=level.getServer().getTickCount();float radius=kind==DomainKind.SHRINE?DomainConfig.SHRINE_RADIUS.get():16;
+        DOMAINS.put(npc.getUUID(),new Domain(npc.getUUID(),npc.getUUID(),false,level,center,axis,now,kind,radius));npc.domainUsed();npc.cancelMahoragaPose();npc.cancelPunch();NpcTechniqueService.cancel(npc);FugaService.cancel(npc.getUUID());npc.getNavigation().stop();npc.setDeltaMovement(Vec3.ZERO);
+        DomainNetwork.announceExpansion(level,npc.getUUID(),kind,center,radius);
+        dev.unlimitedvoid.server.NpcDomainService.respond(level,kind,center,radius);
+        syncAll(level.getServer());return true;
+    }
+
+    private static boolean voidMobile(LivingEntity target){return target instanceof dev.unlimitedvoid.entity.JujutsuNpc npc&&!npc.isGojo();}
     public static boolean isCaptive(UUID id) { return CAPTIVES.containsKey(id); }
     public static int activeCount() { return DOMAINS.size(); }
     public static int captiveCount() { return CAPTIVES.size(); }
@@ -250,9 +280,9 @@ public final class DomainService {
         int now = server.getTickCount();
         boolean removed=false;
         for(Domain d:List.copyOf(DOMAINS.values())) {
-            ServerPlayer caster=server.getPlayerList().getPlayer(d.casterId);
+            LivingEntity caster=caster(d);
             int age=now-d.startedAt;
-            if(d.closingAt<0 && (caster==null || !caster.isAlive() || caster.isSpectator() || caster.serverLevel()!=d.level || age>=d.total())) {dismiss(d.owner);removed=true;}
+            if(d.closingAt<0 && (caster==null || !caster.isAlive() || caster.isSpectator() || caster.level()!=d.level || age>=d.total())) {dismiss(d.owner);removed=true;}
             if(d.closingAt>=0) {
                 if(now-d.closingAt>=DomainTimeline.FADE){remove(d.owner);removed=true;}
                 else if(d.kind==DomainKind.SHRINE)ShrineStructures.animate(d.owner,age,now-d.closingAt);
@@ -270,7 +300,7 @@ public final class DomainService {
                     // Never snap a high-flying caster down to the ground at the start.
                     if(d.lifting || y+0.12>=caster.getY()){
                         d.lifting=true;
-                        caster.teleportTo(caster.serverLevel(),d.center.x,y,d.center.z,caster.getYRot(),caster.getXRot());
+                        caster.teleportTo(d.center.x,y,d.center.z);
                         caster.setDeltaMovement(Vec3.ZERO);caster.fallDistance=0;
                     }
                 }
@@ -284,11 +314,11 @@ public final class DomainService {
         for (UUID id : List.copyOf(CAPTIVES.keySet())) {
             Captive captive = CAPTIVES.get(id);
             Domain domain = DOMAINS.get(captive.owner);
-            if (domain == null || !domain.active(now) || contested(domain,captive.entity.getBoundingBox().getCenter(),now) || captive.entity.isRemoved() || !captive.entity.isAlive()
+            if (captive.entity instanceof dev.unlimitedvoid.entity.MahoragaEntity m&&m.adaptation(dev.unlimitedvoid.MahoragaRules.Kind.VOID)>=4||voidMobile(captive.entity)||domain == null || !domain.active(now) || contested(domain,captive.entity.getBoundingBox().getCenter(),now) || captive.entity.isRemoved() || !captive.entity.isAlive()
                     || captive.entity.level() != domain.level) release(id);
         }
         for (Domain domain : DOMAINS.values()) {
-            ServerPlayer caster = server.getPlayerList().getPlayer(domain.casterId);
+            LivingEntity caster = caster(domain);
             if (caster == null || !domain.active(now)) continue;
             if (domain.kind==DomainKind.SHRINE) { slash(domain,caster,now); continue; }
             double radius = domain.radius(now);
@@ -299,6 +329,8 @@ public final class DomainService {
                     candidate -> eligible(candidate, caster))) {
                 Vec3 middle = target.getBoundingBox().getCenter();
                 if (middle.distanceToSqr(domain.center) > reach * reach || contested(domain,middle,now)) continue;
+                if(target instanceof dev.unlimitedvoid.entity.MahoragaEntity m&&m.adaptation(dev.unlimitedvoid.MahoragaRules.Kind.VOID)>=4)continue;
+                if(voidMobile(target)){if(now%20==0)target.hurt(target.damageSources().indirectMagic(caster,caster),2);continue;}
                 UUID id = target.getUUID();
                 if (CAPTIVES.containsKey(id) || CAPTIVES.size() >= MAX_CAPTIVES) continue;
                 Vec3 anchor = safeEntry(domain, target, radius);
@@ -316,7 +348,7 @@ public final class DomainService {
         for (UUID id : List.copyOf(CAPTIVES.keySet())) {
             Captive captive = CAPTIVES.get(id);
             Domain domain = DOMAINS.get(captive.owner);
-            ServerPlayer caster = domain == null ? null : server.getPlayerList().getPlayer(domain.casterId);
+            LivingEntity caster = domain == null ? null : caster(domain);
             if (caster == null || !eligible(captive.entity, caster) || captive.entity.level() != domain.level) {
                 release(id);
                 continue;
@@ -337,11 +369,11 @@ public final class DomainService {
         }
     }
 
-    private static void slash(Domain domain, ServerPlayer caster, int now) {
+    private static void slash(Domain domain, LivingEntity caster, int now) {
         int age=now-domain.startedAt;
         if(!domain.active(now)) return;
         double radius=domain.radius(now);
-        ShrineRules.cutTerrain(domain.level,caster,domain.center,radius,age,point->terrainCutAllowed(domain.level,point));
+        if(caster instanceof ServerPlayer player)ShrineRules.cutTerrain(domain.level,player,domain.center,radius,age,point->terrainCutAllowed(domain.level,point));
         if(age%10!=0) return;
         // A visual dust field accumulates even with permanent terrain destruction disabled.
         domain.dust=Math.min(dev.unlimitedvoid.FugaCombatRules.DUST_REQUIRED,domain.dust+10);
@@ -352,8 +384,8 @@ public final class DomainService {
             if(target instanceof LivingEntity living && !(target instanceof ArmorStand)) {
                 if(!eligible(living,caster)) continue;
                 boolean cleave=ShrineRules.energy(target)>0;
-                living.hurt(ShrineRules.source(caster,cleave),cleave ? ShrineRules.cleaveDamage(living,ShrineRules.power(caster)) : 6);
-            } else if(ShrineRules.nonlivingTarget(target)) ShrineRules.dismantle(target,caster);
+                living.hurt(ShrineRules.source(caster,cleave),(cleave ? ShrineRules.cleaveDamage(living,ShrineRules.power(caster)) : 6)*(caster instanceof dev.unlimitedvoid.entity.JujutsuNpc n?n.attackScale():1));
+            } else if(caster instanceof ServerPlayer player&&ShrineRules.nonlivingTarget(target)) ShrineRules.dismantle(target,player);
             else continue;
             Vec3 middle=target.getBoundingBox().getCenter();
             if(audibleHits++<2) domain.level.playSound(null,BlockPos.containing(middle),DomainSounds.SLASH_HIT.get(),SoundSource.PLAYERS,0.45f,0.94f+domain.level.random.nextFloat()*0.12f);
@@ -365,22 +397,23 @@ public final class DomainService {
 
     }
 
-    private static boolean eligible(LivingEntity target, ServerPlayer caster) {
+    private static boolean eligible(LivingEntity target, LivingEntity caster) {
         if (!target.isAlive() || target.isRemoved() || target == caster || target instanceof ArmorStand) return false;
         if (target instanceof ServerPlayer player && (player.isCreative() || player.isSpectator())) return false;
+        if(caster instanceof dev.unlimitedvoid.entity.JujutsuNpc npc)return NpcTechniqueService.enemy(npc,target);
         if (caster.isAlliedTo(target)) return false;
         return !(target instanceof TamableAnimal tame && caster.getUUID().equals(tame.getOwnerUUID()));
     }
 
     public record FugaDust(UUID owner,Vec3 center,double radius){}
-    public static boolean fugaEligible(LivingEntity target,ServerPlayer caster){return eligible(target,caster);}
+    public static boolean fugaEligible(LivingEntity target,LivingEntity caster){return eligible(target,caster);}
     public static int fugaDust(UUID caster){
         return DOMAINS.values().stream().filter(d->d.kind==DomainKind.SHRINE&&d.casterId.equals(caster)&&d.active(d.level.getServer().getTickCount()))
             .mapToInt(d->d.dust).max().orElse(0);
     }
-    public static FugaDust consumeFugaDust(ServerPlayer caster,Vec3 impact){
-        int now=caster.server.getTickCount();
-        for(Domain d:DOMAINS.values())if(d.kind==DomainKind.SHRINE&&d.casterId.equals(caster.getUUID())&&d.level==caster.serverLevel()
+    public static FugaDust consumeFugaDust(LivingEntity caster,Vec3 impact){
+        int now=caster.level().getServer().getTickCount();
+        for(Domain d:DOMAINS.values())if(d.kind==DomainKind.SHRINE&&d.casterId.equals(caster.getUUID())&&d.level==caster.level()
             &&d.active(now)&&d.dust>=dev.unlimitedvoid.FugaCombatRules.DUST_REQUIRED&&impact.distanceToSqr(d.center)<=d.maxRadius*d.maxRadius&&!contested(d,impact,now)){
             d.dust=0;return new FugaDust(d.owner,d.center,d.maxRadius);
         }
@@ -554,10 +587,10 @@ public final class DomainService {
 
     private static double ShrineGeometryY(Vec3 center,int age) {return center.y-1+10.27*DomainTimeline.rise(age)+0.08;}
     private static final class Domain {
-        final UUID owner,casterId;final boolean generated;final ServerLevel level;final Vec3 center,axis;final int startedAt;final DomainKind kind;final float maxRadius;
+        final UUID owner,casterId;final boolean generated,npc;final ServerLevel level;final Vec3 center,axis;final int startedAt;final DomainKind kind;final float maxRadius;
         int closingAt=-1,dust;boolean sealAdded,lifting;
         Domain(UUID owner,UUID casterId,boolean generated,ServerLevel level,Vec3 center,Vec3 axis,int startedAt,DomainKind kind,float maxRadius){
-            this.owner=owner;this.casterId=casterId;this.generated=generated;this.level=level;this.center=center;this.axis=axis;this.startedAt=startedAt;this.kind=kind;this.maxRadius=maxRadius;
+            this.owner=owner;this.casterId=casterId;this.generated=generated;this.npc=level.getEntity(casterId) instanceof dev.unlimitedvoid.entity.JujutsuNpc;this.level=level;this.center=center;this.axis=axis;this.startedAt=startedAt;this.kind=kind;this.maxRadius=maxRadius;
         }
         int total(){return DomainTimeline.formed(kind)+DURATION;}
         boolean active(int now){return closingAt<0 && now-startedAt>=DomainTimeline.formed(kind);}

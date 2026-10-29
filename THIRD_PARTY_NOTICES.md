@@ -23,3 +23,13 @@ CC0-1.0 基础录音来自 greyfeather、Merrick079、hedonfire。来源、哈�
 Minecraft 与 Forge 通过开发依赖获取，不将游戏本体或完整 Forge 发行版提交进仓库。Gradle Wrapper 与构建依赖受各自许可约束；Gradle 许可见 https://github.com/gradle/gradle/blob/master/LICENSE ，Forge 许可见 https://github.com/MinecraftForge/MinecraftForge/blob/1.20.x/LICENSE.txt 。
 
 本项目是非官方同人模组。若对素材使用有疑问，请通过仓库 Issues 联系维护者。
+
+## 1.7.0起用户提供的Minecraft皮肤（1.9.0起共六张）
+
+六张64×64皮肤由用户提供；源文件及哈希记录见docs/supplied-skins.json。作者与公开再分发许可尚未核验，不将这些图片标为项目原创或MIT素材。除虎皮宿傩定点修改服装，其余按用户图片保留。新增眼罩与手指功能图标为项目程序绘制。1.10.0按项目所有者要求同步至GitHub；未额外确认素材的通用再分发授权。
+
+1.8.0新增觉醒五条皮肤由用户提供，源PNG及其哈希同样记录在docs/supplied-skins.json。未取得新的公开再分发许可，不将其标为项目原创或MIT素材。惠皮宿傩同为用户提供图片，来源文件名、变体与哈希见同一清单。
+
+## 1.10.0魔虚罗新增资源
+
+魔虚罗方块模型、程序绘制UV材质、透明影池及0.24秒轮盘机械短音由本项目制作。生成器为tools/create_mahoraga_assets.py；默认仅需Pillow，可选--audio重建短音需NumPy及soundfile。此说明仅适用于这些新增资源，不改变用户提供皮肤、角色录音或其他第三方素材的权利边界。

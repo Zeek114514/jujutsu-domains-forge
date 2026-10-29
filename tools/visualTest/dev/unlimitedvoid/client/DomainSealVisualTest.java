@@ -61,7 +61,7 @@ public final class DomainSealVisualTest {
                 if(e!=p&&!fixtures.contains(e.getUUID()))e.discard();
             var struck=new HashSet<UUID>();var impact=new Vec3(0,-59,10);
             int count=FugaCombat.pulse(p,p.getEyePosition(),impact,32,null,struck);
-            LogUtils.getLogger().info("DOMAIN_SEAL_PULSE count={} damage={}",count,damage);
+            LogUtils.getLogger().info("DOMAIN_SEAL_PULSE count={} damage={} edge={} candidates={}",count,damage,p.serverLevel().getEntity(edge),p.serverLevel().getEntitiesOfClass(LivingEntity.class,new net.minecraft.world.phys.AABB(-5,-64,0,5,-50,240)).size());
             require(struck.containsAll(List.of(near,far,edge))&&count<=FugaCombatRules.HIT_BUDGET,"full wave reaches 198 blocks within hit budget");
             FugaCombat.pulse(p,p.getEyePosition(),impact,36,null,struck);
             require(hits.getOrDefault(near,0)==1&&hits.getOrDefault(far,0)==1&&hits.getOrDefault(edge,0)==1,"second pulse deduplicated");
@@ -98,7 +98,7 @@ public final class DomainSealVisualTest {
     }
     static void checkSeal(Minecraft mc,DomainKind kind){var s=DomainSeals.of(mc.player.getUUID(),0);require(s!=null&&s.kind()==kind&&s.weight()==1,"full-weight "+kind+" seal");}
     static UUID pig(ServerPlayer p,double x,double z){
-        var l=p.serverLevel();int cx=(int)Math.floor(x/16),cz=(int)Math.floor(z/16);l.setChunkForced(cx,cz,true);l.getChunk(cx,cz);
+        var l=p.serverLevel();int cx=(int)Math.floor(x/16),cz=(int)Math.floor(z/16);for(int pathZ=0;pathZ<=cz;pathZ++){l.setChunkForced(cx,pathZ,true);l.getChunk(cx,pathZ);}
         var e=EntityType.PIG.create(l);e.moveTo(x,-60,z,0,0);e.setNoAi(true);e.getAttribute(Attributes.MAX_HEALTH).setBaseValue(1000);e.setHealth(1000);l.addFreshEntity(e);return e.getUUID();
     }
     static void require(boolean ok,String message){if(!ok){failed=true;LogUtils.getLogger().error("DOMAIN_SEAL_FAIL {}",message);throw new AssertionError(message);}LogUtils.getLogger().info("DOMAIN_SEAL_PASS {}",message);}
