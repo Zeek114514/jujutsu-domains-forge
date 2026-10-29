@@ -53,10 +53,15 @@ public final class MahoragaModel extends HierarchicalModel<MahoragaEntity> {
             var forearm=arm.addOrReplaceChild("forearm",ivory().addBox(-3.5f,0,-4,7,14,8).addBox(-3.8f,12,-4.3f,7.6f,5.5f,8.6f),PartPose.offset(0,10,0));
             forearm.addOrReplaceChild("raised_ridges",gray().addBox(-4.3f,2,-5,8.6f,1.5f,1.2f).addBox(-4.3f,6,-5,8.6f,1.5f,1.2f).addBox(-4.3f,10,-5,8.6f,1.5f,1.2f),PartPose.ZERO);
         }
+        var wrappedArm=armR.getChild("forearm");
+        wrappedArm.addOrReplaceChild("black_wrapping",dark().addBox(-3.85f,1.5f,-4.4f,7.7f,10.8f,8.8f),PartPose.ZERO);
+        var wraps=dark();for(int i=0;i<6;i++)wraps.addBox(-4.05f,2+i*1.75f,-4.6f,8.1f,.65f,9.2f);
+        wrappedArm.addOrReplaceChild("raised_ridges",wraps,PartPose.ZERO);
+        armL.getChild("forearm").addOrReplaceChild("wrist_ring",dark().addBox(-4,11.5f,-4.6f,8,1.2f,9.2f),PartPose.ZERO);
         armR.getChild("forearm").addOrReplaceChild("extermination_blade",ivory().addBox(-4,-1,-1,7,17,2).addBox(-3.5f,16,-.9f,6,4,1.8f).addBox(-2.5f,20,-.75f,4,4,1.5f).addBox(-1.5f,24,-.6f,2,3,1.2f),PartPose.offsetAndRotation(-5,0,-1,0,0,.09f));
         var blade=armR.getChild("forearm").getChild("extermination_blade");
         blade.addOrReplaceChild("blade_spine",gray().addBox(-2,-.5f,-1.25f,2,19,.5f).addBox(-1.5f,18,-1,1,5,.4f),PartPose.ZERO);
-        blade.addOrReplaceChild("blade_guard",bronze().addBox(-4.7f,-1.8f,-1.5f,8.4f,1.5f,3),PartPose.ZERO);
+        blade.addOrReplaceChild("blade_guard",dark().addBox(-4.7f,-1.8f,-1.5f,8.4f,1.5f,3),PartPose.ZERO);
         var head=root.addOrReplaceChild("head",ivory().addBox(-4,-10,-4,8,8,8).addBox(-4.2f,-2.2f,-4.8f,8.4f,2.8f,8.4f).addBox(-3.3f,.6f,-4.5f,6.6f,1.8f,7.4f),PartPose.offset(0,-17,0));
         head.addOrReplaceChild("blind_brow",ivory().addBox(-4.4f,-8.5f,-5,8.8f,5.8f,1.7f).addBox(-.8f,-10.7f,-4,1.6f,7.7f,8.2f),PartPose.ZERO);
         head.addOrReplaceChild("cheekbones",ivory().addBox(-5,-3.8f,-5,2.1f,2.5f,2).addBox(2.9f,-3.8f,-5,2.1f,2.5f,2).addBox(-3.6f,1,-4.5f,7.2f,1.4f,6),PartPose.ZERO);
@@ -74,10 +79,10 @@ public final class MahoragaModel extends HierarchicalModel<MahoragaEntity> {
                 part.addOrReplaceChild("quill",gray().addBox(side<0?-length*.82f:0,-.08f,-.4f,length*.82f,.16f,.12f),PartPose.ZERO);
             }
         }
-        var crest=head.addOrReplaceChild("crown_base",ivory().addBox(-1.5f,-9,-1.2f,3,9,2.4f),PartPose.offsetAndRotation(0,-9.5f,2,-.1f,0,0));
-        crest=crest.addOrReplaceChild("crown_curve_1",ivory().addBox(-1.3f,-9,-1,2.6f,9,2),PartPose.offsetAndRotation(0,-9,0,-.2f,0,0));
-        crest=crest.addOrReplaceChild("crown_curve_2",ivory().addBox(-1.05f,-8,-.8f,2.1f,8,1.6f),PartPose.offsetAndRotation(0,-9,0,-.3f,0,0));
-        crest.addOrReplaceChild("crown_hook",ivory().addBox(-.65f,-8,-.55f,1.3f,8,1.1f).addBox(-.3f,-10,-.3f,.6f,2,.6f),PartPose.offsetAndRotation(0,-8,0,-.8f,0,0));
+        var crest=head.addOrReplaceChild("crown_base",ivory().addBox(-1.5f,-4,-1.2f,3,4,2.4f),PartPose.offsetAndRotation(0,-9.5f,2,-.1f,0,.15f));
+        crest=crest.addOrReplaceChild("crown_curve_1",ivory().addBox(-1.3f,-4,-1,2.6f,4,2),PartPose.offsetAndRotation(0,-4,0,-.2f,0,.25f));
+        crest=crest.addOrReplaceChild("crown_curve_2",ivory().addBox(-1.05f,-3.5f,-.8f,2.1f,3.5f,1.6f),PartPose.offsetAndRotation(0,-4,0,-.3f,0,.35f));
+        crest.addOrReplaceChild("crown_hook",ivory().addBox(-.65f,-4,-.55f,1.3f,4,1.1f).addBox(-.3f,-5,-.3f,.6f,1,.6f),PartPose.offsetAndRotation(0,-3.5f,0,-.8f,0,.95f));
         for(int side:new int[]{-1,1}){
             var leg=root.addOrReplaceChild(side<0?"right_leg":"left_leg",cloth().addBox(-4,0,-4,8,13,8).addBox(-4.2f,2,-4.3f,8.4f,8,8.6f),PartPose.offset(side*4.5f,7,0));
             leg.addOrReplaceChild("folds",cloth().addBox(-4.5f,1,-5.8f,2.3f,11,1.4f).addBox(.6f,1,-5.7f,2,10.5f,1.3f),PartPose.ZERO);
@@ -87,8 +92,8 @@ public final class MahoragaModel extends HierarchicalModel<MahoragaEntity> {
         }
         var mount=root.addOrReplaceChild("wheel_mount",CubeListBuilder.create(),PartPose.offsetAndRotation(0,-33,0,-.20f,0,0));var wheel=mount.addOrReplaceChild("wheel",bronze().addBox(-2,-1.8f,-2,4,3.6f,4),PartPose.ZERO);
         wheel.addOrReplaceChild("hub_rings",bronze().addBox(-3,-1.1f,-3,6,2.2f,6).addBox(-1.4f,-2.4f,-1.4f,2.8f,1.2f,2.8f),PartPose.ZERO);
-        for(int i=0;i<8;i++){var detailing=wheel.addOrReplaceChild("inlay_"+i,gray().addBox(-3.3f,-.82f,10.5f,6.6f,.25f,.65f),PartPose.rotation(0,i*(float)Math.PI/4,0));detailing.addOrReplaceChild("handle_cap",bronze().addBox(-1.15f,-2.05f,14.5f,2.3f,.6f,2.3f),PartPose.ZERO);}
-        for(int i=0;i<8;i++)wheel.addOrReplaceChild("segment_"+i,bronze().addBox(-4.55f,-.7f,10,9.1f,1.4f,2).addBox(-.65f,-.55f,1,1.3f,1.1f,10.5f).addBox(-.8f,-.8f,11,1.6f,1.6f,3.8f).addBox(-1.4f,-1,14,2.8f,2,3.3f).addBox(-1.65f,-1,14.3f,3.3f,2,2.7f),PartPose.rotation(0,i*(float)Math.PI/4,0));
+        for(int i=0;i<8;i++){var detailing=wheel.addOrReplaceChild("inlay_"+i,gray().addBox(-3.3f,-.82f,10.5f,6.6f,.25f,.65f),PartPose.rotation(0,i*(float)Math.PI/4,0));}
+        for(int i=0;i<8;i++)wheel.addOrReplaceChild("segment_"+i,bronze().addBox(-4.55f,-.7f,10,9.1f,1.4f,2).addBox(-.65f,-.55f,1,1.3f,1.1f,10.5f).addBox(-.8f,-.8f,11,1.6f,1.6f,3.8f).addBox(-1.65f,-1.05f,14.6f,3.3f,2.1f,2.1f).addBox(-1.05f,-1.65f,14.6f,2.1f,3.3f,2.1f).addBox(-1.05f,-1.05f,14,2.1f,2.1f,3.3f).addBox(-1.4f,-1.4f,14.25f,2.8f,2.8f,2.8f),PartPose.rotation(0,i*(float)Math.PI/4,0));
         return LayerDefinition.create(mesh,256,256);
     }
     @Override public ModelPart root(){return root;}
@@ -96,7 +101,7 @@ public final class MahoragaModel extends HierarchicalModel<MahoragaEntity> {
         root.getAllParts().forEach(ModelPart::resetPose);float partial=age-entity.tickCount;
         root.y=(1-entity.emergence(partial))*60;head.yRot=yaw*(float)Math.PI/180*.45f;head.xRot=pitch*(float)Math.PI/180*.35f;
         // Lengthen legs and torso while preserving head width and the planted feet.
-        body.y=-1.6f;body.yScale=1.2f;head.y=-28.4f;wheelMount.y=-51;wheelMount.xRot=(float)Math.PI/2;wheelMount.yRot=head.yRot*.5f;wheel.xScale=wheel.yScale=wheel.zScale=.65f;
+        body.y=-1.6f;body.yScale=1.2f;head.y=-28.4f;wheelMount.y=-51;wheelMount.xRot=0;wheelMount.yRot=head.yRot*.5f;wheel.xScale=wheel.yScale=wheel.zScale=.65f;
         right.y=left.y=-23.5f;right.yScale=left.yScale=1.15f;
         rightLeg.y=leftLeg.y=1;rightLeg.yScale=leftLeg.yScale=23f/17f;
         right.zRot=.10f;left.zRot=-.10f;right.xRot=(float)Math.cos(swing*.6662)*.45f*amount;left.xRot=-right.xRot;rightLeg.xRot=(float)Math.cos(swing*.6662)*.8f*amount;leftLeg.xRot=-rightLeg.xRot;
