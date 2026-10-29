@@ -29,7 +29,7 @@ public final class JujutsuNpc extends PathfinderMob {
     private long domainReadyAt;private int summonDelay;private long nextSummonAt;
     public boolean isMegumi(){return !isGojo()&&entityData.get(MEGUMI)&&!entityData.get(AWAKENED);}
     public boolean isTrueSukuna(){return !isGojo()&&entityData.get(AWAKENED);}
-    public boolean becomeTrueSukuna(){if(!isMegumi()||!isAlive())return false;cancelPunch();entityData.set(MEGUMI,false);entityData.set(AWAKENED,true);applyFormVitals(true);return true;}
+    public boolean becomeTrueSukuna(){if(!isMegumi()||!isAlive()||!rollDangerTransformation())return false;cancelPunch();entityData.set(MEGUMI,false);entityData.set(AWAKENED,true);applyFormVitals(true);return true;}
     public boolean domainReady(){return level().getGameTime()>=domainReadyAt;}
     public void domainUsed(){domainReadyAt=level().getGameTime()+800;}
     public boolean summonReady(){return level().getGameTime()>=nextSummonAt;}
@@ -48,6 +48,9 @@ public final class JujutsuNpc extends PathfinderMob {
             if(target instanceof LivingEntity living){if(isGojo())dev.unlimitedvoid.server.NpcMeleeService.impact(this,living,entityData.get(PUNCH_KIND)==1?LimitlessKind.RED:LimitlessKind.BLUE);else dev.unlimitedvoid.server.SukunaCombatService.impact(this,living);}
         }
     }
+    private boolean dangerTransformationRolled;
+    public boolean dangerTransformationRolled(){return dangerTransformationRolled;}
+    private boolean rollDangerTransformation(){if(level().isClientSide||dangerTransformationRolled)return false;dangerTransformationRolled=true;return getRandom().nextDouble()<DomainConfig.NPC_DANGER_TRANSFORM_CHANCE.get();}
     private boolean awakeningBurstPending;
     private long reversalReadyAt,nextReversalAt;
     public NpcPowerRules.Form form(){return isGojo()?(isShinjuku()?NpcPowerRules.Form.SHINJUKU:isAscended()?NpcPowerRules.Form.AWAKENED:NpcPowerRules.Form.STUDENT):(isTrueSukuna()?NpcPowerRules.Form.TRUE:isMegumi()?NpcPowerRules.Form.MEGUMI:NpcPowerRules.Form.YUJI);}
@@ -65,13 +68,13 @@ public final class JujutsuNpc extends PathfinderMob {
     public void clearAwakeningBurst(){awakeningBurstPending=false;}
     public boolean isAscended(){return isGojo()&&entityData.get(ASCENDED);}
     public boolean isShinjuku(){return isGojo()&&entityData.get(AWAKENED);}
-    public boolean awakenFromDanger(){if(!isGojo()||isAwakened()||!isAlive())return false;entityData.set(ASCENDED,true);applyFormVitals(true);awakeningBurstPending=true;return true;}
+    public boolean awakenFromDanger(){if(!isGojo()||isAwakened()||!isAlive()||!rollDangerTransformation())return false;entityData.set(ASCENDED,true);applyFormVitals(true);awakeningBurstPending=true;return true;}
     private boolean lastResortUsed;
     public boolean lastResortUsed(){return lastResortUsed;}
     public void markLastResort(){lastResortUsed=true;}
     public boolean isAwakened(){return entityData.get(AWAKENED)||isAscended()||isMegumi();}
-    @Override public void addAdditionalSaveData(net.minecraft.nbt.CompoundTag tag){super.addAdditionalSaveData(tag);tag.putBoolean("Megumi",isMegumi());tag.putInt("NpcDomainDelay",(int)Math.max(0,Math.min(800,domainReadyAt-level().getGameTime())));tag.putInt("MahoragaDelay",(int)Math.max(0,Math.min(1200,nextSummonAt-level().getGameTime())));tag.putBoolean("Awakened",entityData.get(AWAKENED));tag.putBoolean("Ascended",isAscended());tag.putBoolean("AwakeningBurstPending",awakeningBurstPending);tag.putBoolean("LastResortUsed",lastResortUsed);tag.putInt("NpcVitalsRevision",1);tag.putInt("ReverseDelay",(int)Math.max(0,Math.min(60,reversalReadyAt-level().getGameTime())));tag.putInt("ReversePulseDelay",(int)Math.max(0,Math.min(40,nextReversalAt-level().getGameTime())));}
-    @Override public void readAdditionalSaveData(net.minecraft.nbt.CompoundTag tag){super.readAdditionalSaveData(tag);entityData.set(MEGUMI,!isGojo()&&(tag.contains("Megumi")?tag.getBoolean("Megumi"):getType()==DomainEntities.MEGUMI_SUKUNA.get()));domainReadyAt=level().getGameTime()+Math.max(0,Math.min(800,tag.getInt("NpcDomainDelay")));nextSummonAt=level().getGameTime()+Math.max(0,Math.min(1200,tag.getInt("MahoragaDelay")));lastResortUsed=tag.getBoolean("LastResortUsed");awakeningBurstPending=tag.getBoolean("AwakeningBurstPending");entityData.set(ASCENDED,isGojo()&&(tag.contains("Ascended")?tag.getBoolean("Ascended"):getType()==DomainEntities.AWAKENED_GOJO.get()));entityData.set(AWAKENED,tag.contains("Awakened")?tag.getBoolean("Awakened"):isAdvancedType());
+    @Override public void addAdditionalSaveData(net.minecraft.nbt.CompoundTag tag){super.addAdditionalSaveData(tag);tag.putBoolean("DangerTransformationRolled",dangerTransformationRolled);tag.putBoolean("Megumi",isMegumi());tag.putInt("NpcDomainDelay",(int)Math.max(0,Math.min(800,domainReadyAt-level().getGameTime())));tag.putInt("MahoragaDelay",(int)Math.max(0,Math.min(1200,nextSummonAt-level().getGameTime())));tag.putBoolean("Awakened",entityData.get(AWAKENED));tag.putBoolean("Ascended",isAscended());tag.putBoolean("AwakeningBurstPending",awakeningBurstPending);tag.putBoolean("LastResortUsed",lastResortUsed);tag.putInt("NpcVitalsRevision",1);tag.putInt("ReverseDelay",(int)Math.max(0,Math.min(60,reversalReadyAt-level().getGameTime())));tag.putInt("ReversePulseDelay",(int)Math.max(0,Math.min(40,nextReversalAt-level().getGameTime())));}
+    @Override public void readAdditionalSaveData(net.minecraft.nbt.CompoundTag tag){super.readAdditionalSaveData(tag);dangerTransformationRolled=tag.getBoolean("DangerTransformationRolled");entityData.set(MEGUMI,!isGojo()&&(tag.contains("Megumi")?tag.getBoolean("Megumi"):getType()==DomainEntities.MEGUMI_SUKUNA.get()));domainReadyAt=level().getGameTime()+Math.max(0,Math.min(800,tag.getInt("NpcDomainDelay")));nextSummonAt=level().getGameTime()+Math.max(0,Math.min(1200,tag.getInt("MahoragaDelay")));lastResortUsed=tag.getBoolean("LastResortUsed");awakeningBurstPending=tag.getBoolean("AwakeningBurstPending");entityData.set(ASCENDED,isGojo()&&(tag.contains("Ascended")?tag.getBoolean("Ascended"):getType()==DomainEntities.AWAKENED_GOJO.get()));entityData.set(AWAKENED,tag.contains("Awakened")?tag.getBoolean("Awakened"):isAdvancedType());
         if(tag.getInt("NpcVitalsRevision")<1){
             float oldMax=40;for(var value:tag.getList("Attributes",10)){var attribute=(net.minecraft.nbt.CompoundTag)value;if(attribute.getString("Name").endsWith("generic.max_health"))oldMax=(float)attribute.getDouble("Base");}
             float oldHealth=tag.contains("Health")?tag.getFloat("Health"):oldMax;applyFormVitals(false);setHealth(NpcVitals.preserved(oldHealth,oldMax,getMaxHealth()));

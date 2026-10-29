@@ -16,7 +16,7 @@ public final class DomainEntities {
     public static final RegistryObject<EntityType<JujutsuNpc>> TRUE_SUKUNA=npc("true_sukuna");
     public static final RegistryObject<EntityType<JujutsuNpc>> AWAKENED_GOJO=npc("awakened_gojo");
     public static final RegistryObject<EntityType<JujutsuNpc>> MEGUMI_SUKUNA=npc("megumi_sukuna");
-    public static final RegistryObject<EntityType<dev.unlimitedvoid.entity.MahoragaEntity>> MAHORAGA=TYPES.register("mahoraga",()->EntityType.Builder.<dev.unlimitedvoid.entity.MahoragaEntity>of(dev.unlimitedvoid.entity.MahoragaEntity::new,MobCategory.CREATURE).sized(1.4f,3.3f).clientTrackingRange(12).updateInterval(2).build(UnlimitedVoid.ID+":mahoraga"));
+    public static final RegistryObject<EntityType<dev.unlimitedvoid.entity.MahoragaEntity>> MAHORAGA=TYPES.register("mahoraga",()->EntityType.Builder.<dev.unlimitedvoid.entity.MahoragaEntity>of(dev.unlimitedvoid.entity.MahoragaEntity::new,MobCategory.CREATURE).sized(1.4f,4f).clientTrackingRange(12).updateInterval(2).build(UnlimitedVoid.ID+":mahoraga"));
     private static RegistryObject<EntityType<JujutsuNpc>> npc(String name){
         return TYPES.register(name,()->EntityType.Builder.<JujutsuNpc>of(JujutsuNpc::new,MobCategory.CREATURE)
             .sized(.6f,1.95f).clientTrackingRange(10).updateInterval(3).build(UnlimitedVoid.ID+":"+name));
