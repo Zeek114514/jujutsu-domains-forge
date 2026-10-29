@@ -202,5 +202,14 @@
       }
     ],
     "subtitle": "subtitles.unlimitedvoid.purple_impact"
+  },
+  "mahoraga_turn": {
+    "subtitle": "subtitles.unlimitedvoid.mahoraga_turn",
+    "sounds": [
+      {
+        "name": "unlimitedvoid:mahoraga_turn",
+        "preload": true
+      }
+    ]
   }
 }

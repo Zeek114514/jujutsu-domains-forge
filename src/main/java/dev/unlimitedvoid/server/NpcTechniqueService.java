@@ -68,21 +68,22 @@ public final class NpcTechniqueService {
             else if(c.phase==PurpleDetonation.BLAST){if(age<PurpleDetonation.HIT_TICKS)blast(c,age);if(age>=PurpleDetonation.BLAST_TICKS)CASTS.remove(c.id);}
         }
     }
+    private static boolean hurt(Cast c,LivingEntity target,float amount){return target.hurt(source(c),amount*(target==c.owner?1:c.owner.attackScale()));}
     private static boolean exposed(Cast c,LivingEntity target){return !DomainService.fugaSheltered(c.level,c.origin,target.getBoundingBox().getCenter())&&c.level.clip(new ClipContext(c.position,target.getEyePosition(),ClipContext.Block.COLLIDER,ClipContext.Fluid.NONE,c.owner)).getType()==HitResult.Type.MISS;}
     private static List<LivingEntity> targets(Cast c,double radius){return c.level.getEntitiesOfClass(LivingEntity.class,new AABB(c.position,c.position).inflate(radius),t->enemy(c.owner,t));}
     private static DamageSource source(Cast c){var key=ResourceKey.create(Registries.DAMAGE_TYPE,new ResourceLocation(UnlimitedVoid.ID,c.kind.name().toLowerCase(Locale.ROOT)));return new DamageSource(c.level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(key),c.owner,c.owner);}
     private static void field(Cast c,int age){int scanned=0;for(var t:targets(c,8)){
         if(scanned++>=128)break;var delta=c.position.subtract(t.getBoundingBox().getCenter());double distance=delta.length();if(distance>8||!exposed(c,t))continue;
-        if(distance>.05){t.setDeltaMovement(t.getDeltaMovement().scale(.65).add(delta.normalize().scale((.12+.28*(1-distance/8))*MahoragaService.force(t,dev.unlimitedvoid.MahoragaRules.Kind.BLUE))));t.hurtMarked=true;}
-        if(age%10==0)t.hurt(source(c),4);
+        double force=MahoragaService.force(t,dev.unlimitedvoid.MahoragaRules.Kind.BLUE);if(distance>.05&&force>0){t.setDeltaMovement(t.getDeltaMovement().scale(1-.35*force).add(delta.normalize().scale((.12+.28*(1-distance/8))*force)));t.hurtMarked=true;}
+        if(age%10==0)hurt(c,t,4);
     }}
     private static void red(Cast c){int scanned=0;for(var t:targets(c,6)){
         if(scanned++>=128)break;double d=t.getBoundingBox().getCenter().distanceTo(c.position);if(d>6||!exposed(c,t))continue;
-        t.hurt(source(c),(float)(72*(1-.45*d/6)));t.setDeltaMovement(t.position().subtract(c.position).normalize().scale(2).add(0,.5,0).scale(MahoragaService.force(t,dev.unlimitedvoid.MahoragaRules.Kind.RED)));t.hurtMarked=true;
+        hurt(c,t,(float)(72*(1-.45*d/6)));double force=MahoragaService.force(t,dev.unlimitedvoid.MahoragaRules.Kind.RED);if(force>0){t.setDeltaMovement(t.position().subtract(c.position).normalize().scale(2).add(0,.5,0).scale(force));t.hurtMarked=true;}
     }}
     private static void purple(Cast c,Vec3 from,Vec3 to){int scanned=0;for(var t:c.level.getEntitiesOfClass(LivingEntity.class,new AABB(from,to).inflate(4.5),e->enemy(c.owner,e)&&!c.struck.contains(e.getUUID()))){
         if(scanned++>=128||c.struck.size()>=512)break;
-        if(PurpleDetonation.closest(from,to,t.getBoundingBox().getCenter()).distanceToSqr(t.getBoundingBox().getCenter())<=4.5*4.5&&exposed(c,t)){c.struck.add(t.getUUID());t.hurt(source(c),160);}
+        if(PurpleDetonation.closest(from,to,t.getBoundingBox().getCenter()).distanceToSqr(t.getBoundingBox().getCenter())<=4.5*4.5&&exposed(c,t)){c.struck.add(t.getUUID());hurt(c,t,160);}
     }}
     private static void blast(Cast c,int age){double front=PurpleDetonation.front(age,c.radius);int scanned=0;
         var list=c.level.getEntitiesOfClass(LivingEntity.class,new AABB(c.position,c.position).inflate(front),t->(t==c.owner||enemy(c.owner,t))&&!c.struck.contains(t.getUUID()));
@@ -90,7 +91,7 @@ public final class NpcTechniqueService {
         for(int i=0;i<list.size()&&scanned++<128&&c.struck.size()<512;i++){
             var target=list.get((offset+i)%list.size());double distance=target.getBoundingBox().getCenter().distanceTo(c.position);
             if(distance>front||!exposed(c,target))continue;c.struck.add(target.getUUID());float damage=PurpleDetonation.damage(distance,c.radius,c.damage);
-            if(target==c.owner)damage*=c.backlash;if(damage>0)target.hurt(source(c),damage);
+            if(target==c.owner)damage*=c.backlash;if(damage>0)hurt(c,target,damage);
         }
     }
     @SubscribeEvent public static void stop(ServerStoppingEvent e){CASTS.clear();}
