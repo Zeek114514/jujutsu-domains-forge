@@ -8,6 +8,6 @@ public final class MahoragaRules {
     public static double forceFactor(int stage){return switch(Math.max(0,Math.min(4,stage))){case 1->.7;case 2->.4;case 3->.15;case 4->0;default->1;};}
     public static boolean advance(Kind kind,int stage,int exposures,long elapsed,long sinceStep){return stage>=0&&stage<4&&exposures>=(stage+1)*3&&elapsed>=(stage+1)*(kind==Kind.PURPLE?160L:60L)&&sinceStep>=40;}
     public static int adaptations(int packed){int count=0;for(var kind:Kind.values())count+=stage(packed,kind);return count;}
-    public static float growth(int packed){return 1+adaptations(packed)*.05f;}
+    public static float growth(long completed){return 1+Math.max(0,completed)*.05f;}
     private MahoragaRules(){}
 }

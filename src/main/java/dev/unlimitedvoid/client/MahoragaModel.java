@@ -17,28 +17,28 @@ public final class MahoragaModel extends HierarchicalModel<MahoragaEntity> {
     private static CubeListBuilder bronze(){return CubeListBuilder.create().texOffs(128,128);}
     public static LayerDefinition layer(){
         var mesh=new MeshDefinition();var root=mesh.getRoot();
-        var body=root.addOrReplaceChild("body",ivory().addBox(-10,-21,-5,20,15,10).addBox(-7.5f,-8,-4.5f,15,10,9),PartPose.offset(0,5,0));
+        var body=root.addOrReplaceChild("body",ivory().addBox(-10,-21,-4.5f,20,8,9).addBox(-8.5f,-13,-4,17,4,8).addBox(-7,-9,-3.6f,14,4,7.2f).addBox(-6,-5,-3.4f,12,7,6.8f),PartPose.offset(0,5,0));
         body.addOrReplaceChild("pectorals",ivory().addBox(-10.4f,-20,-7,10,7,3).addBox(.4f,-20,-7,10,7,3),PartPose.ZERO);
         for(int side:new int[]{-1,1}){
             body.addOrReplaceChild("clavicle_"+side,ivory().addBox(-4,-1,-1,8,2,2),PartPose.offsetAndRotation(side*5,-21,-6.5f,0,0,side*.12f));
             body.addOrReplaceChild("pec_lower_"+side,gray().addBox(-4,-.4f,-.6f,8,.8f,1.2f),PartPose.offsetAndRotation(side*5,-13.2f,-6.5f,0,0,side*-.06f));
-            for(int i=0;i<3;i++)body.addOrReplaceChild("serratus_"+side+"_"+i,ivory().addBox(-1.6f,-.65f,-.7f,3.2f,1.3f,1.4f),PartPose.offsetAndRotation(side*(8.2f-i*.6f),-12+i*2,-5.8f,0,0,side*.38f));
+            for(int i=0;i<3;i++)body.addOrReplaceChild("serratus_"+side+"_"+i,ivory().addBox(-1.6f,-.65f,-.7f,3.2f,1.3f,1.4f),PartPose.offsetAndRotation(side*(7.3f-i*.7f),-12+i*2,-5.8f,0,0,side*.38f));
         }
-        body.addOrReplaceChild("ribs",gray().addBox(-9,-12.5f,-5.7f,4,4,1.4f).addBox(5,-12.5f,-5.7f,4,4,1.4f),PartPose.ZERO);
-        var abs=ivory();for(int row=0;row<3;row++){float y=-13+row*3.4f;abs.addBox(-4.8f,y,-6.3f,4.5f,2.8f,1.9f).addBox(.3f,y,-6.3f,4.5f,2.8f,1.9f);}body.addOrReplaceChild("abdominals",abs,PartPose.ZERO);
-        body.addOrReplaceChild("trapezius",ivory().addBox(-8,-24,-3.7f,16,5,8).addBox(-3,-21,4,6,15,2.5f),PartPose.ZERO);
-        body.addOrReplaceChild("spinal_ridge",gray().addBox(-.7f,-23,6.4f,1.4f,18,.8f),PartPose.ZERO);
-        var vertebrae=ivory();for(int i=0;i<7;i++)vertebrae.addBox(-1.2f,-22+i*2.3f,6.5f,2.4f,1.3f,1);body.addOrReplaceChild("vertebrae",vertebrae,PartPose.ZERO);
-        body.addOrReplaceChild("back_lats",ivory().addBox(-11,-20,3,7,12,3.5f).addBox(4,-20,3,7,12,3.5f),PartPose.ZERO);
-        body.addOrReplaceChild("sash",dark().addBox(-9,-2,-6,18,5,12).addBox(-3,2,-6.8f,6,14,1.2f).addBox(1,2,-7.5f,3,11,1.3f),PartPose.ZERO);
+        body.addOrReplaceChild("ribs",gray().addBox(-7.8f,-12.5f,-4.9f,2.8f,4,1).addBox(5,-12.5f,-4.9f,2.8f,4,1),PartPose.ZERO);
+        var abs=ivory();for(int row=0;row<3;row++){float y=-13+row*3.4f;abs.addBox(-3.9f,y,-5.5f,3.6f,2.8f,1.6f).addBox(.3f,y,-5.5f,3.6f,2.8f,1.6f);}body.addOrReplaceChild("abdominals",abs,PartPose.ZERO);
+        body.addOrReplaceChild("trapezius",ivory().addBox(-8,-24,-3.7f,16,5,8).addBox(-2,-21,3.5f,4,15,2),PartPose.ZERO);
+        body.addOrReplaceChild("spinal_ridge",gray().addBox(-.7f,-23,5.4f,1.4f,18,.8f),PartPose.ZERO);
+        var vertebrae=ivory();for(int i=0;i<7;i++)vertebrae.addBox(-1.2f,-22+i*2.3f,5.5f,2.4f,1.3f,1);body.addOrReplaceChild("vertebrae",vertebrae,PartPose.ZERO);
+        body.addOrReplaceChild("back_lats",ivory().addBox(-10.5f,-20,2.5f,6.5f,6,3).addBox(4,-20,2.5f,6.5f,6,3).addBox(-8.5f,-14,2.5f,4.5f,5,2).addBox(4,-14,2.5f,4.5f,5,2),PartPose.ZERO);
+        body.addOrReplaceChild("sash",dark().addBox(-6.8f,-2,-4.8f,13.6f,5,9.6f).addBox(-3,2,-6.8f,6,14,1.2f).addBox(1,2,-7.5f,3,11,1.3f),PartPose.ZERO);
         var trim=dark().addBox(-8,-20.6f,-7.5f,16,.7f,.7f);for(int i=0;i<5;i++){float x=-7.5f+i*3.5f,y=-21+Math.abs(2-i)*.5f;trim.addBox(x,y,-8,2.3f,2.3f,.7f).addBox(x+.85f,y+2,-7.9f,.7f,2,.6f);}body.addOrReplaceChild("chest_chain",trim,PartPose.ZERO);var holes=ivory();for(int i=0;i<5;i++){float x=-7.5f+i*3.5f,y=-21+Math.abs(2-i)*.5f;holes.addBox(x+.55f,y+.55f,-8.2f,1.2f,1.2f,.5f);}body.addOrReplaceChild("chain_insets",holes,PartPose.ZERO);
-        var armR=root.addOrReplaceChild("right_arm",ivory().addBox(-5,-2,-5.5f,10,12,11),PartPose.offset(-14,-13,0));
-        var armL=root.addOrReplaceChild("left_arm",ivory().addBox(-5,-2,-5.5f,10,12,11),PartPose.offset(14,-13,0));
+        var armR=root.addOrReplaceChild("right_arm",ivory().addBox(-4.2f,-2,-4.6f,8.4f,12,9.2f),PartPose.offset(-14,-13,0));
+        var armL=root.addOrReplaceChild("left_arm",ivory().addBox(-4.2f,-2,-4.6f,8.4f,12,9.2f),PartPose.offset(14,-13,0));
         for(var arm:new PartDefinition[]{armR,armL}){
-            arm.addOrReplaceChild("deltoid",ivory().addBox(-5.8f,-1,-6.1f,11.6f,6,12.2f),PartPose.ZERO);
+            arm.addOrReplaceChild("deltoid",ivory().addBox(-5.3f,-1,-5.5f,10.6f,6,11),PartPose.ZERO);
             arm.addOrReplaceChild("shoulder_caps",ivory().addBox(-4.5f,-2,-5,9,2,10).addBox(-4.8f,1,4.6f,9.6f,7,1.8f),PartPose.ZERO);
             arm.addOrReplaceChild("biceps",ivory().addBox(-4.3f,4,-6,8.6f,6,2),PartPose.ZERO);
-            var forearm=arm.addOrReplaceChild("forearm",ivory().addBox(-4,0,-4.5f,8,14,9).addBox(-4.3f,12,-4.8f,8.6f,5.5f,9.6f),PartPose.offset(0,10,0));
+            var forearm=arm.addOrReplaceChild("forearm",ivory().addBox(-3.5f,0,-4,7,14,8).addBox(-3.8f,12,-4.3f,7.6f,5.5f,8.6f),PartPose.offset(0,10,0));
             forearm.addOrReplaceChild("raised_ridges",gray().addBox(-4.3f,2,-5,8.6f,1.5f,1.2f).addBox(-4.3f,6,-5,8.6f,1.5f,1.2f).addBox(-4.3f,10,-5,8.6f,1.5f,1.2f),PartPose.ZERO);
         }
         armR.getChild("forearm").addOrReplaceChild("extermination_blade",ivory().addBox(-4,-1,-1,7,17,2).addBox(-3.5f,16,-.9f,6,4,1.8f).addBox(-2.5f,20,-.75f,4,4,1.5f).addBox(-1.5f,24,-.6f,2,3,1.2f),PartPose.offsetAndRotation(-5,0,-1,0,0,.09f));
@@ -56,7 +56,7 @@ public final class MahoragaModel extends HierarchicalModel<MahoragaEntity> {
             head.addOrReplaceChild("fin_"+side+"_"+tier,fin,PartPose.offsetAndRotation(side*3.8f,-6+tier*4,0,0,0,side*(tier==0?-.20f:.13f)));
         }
         for(int side:new int[]{-1,1}){
-            var leg=root.addOrReplaceChild(side<0?"right_leg":"left_leg",cloth().addBox(-4.5f,0,-4.5f,9,13,9).addBox(-5,2,-5,10,8,10),PartPose.offset(side*5,7,0));
+            var leg=root.addOrReplaceChild(side<0?"right_leg":"left_leg",cloth().addBox(-4,0,-4,8,13,8).addBox(-4.2f,2,-4.3f,8.4f,8,8.6f),PartPose.offset(side*4.5f,7,0));
             leg.addOrReplaceChild("folds",cloth().addBox(-4.5f,1,-5.8f,2.3f,11,1.4f).addBox(.6f,1,-5.7f,2,10.5f,1.3f),PartPose.ZERO);
             leg.addOrReplaceChild("ankle",ivory().addBox(-3,12,-3.2f,6,3.5f,6.4f),PartPose.ZERO);
             leg.addOrReplaceChild("ankle_wrap",dark().addBox(-3.2f,12.6f,-3.4f,6.4f,1.8f,6.8f),PartPose.ZERO);
