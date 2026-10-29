@@ -28,4 +28,4 @@
 
 苍/赫牵引和击退随对应等级减弱，满级不再受其附加力量影响。无下限通过真实出手被阻挡来积累，满级后近战可命中五条，并解锁低概率、12秒冷却的空间斩（24格，受墙体遮挡）。无量空处在持续控制期间也能适应，满级解除行动控制；物理封闭结界仍然存在，不能直接穿壳。
 
-生命、轮盘、主人、适应等级与累积时间支持NBT保存读取。完整关服重开存档、多台电脑联机及大规模性能尚未做本版验收。既有宿傩战力和领域修复沿用[1.9.1记录](NPC_BALANCE_VALIDATION.md)，本版实机范围见[验证记录](MAHORAGA_VALIDATION.md)。
+生命、轮盘、主人、适应等级与累积时间支持NBT保存读取。完整关服重开存档、多台电脑联机及大规模性能尚未做本版验收。既有宿傩战力和领域修复沿用[1.9.1记录](NPC_BALANCE_VALIDATION.md)，本版实机范围见[攻击动作验证](MAHORAGA_ATTACK_ANIMATION_VALIDATION.md)、[无上限成长验证](MAHORAGA_GROWTH_VALIDATION.md)和[水平法轮验证](MAHORAGA_WHEEL_VALIDATION.md)，初版记录见[1.10.0验证](MAHORAGA_VALIDATION.md)。

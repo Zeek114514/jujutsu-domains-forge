@@ -1,6 +1,6 @@
 # 咒术领域 · Jujutsu Domains
 
-> 当前本地版本：**1.10.6**（GitHub正式版1.10.0）（魔虚罗、逐步适应与宿傩战斗修复）。灶·开现已默认使用粒子火焰、火矢拖尾和爆燃烟尘。向空中的苍射入赫，或向赫射入苍，形成逐渐膨胀并大范围爆炸的自爆茈。
+> 当前版本：**1.10.6**（魔虚罗造型、完整攻击动作、无上限成长与概率变身）。灶·开现已默认使用粒子火焰、火矢拖尾和爆燃烟尘。向空中的苍射入赫，或向赫射入苍，形成逐渐膨胀并大范围爆炸的自爆茈。
 
 [![Build](https://github.com/Zeek114514/jujutsu-domains-forge/actions/workflows/build.yml/badge.svg)](https://github.com/Zeek114514/jujutsu-domains-forge/actions/workflows/build.yml)
 [![Minecraft](https://img.shields.io/badge/Minecraft-1.20.1-62b47a)](https://www.minecraft.net/)
@@ -16,13 +16,13 @@
 ## 下载和安装
 
 1. 安装 **Minecraft Java 1.20.1、Forge 47.4.10 或更高的 47.x、Java 17**。
-2. 前往 [Releases](https://github.com/Zeek114514/jujutsu-domains-forge/releases/latest)，下载 `unlimited-void-1.20.1-1.10.0.jar`。
+2. 前往 [Releases](https://github.com/Zeek114514/jujutsu-domains-forge/releases/latest)，下载 `unlimited-void-1.20.1-1.10.6.jar`。
 3. 放进当前游戏实例的 `mods` 文件夹。升级时移走旧版同名模组，避免重复加载，随后重启游戏。
 4. 多人游戏中客户端与服务端都要安装相同版本。
 
 升级时同时更新客户端和服务端；本版网络协议与旧预览版不同。
 
-开发依赖为Forge47.4.10，1.10.0实机使用Forge47.4.20。当前新增内容验证见[魔虚罗记录](docs/MAHORAGA_VALIDATION.md)和[宿傩平衡记录](docs/NPC_BALANCE_VALIDATION.md)；既有内容见[灶·开粒子记录](docs/FUGA_PARTICLES_VALIDATION.md)，自爆茈沿用[1.5.0记录](docs/PURPLE_DETONATION_VALIDATION.md)。此前记录按各自版本保留，不表示所有47.x、光影组合和硬件均已覆盖。御厨子血红天空/镜面的指定光影限制仍见[1.4.1记录](docs/SHRINE_SLASH_VALIDATION.md)。
+开发依赖为Forge47.4.10，实机验证使用Forge47.4.20。1.10.6见[攻击动作验证](docs/MAHORAGA_ATTACK_ANIMATION_VALIDATION.md)、[成长验证](docs/MAHORAGA_GROWTH_VALIDATION.md)与[法轮验证](docs/MAHORAGA_WHEEL_VALIDATION.md)；此前内容见[魔虚罗记录](docs/MAHORAGA_VALIDATION.md)和[宿傩平衡记录](docs/NPC_BALANCE_VALIDATION.md)；既有内容见[灶·开粒子记录](docs/FUGA_PARTICLES_VALIDATION.md)，自爆茈沿用[1.5.0记录](docs/PURPLE_DETONATION_VALIDATION.md)。此前记录按各自版本保留，不表示所有47.x、光影组合和硬件均已覆盖。御厨子血红天空/镜面的指定光影限制仍见[1.4.1记录](docs/SHRINE_SLASH_VALIDATION.md)。
 
 ## 角色与战斗（1.10.6）
 
@@ -38,7 +38,7 @@
 
 ![魔虚罗实机光影截图](docs/images/mahoraga-horizontal-1.10.5.png)
 
-魔虚罗每完成一级适应增加5%体型，无预设上限；身体、碰撞和近战触及距离同步成长。濒死变身每个角色一生只判定一次，失败会保存，不反复重抽。
+魔虚罗每完成一次适应增加原始体型5%，抗性满级后仍能通过对应有效命中继续成长，无预设上限；身体、碰撞和近战触及距离同步成长。濒死变身每个角色一生只判定一次，失败会保存，不反复重抽。
 
 [魔虚罗四种攻击的实机演示](docs/images/mahoraga-attacks-1.10.6.mp4)。
 
