@@ -85,7 +85,7 @@ NPC伤害只结算敌方怪物/敌方阵营角色及自爆时施术者反噬，�
 
 ## 获取与物品变身
 
-【咒术领域】创造栏现有六种生成蛋、眼罩和宿傩手指，共八个物品。可直接生成任意形态：
+【咒术领域】创造栏现有七种生成蛋、眼罩和宿傩手指，共九个物品。可直接生成任意形态：
 
 ```mcfunction
 /give @s unlimitedvoid:student_gojo_spawn_egg
@@ -94,6 +94,7 @@ NPC伤害只结算敌方怪物/敌方阵营角色及自爆时施术者反噬，�
 /give @s unlimitedvoid:sukuna_16_spawn_egg
 /give @s unlimitedvoid:megumi_sukuna_spawn_egg
 /give @s unlimitedvoid:true_sukuna_spawn_egg
+/give @s unlimitedvoid:mahoraga_spawn_egg
 /give @s unlimitedvoid:blindfold
 /give @s unlimitedvoid:sukuna_finger
 ```
@@ -106,11 +107,11 @@ NPC伤害只结算敌方怪物/敌方阵营角色及自爆时施术者反噬，�
 
 NPC与玩家共用最多8个正在运行的术式，达到上限时等待空位；觉醒首发待发状态会保留。目标扫描、每tick伤害处理和每次命中数量均有上限；不强制加载区块。角色卸载会中断非爆炸阶段术式，施法本身不跨服务端重启保存。
 
-无下限通道升级为协议5，领域通道协议14，服务端与客户端均须更新1.9.0。旧玩家施法仍保留原来的按键、冷却、音效和伤害逻辑。
+无下限通道为协议6，领域通道协议14，服务端与客户端均须更新1.10.0。旧玩家施法仍保留原来的按键、冷却、音效和伤害逻辑。
 
 ## 资源与验证
 
-六张皮肤来源和SHA256见[supplied-skins.json](supplied-skins.json)，觉醒与惠皮皮肤按用户新图原样复制；虎皮只修改服装掩膜。公开再分发许可未核验，本轮只本地安装，不上传这些皮肤或新版包到GitHub。
+六张皮肤来源和SHA256见[supplied-skins.json](supplied-skins.json)，觉醒与惠皮皮肤按用户新图原样复制；虎皮只修改服装掩膜。来源作者及通用再分发许可尚未核验，未将这些皮肤声明为原创或MIT素材。1.10.0按项目所有者要求同步，素材边界见[第三方说明](../THIRD_PARTY_NOTICES.md)。
 
 最终规则、战斗/回血、界面与原玩家术式回归结果见[NPC战斗验证](NPC_COMBAT_VALIDATION.md)。历史版本记录留在Git历史中。
 

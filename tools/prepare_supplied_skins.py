@@ -2,7 +2,10 @@
 from pathlib import Path
 from PIL import Image,ImageDraw
 import hashlib,json,shutil
-SOURCE=Path(r'D:/Internet Download/Edge')
+import argparse
+parser=argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--source',type=Path,required=True,help='Folder containing the supplied source skin PNGs')
+SOURCE=parser.parse_args().source
 ROOT=Path(__file__).resolve().parents[1]
 OUT=ROOT/'src/main/resources/assets/unlimitedvoid/textures/entity'
 files={'student_gojo':'skin_Suguru_Nobara_e459248157541bc5de80071429f3ed7f.png','shinjuku_gojo':'skin_Boy_Sweatpants_7e3d91008aeb1c4ca6635f00c9fa9088.png','sukuna_16':'b0059d77b9487888.png','true_sukuna':'720b8352ce7efeed.png','awakened_gojo':'skin_Anime_Jujutsu Kaisen_e4d8a245b9e687df4b4b286cfbf5c7f1.png'}

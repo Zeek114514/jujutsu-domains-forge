@@ -26,3 +26,9 @@ python tools/run_fuga_qa.py --minecraft-root '你的Minecraft根目录' --versio
 1.7.1的NPC套件追加独立创造栏/原版分类移除、真实Forge分页、五条近战与箭矢防御/减速、宿傩不共享防御、间接魔法/kill绕过、配置关闭和重力标记保留检查；截图creative-tab.png。
 
 `--suite npccombat --mode plain|shader`检查高专仅苍、受控随机种子的觉醒红/茈分支、自然AI满血觉醒/立即放茈、自爆死亡后扩散、存活后回血、贴脸茈、友方保护、玩家/NPC共用施法上限、五种血量、旧40血NBT迁移和反转延迟/恢复/满血封顶。界面套件`npcs`使用NoAI隔离变身/取蛋/保存检查，不能代替战斗套件。
+
+## 1.10.0当前套件
+
+`--suite npcs`覆盖九项创造栏、六种角色皮肤及NoAI隔离变身；`--suite npcdomains`覆盖领域反开/去重与真实魔虚罗召唤；`--suite sukunabalance`覆盖近身延展、领域内行动、外侧破壳与神龛追击。
+
+`--suite mahoraga --mode plain|shader`检查专属巨型模型、轮盘转动、材质与NBT；`--suite mahoragacombat --mode plain|shader`检查逐步适应、无下限实际命中、领域内行动、召唤战斗与主人死亡退场。`--suite mahoragaowned`仅重跑召唤与退场部分。最终1.10.0验证边界见docs/MAHORAGA_VALIDATION.md，不把NBT往返表述为完整退出重开测试。
