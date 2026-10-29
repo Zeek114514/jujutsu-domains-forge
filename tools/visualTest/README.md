@@ -32,3 +32,5 @@ python tools/run_fuga_qa.py --minecraft-root '你的Minecraft根目录' --versio
 `--suite npcs`覆盖九项创造栏、六种角色皮肤及NoAI隔离变身；`--suite npcdomains`覆盖领域反开/去重与真实魔虚罗召唤；`--suite sukunabalance`覆盖近身延展、领域内行动、外侧破壳与神龛追击。
 
 `--suite mahoraga --mode plain|shader`检查专属巨型模型、轮盘转动、材质与NBT；`--suite mahoragacombat --mode plain|shader`检查逐步适应、无下限实际命中、领域内行动、召唤战斗与主人死亡退场。`--suite mahoragaowned`仅重跑召唤与退场部分。最终1.10.0验证边界见docs/MAHORAGA_VALIDATION.md，不把NBT往返表述为完整退出重开测试。
+
+`--suite mahoragaanim --mode shader|plain`在独立新世界对真实目标逐招启动四种攻击，检查单次伤害及接触时刻、实际渲染的肘膝与转腰、真实腾空和落地，并采集按序PNG用于实机动画预览。

@@ -65,7 +65,7 @@ public final class MahoragaEntity extends PathfinderMob {
         if(dismissing()){if(now-entityData.get(DISMISS)>=30)discard();return;}
         if(DomainService.isCaptive(getUUID())&&now%20==0)observe(Kind.VOID);adapt();
         if(!isNoAi()&&!emerging()&&now-lastDamage>=60&&now%40==0&&getHealth()<getMaxHealth())heal(5);
-        if(attackType()>0){long age=now-entityData.get(ATTACK_START);int hit=attackType()==1?10:attackType()==2?14:18;if(!attackLanded&&age>=hit){attackLanded=true;impact();}if(age>=30){entityData.set(ATTACK,0);attackTarget=null;}}
+        if(attackType()>0){long age=now-entityData.get(ATTACK_START);int hit=MahoragaAttackMotion.contact(attackType());if(!attackLanded&&age>=hit){attackLanded=true;impact();}if(age>=MahoragaAttackMotion.DURATION){entityData.set(ATTACK,0);attackTarget=null;}}
     }
     public boolean startAttack(LivingEntity target){
         if(!canAct()||!enemy(target)||!hasLineOfSight(target)||attackType()>0||level().getGameTime()<recovery)return false;
@@ -91,7 +91,7 @@ public final class MahoragaEntity extends PathfinderMob {
     public void beginEmergence(){entityData.set(EMERGE,level().getGameTime());}
     public void turnWheel(){entityData.set(WHEEL,entityData.get(WHEEL)+1);entityData.set(TURN,level().getGameTime());}
     public float wheelAngle(float partial){float step=entityData.get(WHEEL),p=DomainTimeline.smooth((level().getGameTime()+partial-entityData.get(TURN))/14f);return (step-(step>0?1-p:0))*(float)Math.PI/4;}
-    public int attackType(){return entityData.get(ATTACK);}public float attackProgress(float partial){return attackType()==0?0:Math.max(0,Math.min(1,(level().getGameTime()+partial-entityData.get(ATTACK_START))/30f));}
+    public int attackType(){return entityData.get(ATTACK);}public float attackAge(float partial){return level().getGameTime()-entityData.get(ATTACK_START)+partial;}public float attackProgress(float partial){return attackType()==0?0:Math.max(0,Math.min(1,(level().getGameTime()+partial-entityData.get(ATTACK_START))/30f));}
     private static final class FollowSummoner extends net.minecraft.world.entity.ai.goal.Goal {
         private final MahoragaEntity actor;FollowSummoner(MahoragaEntity actor){this.actor=actor;setFlags(java.util.EnumSet.of(Flag.MOVE,Flag.LOOK));}
         @Override public boolean canUse(){return actor.canAct()&&actor.owner()!=null&&actor.distanceToSqr(actor.owner())>6*6;}

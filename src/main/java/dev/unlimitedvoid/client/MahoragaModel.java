@@ -1,5 +1,6 @@
 package dev.unlimitedvoid.client;
 import dev.unlimitedvoid.UnlimitedVoid;
+import dev.unlimitedvoid.MahoragaAttackMotion;
 import dev.unlimitedvoid.entity.MahoragaEntity;
 import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.*;
@@ -8,8 +9,8 @@ import net.minecraft.resources.ResourceLocation;
 /** Cuboid geometry follows the approved concept: broad chest, long arms, temple fins and eight handles. */
 public final class MahoragaModel extends HierarchicalModel<MahoragaEntity> {
     public static final ModelLayerLocation LAYER=new ModelLayerLocation(new ResourceLocation(UnlimitedVoid.ID,"mahoraga"),"main");
-    private final ModelPart root,body,head,right,left,rightLeg,leftLeg,wheel,wheelMount;
-    public MahoragaModel(ModelPart root){this.root=root;body=root.getChild("body");head=root.getChild("head");right=root.getChild("right_arm");left=root.getChild("left_arm");rightLeg=root.getChild("right_leg");leftLeg=root.getChild("left_leg");wheelMount=root.getChild("wheel_mount");wheel=wheelMount.getChild("wheel");}
+    private final ModelPart root,body,head,right,left,rightLeg,leftLeg,wheel,wheelMount,rightForearm,leftForearm,rightShin,leftShin,rightFoot,leftFoot;
+    public MahoragaModel(ModelPart root){this.root=root;body=root.getChild("body");head=root.getChild("head");right=root.getChild("right_arm");left=root.getChild("left_arm");rightLeg=root.getChild("right_leg");leftLeg=root.getChild("left_leg");wheelMount=root.getChild("wheel_mount");wheel=wheelMount.getChild("wheel");rightForearm=right.getChild("forearm");leftForearm=left.getChild("forearm");rightShin=rightLeg.getChild("shin");leftShin=leftLeg.getChild("shin");rightFoot=rightShin.getChild("foot");leftFoot=leftShin.getChild("foot");}
     private static CubeListBuilder ivory(){return CubeListBuilder.create().texOffs(0,0);}
     private static CubeListBuilder gray(){return CubeListBuilder.create().texOffs(64,64);}
     private static CubeListBuilder dark(){return CubeListBuilder.create().texOffs(128,0);}
@@ -84,11 +85,12 @@ public final class MahoragaModel extends HierarchicalModel<MahoragaEntity> {
         crest=crest.addOrReplaceChild("crown_curve_2",ivory().addBox(-1.05f,-3.5f,-.8f,2.1f,3.5f,1.6f),PartPose.offsetAndRotation(0,-4,0,-.3f,0,.35f));
         crest.addOrReplaceChild("crown_hook",ivory().addBox(-.65f,-4,-.55f,1.3f,4,1.1f).addBox(-.3f,-5,-.3f,.6f,1,.6f),PartPose.offsetAndRotation(0,-3.5f,0,-.8f,0,.95f));
         for(int side:new int[]{-1,1}){
-            var leg=root.addOrReplaceChild(side<0?"right_leg":"left_leg",cloth().addBox(-4,0,-4,8,13,8).addBox(-4.2f,2,-4.3f,8.4f,8,8.6f),PartPose.offset(side*4.5f,7,0));
-            leg.addOrReplaceChild("folds",cloth().addBox(-4.5f,1,-5.8f,2.3f,11,1.4f).addBox(.6f,1,-5.7f,2,10.5f,1.3f),PartPose.ZERO);
-            leg.addOrReplaceChild("ankle",ivory().addBox(-3,12,-3.2f,6,3.5f,6.4f),PartPose.ZERO);
-            leg.addOrReplaceChild("ankle_wrap",dark().addBox(-3.2f,12.6f,-3.4f,6.4f,1.8f,6.8f),PartPose.ZERO);
-            leg.addOrReplaceChild("foot",ivory().addBox(-4,14.5f,-7.5f,8,2.5f,12),PartPose.ZERO);
+            var leg=root.addOrReplaceChild(side<0?"right_leg":"left_leg",cloth().addBox(-4,0,-4,8,7.5f,8).addBox(-4.2f,2,-4.3f,8.4f,5.5f,8.6f),PartPose.offset(side*4.5f,7,0));
+            leg.addOrReplaceChild("folds",cloth().addBox(-4.5f,1,-5.8f,2.3f,6,1.4f).addBox(.6f,1,-5.7f,2,6,1.3f),PartPose.ZERO);
+            var shin=leg.addOrReplaceChild("shin",cloth().addBox(-4,0,-4,8,5.5f,8).addBox(-4.2f,0,-4.3f,8.4f,2.5f,8.6f),PartPose.offset(0,7.5f,0));
+            shin.addOrReplaceChild("ankle",ivory().addBox(-3,4.5f,-3.2f,6,3.5f,6.4f),PartPose.ZERO);
+            shin.addOrReplaceChild("ankle_wrap",dark().addBox(-3.2f,5.1f,-3.4f,6.4f,1.8f,6.8f),PartPose.ZERO);
+            shin.addOrReplaceChild("foot",ivory().addBox(-4,0,-7.5f,8,2.5f,12),PartPose.offset(0,7,0));
         }
         var mount=root.addOrReplaceChild("wheel_mount",CubeListBuilder.create(),PartPose.offsetAndRotation(0,-33,0,-.20f,0,0));var wheel=mount.addOrReplaceChild("wheel",bronze().addBox(-2,-1.8f,-2,4,3.6f,4),PartPose.ZERO);
         wheel.addOrReplaceChild("hub_rings",bronze().addBox(-3,-1.1f,-3,6,2.2f,6).addBox(-1.4f,-2.4f,-1.4f,2.8f,1.2f,2.8f),PartPose.ZERO);
@@ -106,6 +108,22 @@ public final class MahoragaModel extends HierarchicalModel<MahoragaEntity> {
         rightLeg.y=leftLeg.y=1;rightLeg.yScale=leftLeg.yScale=23f/17f;
         right.zRot=.10f;left.zRot=-.10f;right.xRot=(float)Math.cos(swing*.6662)*.45f*amount;left.xRot=-right.xRot;rightLeg.xRot=(float)Math.cos(swing*.6662)*.8f*amount;leftLeg.xRot=-rightLeg.xRot;
         body.xRot=.035f;wheel.yRot=entity.wheelAngle(partial);wheelMount.y+=(float)Math.sin(age*.07)*.25f;
-        float hit=(float)Math.sin(entity.attackProgress(partial)*Math.PI);if(entity.attackType()>0){right.xRot-=hit*1.6f;right.zRot+=hit*.5f;body.yRot=-hit*.15f;}
+        if(entity.attackType()>0)attackPose(entity,MahoragaAttackMotion.sample(entity.attackType(),entity.attackAge(partial)),pitch,entity.attackAge(partial));
+    }
+    private static void arm(ModelPart part,ModelPart forearm,MahoragaAttackMotion.Arm pose,float twist){part.xRot=pose.pitch();part.yRot=twist+pose.yaw();part.zRot=pose.roll();forearm.xRot=pose.elbow();}
+    private static float compression(MahoragaAttackMotion.Leg pose){return 23-(23f/17f)*(7.5f*(float)Math.cos(pose.hip())+7*(float)Math.cos(pose.hip()+pose.knee())+2.5f);}
+    private void attackPose(MahoragaEntity entity,MahoragaAttackMotion.Pose pose,float pitch,float age){
+        body.yRot=pose.yaw();body.xRot+=pose.lean();body.z=-pose.lean()*3;
+        head.yRot-=pose.yaw()*.45f;head.xRot+=pose.head();head.z=-pose.lean()*12;
+        float turn=pose.yaw(),sin=(float)Math.sin(turn),cos=(float)Math.cos(turn);
+        right.x=-14*cos;left.x=14*cos;right.z=14*sin-pose.lean()*10;left.z=-14*sin-pose.lean()*10;
+        arm(left,leftForearm,pose.left(),turn);arm(right,rightForearm,pose.right(),turn);
+        float aim=Math.max(-.45f,Math.min(.9f,pitch*(float)Math.PI/180))*Math.min(1,age/MahoragaAttackMotion.contact(entity.attackType()))*Math.min(1,(MahoragaAttackMotion.DURATION-age)/7);
+        if(entity.attackType()==1)left.xRot+=aim;else right.xRot+=aim*.8f;
+        float dl=compression(pose.leftLeg()),dr=compression(pose.rightLeg()),crouch=entity.onGround()?(dl+dr)*.5f:0;
+        root.y+=crouch;leftLeg.y=1+(entity.onGround()?dl-crouch:0);rightLeg.y=1+(entity.onGround()?dr-crouch:0);
+        leftLeg.z=-pose.step();rightLeg.z=pose.step()*.3f;
+        leftLeg.xRot=pose.leftLeg().hip();rightLeg.xRot=pose.rightLeg().hip();leftShin.xRot=pose.leftLeg().knee();rightShin.xRot=pose.rightLeg().knee();
+        leftFoot.xRot=-leftLeg.xRot-leftShin.xRot;rightFoot.xRot=-rightLeg.xRot-rightShin.xRot;
     }
 }
