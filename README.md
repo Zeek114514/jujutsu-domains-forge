@@ -1,6 +1,6 @@
 # 咒术领域 · Jujutsu Domains
 
-> 当前本地版本：**1.10.3**（GitHub正式版1.10.0）（魔虚罗、逐步适应与宿傩战斗修复）。灶·开现已默认使用粒子火焰、火矢拖尾和爆燃烟尘。向空中的苍射入赫，或向赫射入苍，形成逐渐膨胀并大范围爆炸的自爆茈。
+> 当前本地版本：**1.10.4**（GitHub正式版1.10.0）（魔虚罗、逐步适应与宿傩战斗修复）。灶·开现已默认使用粒子火焰、火矢拖尾和爆燃烟尘。向空中的苍射入赫，或向赫射入苍，形成逐渐膨胀并大范围爆炸的自爆茈。
 
 [![Build](https://github.com/Zeek114514/jujutsu-domains-forge/actions/workflows/build.yml/badge.svg)](https://github.com/Zeek114514/jujutsu-domains-forge/actions/workflows/build.yml)
 [![Minecraft](https://img.shields.io/badge/Minecraft-1.20.1-62b47a)](https://www.minecraft.net/)
@@ -24,7 +24,7 @@
 
 开发依赖为Forge47.4.10，1.10.0实机使用Forge47.4.20。当前新增内容验证见[魔虚罗记录](docs/MAHORAGA_VALIDATION.md)和[宿傩平衡记录](docs/NPC_BALANCE_VALIDATION.md)；既有内容见[灶·开粒子记录](docs/FUGA_PARTICLES_VALIDATION.md)，自爆茈沿用[1.5.0记录](docs/PURPLE_DETONATION_VALIDATION.md)。此前记录按各自版本保留，不表示所有47.x、光影组合和硬件均已覆盖。御厨子血红天空/镜面的指定光影限制仍见[1.4.1记录](docs/SHRINE_SLASH_VALIDATION.md)。
 
-## 角色与战斗（1.10.3）
+## 角色与战斗（1.10.4）
 
 六种NPC使用用户提供的玩家皮肤。五条主要快速接近怪物近战；高专只用苍拳，觉醒/新宿使用苍拳和赫拳，分别短促吸近或击退。常规远程术式至少间隔8秒，进阶远程分支茈仍为5%。新宿遇原身宿傩优先贴近放茈。高专首次濒死以默认50%概率满血觉醒并立即放茈；觉醒/新宿低于5%触发一次自爆茈。
 
@@ -40,7 +40,7 @@
 
 魔虚罗每完成一级适应增加5%体型，无预设上限；身体、碰撞和近战触及距离同步成长。濒死变身每个角色一生只判定一次，失败会保存，不反复重抽。
 
-配置、濒死优先级和原版玩家形态说明见[NPC指南](docs/NPCS.md)。客户端/服务端都需更新1.10.3（无下限通道协议7，领域协议14）。
+配置、濒死优先级和原版玩家形态说明见[NPC指南](docs/NPCS.md)。客户端/服务端都需更新1.10.4（无下限通道协议7，领域协议14）。
 
 ## 玩法
 
