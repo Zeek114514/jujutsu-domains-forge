@@ -9,8 +9,14 @@ import net.minecraft.sounds.SoundSource;
 /** NPC attacks protect players and allies and never modify terrain. Ordinary attacks respect Infinity. */
 public final class SukunaCombatService {
     private static boolean allowed(JujutsuNpc n,LivingEntity t){return !n.isGojo()&&n.isAlive()&&!n.isNoAi()&&!DomainService.isCaptive(n.getUUID())&&!DomainService.npcChanting(n)&&!FugaService.casting(n.getUUID())&&NpcTechniqueService.enemy(n,t)&&n.hasLineOfSight(t);}
+    public static boolean descend(JujutsuNpc npc,LivingEntity target){
+        var shrine=ShrineStructures.get(npc.getUUID());
+        if(shrine==null||target==null||npc.getY()-target.getY()<=3){npc.descendingShrine(false);return false;}
+        Vec3 direction=new Vec3(target.getX()-npc.getX(),0,target.getZ()-npc.getZ());if(direction.lengthSqr()<.1)direction=new Vec3(npc.getLookAngle().x,0,npc.getLookAngle().z);if(direction.lengthSqr()<.1)direction=new Vec3(0,0,1);
+        Vec3 exit=shrine.position().add(direction.normalize().scale(13));npc.descendingShrine(true);npc.getNavigation().stop();npc.getMoveControl().setWantedPosition(exit.x,npc.getY(),exit.z,1.45);npc.fallDistance=0;return true;
+    }
     public static boolean punch(JujutsuNpc n,LivingEntity t){if(!allowed(n,t)||n.punchKind()>=0||n.distanceToSqr(t)>NpcMeleeRules.REACH*NpcMeleeRules.REACH)return false;n.beginStrike(t.getUUID());return true;}
-    public static void impact(JujutsuNpc n,LivingEntity t){if(!allowed(n,t)||n.distanceToSqr(t)>2.8*2.8)return;n.swing(net.minecraft.world.InteractionHand.MAIN_HAND,true);if(t.hurt(n.damageSources().mobAttack(n),18)){t.knockback(.35,n.getX()-t.getX(),n.getZ()-t.getZ());((ServerLevel)n.level()).sendParticles(net.minecraft.core.particles.ParticleTypes.CRIT,t.getX(),t.getY()+1,t.getZ(),5,.2,.3,.2,.05);}}
+    public static void impact(JujutsuNpc n,LivingEntity t){if(!allowed(n,t)||n.distanceToSqr(t)>2.8*2.8)return;n.swing(net.minecraft.world.InteractionHand.MAIN_HAND,true);if(t.hurt(n.damageSources().mobAttack(n),24*n.attackScale())){t.knockback(.35,n.getX()-t.getX(),n.getZ()-t.getZ());((ServerLevel)n.level()).sendParticles(net.minecraft.core.particles.ParticleTypes.CRIT,t.getX(),t.getY()+1,t.getZ(),5,.2,.3,.2,.05);}}
     public static boolean slash(JujutsuNpc n,LivingEntity t){
         if(!allowed(n,t)||n.distanceToSqr(t)>24*24)return false;boolean cleave=n.distanceToSqr(t)<4*4;
         Vec3 center=t.getBoundingBox().getCenter(),side=n.getLookAngle().cross(new Vec3(0,1,0)).normalize();if(side.lengthSqr()<.1)side=new Vec3(1,0,0);
@@ -18,7 +24,7 @@ public final class SukunaCombatService {
         DomainNetwork.npcSlash((ServerLevel)n.level(),n.getUUID(),center.subtract(extent),center.add(extent),cleave);
         n.swing(net.minecraft.world.InteractionHand.MAIN_HAND,true);
         n.level().playSound(null,n.blockPosition(),DomainSounds.SLASH_WIND.get(),SoundSource.HOSTILE,.55f,1);
-        if(t.hurt(n.damageSources().mobAttack(n),cleave?32:24))n.level().playSound(null,t.blockPosition(),DomainSounds.SLASH_HIT.get(),SoundSource.HOSTILE,.5f,1);
+        if(t.hurt(n.damageSources().mobAttack(n),(cleave?44:28)*n.attackScale()))n.level().playSound(null,t.blockPosition(),DomainSounds.SLASH_HIT.get(),SoundSource.HOSTILE,.5f,1);
         return true;
     }
     public static boolean summon(JujutsuNpc n,LivingEntity t){

@@ -35,7 +35,7 @@ public final class FugaCombat {
             if(dust!=null && (point.distanceToSqr(dust.center())>dust.radius()*dust.radius()||DomainService.fugaContested(dust.owner(),point)))continue;
             if(dust==null && level.clip(new ClipContext(impact.add(0,.25,0),target.getEyePosition(),ClipContext.Block.COLLIDER,ClipContext.Fluid.NONE,caster)).getType()!=HitResult.Type.MISS)continue;
             struck.add(target.getUUID());count++;
-            float amount=FugaCombatRules.damage(distance,radius,maximum);
+            float amount=FugaCombatRules.damage(distance,radius,maximum)*(caster instanceof dev.unlimitedvoid.entity.JujutsuNpc n?n.attackScale():1);
             if(amount>0&&target.hurt(source,amount)&&target.isAlive())target.setSecondsOnFire(dust==null?4:8);
         }
         return count;

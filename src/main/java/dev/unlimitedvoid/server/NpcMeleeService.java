@@ -21,7 +21,7 @@ public final class NpcMeleeService {
     public static void impact(JujutsuNpc npc,LivingEntity target,LimitlessKind kind){
         if(!npc.isAlive()||(DomainService.isCaptive(npc.getUUID())||DomainService.npcChanting(npc))||NpcTechniqueService.charging(npc)||NpcTechniqueService.detonating(npc)||!NpcTechniqueService.enemy(npc,target)||!npc.hasLineOfSight(target)||npc.distanceToSqr(target)>2.8*2.8)return;
         npc.swing(InteractionHand.MAIN_HAND,true);
-        if(!target.hurt(npc.damageSources().mobAttack(npc),NpcMeleeRules.damage(kind)))return;
+        if(!target.hurt(npc.damageSources().mobAttack(npc),NpcMeleeRules.damage(kind)*npc.attackScale()))return;
         Vec3 direction=kind==LimitlessKind.RED?target.position().subtract(npc.position()):npc.position().subtract(target.position());
         if(direction.lengthSqr()>.01){target.setDeltaMovement(direction.normalize().scale(kind==LimitlessKind.RED?1.5:.30).add(0,kind==LimitlessKind.RED?.3:.04,0));target.hurtMarked=true;}
         particles(npc,kind,target.getBoundingBox().getCenter(),12);

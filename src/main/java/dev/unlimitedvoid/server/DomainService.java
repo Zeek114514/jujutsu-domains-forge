@@ -130,7 +130,7 @@ public final class DomainService {
     /** External shell hit; the range test uses the sphere surface, not its center. */
     public static boolean strikeBarrier(ServerLevel level,UUID owner,Vec3 origin,double range,double power) {
         Domain barrier=DOMAINS.get(owner);
-        if(barrier==null || barrier.kind!=DomainKind.VOID || barrier.level!=level || !barrier.active(level.getServer().getTickCount())) return false;
+        if(barrier==null || barrier.kind!=DomainKind.VOID || barrier.level!=level || (barrier.closingAt>=0||!barrier.sealAdded)) return false;
         double distance=barrier.center.distanceTo(origin);
         if(distance<=barrier.maxRadius || distance-barrier.maxRadius>range) return false;
         float hp=BARRIER_HP.getOrDefault(owner,100f);
@@ -154,7 +154,14 @@ public final class DomainService {
             if(attacker==null) continue;
             for(Domain barrier:List.copyOf(DOMAINS.values())) {
                 if(barrier.kind!=DomainKind.VOID || barrier.owner.equals(shrine.owner)) continue;
-                changed|=strikeBarrier(shrine.level,barrier.owner,shrine.center,shrine.radius(now),ShrineRules.power(attacker));
+                Vec3 origin=shrine.center;
+                if(shrine.center.distanceToSqr(barrier.center)<=barrier.maxRadius*barrier.maxRadius){
+                    Vec3 direction=shrine.center.subtract(barrier.center);if(direction.lengthSqr()<.01)direction=new Vec3(shrine.axis.x,0,shrine.axis.z);if(direction.lengthSqr()<.01)direction=new Vec3(1,0,0);
+                    origin=barrier.center.add(direction.normalize().scale(barrier.maxRadius+1));
+                    // The OPEN field reaches the outside shell even with its shrine inside it.
+                    if(origin.distanceToSqr(shrine.center)>shrine.radius(now)*shrine.radius(now))continue;
+                }
+                changed|=strikeBarrier(shrine.level,barrier.owner,origin,shrine.radius(now),ShrineRules.power(attacker));
             }
         }
         return changed;
@@ -249,6 +256,7 @@ public final class DomainService {
         syncAll(level.getServer());return true;
     }
 
+    private static boolean voidMobile(LivingEntity target){return target instanceof dev.unlimitedvoid.entity.JujutsuNpc npc&&!npc.isGojo();}
     public static boolean isCaptive(UUID id) { return CAPTIVES.containsKey(id); }
     public static int activeCount() { return DOMAINS.size(); }
     public static int captiveCount() { return CAPTIVES.size(); }
@@ -306,7 +314,7 @@ public final class DomainService {
         for (UUID id : List.copyOf(CAPTIVES.keySet())) {
             Captive captive = CAPTIVES.get(id);
             Domain domain = DOMAINS.get(captive.owner);
-            if (domain == null || !domain.active(now) || contested(domain,captive.entity.getBoundingBox().getCenter(),now) || captive.entity.isRemoved() || !captive.entity.isAlive()
+            if (voidMobile(captive.entity)||domain == null || !domain.active(now) || contested(domain,captive.entity.getBoundingBox().getCenter(),now) || captive.entity.isRemoved() || !captive.entity.isAlive()
                     || captive.entity.level() != domain.level) release(id);
         }
         for (Domain domain : DOMAINS.values()) {
@@ -321,6 +329,7 @@ public final class DomainService {
                     candidate -> eligible(candidate, caster))) {
                 Vec3 middle = target.getBoundingBox().getCenter();
                 if (middle.distanceToSqr(domain.center) > reach * reach || contested(domain,middle,now)) continue;
+                if(voidMobile(target)){if(now%20==0)target.hurt(target.damageSources().indirectMagic(caster,caster),2);continue;}
                 UUID id = target.getUUID();
                 if (CAPTIVES.containsKey(id) || CAPTIVES.size() >= MAX_CAPTIVES) continue;
                 Vec3 anchor = safeEntry(domain, target, radius);
@@ -374,7 +383,7 @@ public final class DomainService {
             if(target instanceof LivingEntity living && !(target instanceof ArmorStand)) {
                 if(!eligible(living,caster)) continue;
                 boolean cleave=ShrineRules.energy(target)>0;
-                living.hurt(ShrineRules.source(caster,cleave),cleave ? ShrineRules.cleaveDamage(living,ShrineRules.power(caster)) : 6);
+                living.hurt(ShrineRules.source(caster,cleave),(cleave ? ShrineRules.cleaveDamage(living,ShrineRules.power(caster)) : 6)*(caster instanceof dev.unlimitedvoid.entity.JujutsuNpc n?n.attackScale():1));
             } else if(caster instanceof ServerPlayer player&&ShrineRules.nonlivingTarget(target)) ShrineRules.dismantle(target,player);
             else continue;
             Vec3 middle=target.getBoundingBox().getCenter();

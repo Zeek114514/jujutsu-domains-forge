@@ -21,6 +21,13 @@ public final class NpcCombatCheck {
         check(domains==15&&fire==3&&summons==10,"bounded battle rare probabilities");
         check(NpcBattleRules.INITIAL_DELAY>=200&&NpcBattleRules.ROLL_INTERVAL>=40,"rare roll cadence avoids per-tick spam");
         check(NpcVitals.MEGUMI>40&&NpcVitals.MEGUMI<=1024,"Megumi health profile within vanilla limits");
+        for(var form:NpcPowerRules.Form.values()){check(NpcPowerRules.attack(form)>0&&NpcPowerRules.taken(form)>0,"finite positive current-form multipliers");check(NpcPowerRules.domainHit(form)>0&&NpcPowerRules.domainHit(form)<400,"domain hit does not execute full-health boss NPC");}
+        check(NpcPowerRules.attack(NpcPowerRules.Form.STUDENT)<NpcPowerRules.attack(NpcPowerRules.Form.AWAKENED),"student below awakened");
+        check(NpcPowerRules.attack(NpcPowerRules.Form.AWAKENED)<NpcPowerRules.attack(NpcPowerRules.Form.YUJI),"awakened below Yuji");
+        check(NpcPowerRules.attack(NpcPowerRules.Form.YUJI)<NpcPowerRules.attack(NpcPowerRules.Form.SHINJUKU),"Yuji below Shinjuku");
+        check(NpcPowerRules.attack(NpcPowerRules.Form.MEGUMI)<=NpcPowerRules.attack(NpcPowerRules.Form.TRUE)&&NpcPowerRules.taken(NpcPowerRules.Form.TRUE)<=NpcPowerRules.taken(NpcPowerRules.Form.MEGUMI),"true form at least Megumi");
+        double[] values={400,800,800,1000,900,1000};double[] ratings=new double[6];for(var f:NpcPowerRules.Form.values())ratings[f.ordinal()]=values[f.ordinal()]*NpcPowerRules.attack(f)/NpcPowerRules.taken(f);
+        check(ratings[0]<ratings[1]&&ratings[1]<ratings[2]&&ratings[2]<ratings[3],"requested lower-form power ordering");check(Math.abs(ratings[3]-ratings[4])<.01,"Shinjuku and Megumi share a baseline power rating");check(ratings[4]<=ratings[5],"true form is the highest baseline");
         System.out.println("NPC combat rules: "+checks+" checks PASS");
     }
 }

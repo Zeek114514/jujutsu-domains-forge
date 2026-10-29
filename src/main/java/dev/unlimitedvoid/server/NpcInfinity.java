@@ -23,6 +23,10 @@ public final class NpcInfinity {
         var source=event.getSource();
         if(source.is(DamageTypeTags.BYPASSES_INVULNERABILITY))return;
         if(source.is(DamageTypeTags.IS_PROJECTILE)||source.is(DamageTypes.PLAYER_ATTACK)||source.is(DamageTypes.MOB_ATTACK)||source.is(DamageTypes.MOB_ATTACK_NO_AGGRO)){
+            // Domain amplification permits deliberate close contact, not long-range Dismantle.
+            if(source.getEntity() instanceof JujutsuNpc sukuna&&!sukuna.isGojo()&&sukuna.isAlive()&&!sukuna.isNoAi()&&sukuna.distanceToSqr(npc)<=4.5*4.5){
+                if(npc.level() instanceof ServerLevel server)server.sendParticles(new net.minecraft.core.particles.DustParticleOptions(new org.joml.Vector3f(.35f,.35f,.42f),.7f),npc.getX(),npc.getY()+1,npc.getZ(),5,.25,.4,.25,.02);return;
+            }
             event.setCanceled(true);spark(npc,npc.getBoundingBox().getCenter());
         }
     }
