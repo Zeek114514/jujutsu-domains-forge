@@ -1,7 +1,7 @@
 package dev.unlimitedvoid.server;
 import dev.unlimitedvoid.entity.JujutsuNpc;
 import net.minecraft.world.entity.LivingEntity;
-/** Extension point only: a future Mahoraga implementation must create its actual entity. */
+/** Server summon request; successful handlers create the actual entity and mark it summoned. */
 public final class MahoragaSummonEvent extends net.minecraftforge.eventbus.api.Event {
     private final JujutsuNpc caster;private final LivingEntity target;private boolean summoned;
     public MahoragaSummonEvent(JujutsuNpc caster,LivingEntity target){this.caster=caster;this.target=target;}

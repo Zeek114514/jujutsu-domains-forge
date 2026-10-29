@@ -97,5 +97,15 @@
   "item.unlimitedvoid.megumi_sukuna_spawn_egg": "Shinjuku Sukuna Spawn Egg",
   "entity.unlimitedvoid.mahoraga": "Eight-Handled Sword Divergent Sila Divine General Mahoraga",
   "item.unlimitedvoid.mahoraga_spawn_egg": "Mahoraga Spawn Egg",
-  "subtitles.unlimitedvoid.mahoraga_turn": "Mahoraga wheel turns"
+  "subtitles.unlimitedvoid.mahoraga_turn": "Mahoraga wheel turns",
+  "adaptation.unlimitedvoid.physical": "Physical",
+  "adaptation.unlimitedvoid.blue": "Blue",
+  "adaptation.unlimitedvoid.red": "Red",
+  "adaptation.unlimitedvoid.slash": "Slashes",
+  "adaptation.unlimitedvoid.fire": "Fire",
+  "adaptation.unlimitedvoid.purple": "Purple",
+  "adaptation.unlimitedvoid.infinity": "Infinity",
+  "adaptation.unlimitedvoid.void": "Unlimited Void",
+  "adaptation.unlimitedvoid.none": "None",
+  "message.unlimitedvoid.mahoraga_status": "%s · HP %s/%s · Adaptation: %s"
 }

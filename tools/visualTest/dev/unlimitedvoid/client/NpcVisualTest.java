@@ -36,9 +36,9 @@ public final class NpcVisualTest {
         if(mc.player==null||mc.level==null||(mc.screen!=null&&ticks<210))return;if(warmup++<200)return;ticks++;
         if(ticks==5){require(mc.getEntityRenderDispatcher().getRenderer(DomainEntities.STUDENT_GOJO.get().create(mc.level))!=null,"Gojo renderer registered");require(mc.getEntityRenderDispatcher().getRenderer(DomainEntities.SUKUNA_16.get().create(mc.level))!=null,"Sukuna renderer registered");}
         if(ticks==6){
-            var four=java.util.Set.of(DomainItems.STUDENT_GOJO.get(),DomainItems.SUKUNA_16.get(),DomainItems.BLINDFOLD.get(),DomainItems.SUKUNA_FINGER.get(),DomainItems.SHINJUKU_GOJO.get(),DomainItems.TRUE_SUKUNA.get(),DomainItems.AWAKENED_GOJO.get(),DomainItems.MEGUMI_SUKUNA.get());
+            var four=java.util.Set.of(DomainItems.STUDENT_GOJO.get(),DomainItems.SUKUNA_16.get(),DomainItems.BLINDFOLD.get(),DomainItems.SUKUNA_FINGER.get(),DomainItems.SHINJUKU_GOJO.get(),DomainItems.TRUE_SUKUNA.get(),DomainItems.AWAKENED_GOJO.get(),DomainItems.MEGUMI_SUKUNA.get(),DomainItems.MAHORAGA.get());
             net.minecraft.world.item.CreativeModeTabs.tryRebuildTabContents(mc.player.connection.enabledFeatures(),true,mc.level.registryAccess());
-            var tab=DomainItems.JUJUTSU_TAB.get();require(tab.getDisplayItems().size()==8&&tab.getDisplayItems().stream().allMatch(st->four.contains(st.getItem())),"dedicated creative tab contains exactly all eight mod items");
+            var tab=DomainItems.JUJUTSU_TAB.get();require(tab.getDisplayItems().size()==9&&tab.getDisplayItems().stream().allMatch(st->four.contains(st.getItem())),"dedicated creative tab contains exactly all nine mod items");
             for(var key:new net.minecraft.resources.ResourceKey[]{net.minecraft.world.item.CreativeModeTabs.SPAWN_EGGS,net.minecraft.world.item.CreativeModeTabs.INGREDIENTS}){
                 var vanilla=net.minecraft.core.registries.BuiltInRegistries.CREATIVE_MODE_TAB.get((net.minecraft.resources.ResourceKey<net.minecraft.world.item.CreativeModeTab>)key);
                 require(vanilla.getDisplayItems().stream().noneMatch(st->four.contains(st.getItem())),"mod items removed from vanilla category");

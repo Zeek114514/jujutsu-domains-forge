@@ -49,7 +49,7 @@ public final class MahoragaModel extends HierarchicalModel<MahoragaEntity> {
             leg.addOrReplaceChild("ankle_wrap",dark().addBox(-3.2f,12.6f,-3.4f,6.4f,1.8f,6.8f),PartPose.ZERO);
             leg.addOrReplaceChild("foot",ivory().addBox(-4,14.5f,-7.5f,8,2.5f,12),PartPose.ZERO);
         }
-        var mount=root.addOrReplaceChild("wheel_mount",CubeListBuilder.create(),PartPose.offsetAndRotation(0,-33,0,.20f,0,0));var wheel=mount.addOrReplaceChild("wheel",bronze().addBox(-2,-1.8f,-2,4,3.6f,4),PartPose.ZERO);
+        var mount=root.addOrReplaceChild("wheel_mount",CubeListBuilder.create(),PartPose.offsetAndRotation(0,-33,0,-.20f,0,0));var wheel=mount.addOrReplaceChild("wheel",bronze().addBox(-2,-1.8f,-2,4,3.6f,4),PartPose.ZERO);
         for(int i=0;i<8;i++)wheel.addOrReplaceChild("segment_"+i,bronze().addBox(-4.55f,-.7f,10,9.1f,1.4f,2).addBox(-.65f,-.55f,1,1.3f,1.1f,10.5f).addBox(-.8f,-.8f,11,1.6f,1.6f,3.8f).addBox(-1.65f,-1.65f,14,3.3f,3.3f,3.3f),PartPose.rotation(0,i*(float)Math.PI/4,0));
         return LayerDefinition.create(mesh,256,256);
     }

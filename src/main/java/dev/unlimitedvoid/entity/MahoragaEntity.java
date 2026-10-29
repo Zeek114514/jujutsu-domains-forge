@@ -23,9 +23,10 @@ public final class MahoragaEntity extends PathfinderMob {
     private static final EntityDataAccessor<Long> DISMISS=SynchedEntityData.defineId(MahoragaEntity.class,EntityDataSerializers.LONG);
     private static final EntityDataAccessor<Optional<UUID>> OWNER=SynchedEntityData.defineId(MahoragaEntity.class,EntityDataSerializers.OPTIONAL_UUID);
     private final int[] exposures=new int[8];private final long[] first=new long[8],last=new long[8],advanced=new long[8];
-    private Kind forcedKind;private UUID attackTarget;private boolean attackLanded;private long recovery,spaceReady,leapReady,lastDamage;private int missingOwner;
+    private Kind forcedKind;private UUID attackTarget;private boolean attackLanded;private long recovery,spaceReady,leapReady,lastDamage;private int missingOwner;private long lastGlobalTurn=-100;
     public int adaptation(Kind kind){return MahoragaRules.stage(entityData.get(ADAPT),kind);}
     public Optional<UUID> ownerId(){return entityData.get(OWNER);}
+    @Override public net.minecraft.world.scores.Team getTeam(){var owner=owner();return owner==null?super.getTeam():owner.getTeam();}
     public JujutsuNpc owner(){if(level() instanceof ServerLevel server&&ownerId().isPresent()&&server.getEntity(ownerId().get()) instanceof JujutsuNpc n)return n;return null;}
     public void bind(JujutsuNpc owner){entityData.set(OWNER,Optional.of(owner.getUUID()));beginEmergence();}
     public boolean emerging(){return entityData.get(EMERGE)>=0&&level().getGameTime()-entityData.get(EMERGE)<60;}
@@ -51,7 +52,7 @@ public final class MahoragaEntity extends PathfinderMob {
         if(result&&amount>0&&isAlive()){lastDamage=level().getGameTime();observe(kind);}return result;
     }
     public void observe(Kind kind){if(level().isClientSide||!isAlive()||dismissing())return;int i=kind.ordinal();long now=level().getGameTime();if(exposures[i]>0&&now-last[i]<5)return;if(exposures[i]==0){first[i]=now;advanced[i]=now-40;}exposures[i]=Math.min(64,exposures[i]+1);last[i]=now;}
-    private void adapt(){long now=level().getGameTime();for(var kind:Kind.values()){int i=kind.ordinal(),stage=adaptation(kind);if(exposures[i]>0&&MahoragaRules.advance(kind,stage,exposures[i],now-first[i],now-advanced[i])){entityData.set(ADAPT,MahoragaRules.setStage(entityData.get(ADAPT),kind,stage+1));advanced[i]=now;turnWheel();heal(80);if(level() instanceof ServerLevel server){server.sendParticles(new net.minecraft.core.particles.DustParticleOptions(new org.joml.Vector3f(.8f,.65f,.3f),.8f),getX(),getY()+3.5,getZ(),12,.7,.08,.7,.02);server.playSound(null,blockPosition(),net.minecraft.sounds.SoundEvent.createVariableRangeEvent(new net.minecraft.resources.ResourceLocation(UnlimitedVoid.ID,"mahoraga_turn")),net.minecraft.sounds.SoundSource.HOSTILE,.65f,1);}}}}
+    private void adapt(){long now=level().getGameTime();if(now-lastGlobalTurn<20)return;for(var kind:Kind.values()){int i=kind.ordinal(),stage=adaptation(kind);if(exposures[i]>0&&MahoragaRules.advance(kind,stage,exposures[i],now-first[i],now-advanced[i])){entityData.set(ADAPT,MahoragaRules.setStage(entityData.get(ADAPT),kind,stage+1));advanced[i]=now;lastGlobalTurn=now;turnWheel();heal(80);if(level() instanceof ServerLevel server){server.sendParticles(new net.minecraft.core.particles.DustParticleOptions(new org.joml.Vector3f(.8f,.65f,.3f),.8f),getX(),getY()+3.5,getZ(),12,.7,.08,.7,.02);server.playSound(null,blockPosition(),net.minecraft.sounds.SoundEvent.createVariableRangeEvent(new net.minecraft.resources.ResourceLocation(UnlimitedVoid.ID,"mahoraga_turn")),net.minecraft.sounds.SoundSource.HOSTILE,.65f,1);}break;}}}
     @Override public void tick(){
         super.tick();if(level().isClientSide||!isAlive())return;long now=level().getGameTime();
         if(ownerId().isPresent()){var owner=owner();if(owner==null){if(++missingOwner>200)dismiss();}else{missingOwner=0;if(!owner.isAlive()||owner.distanceToSqr(this)>96*96)dismiss();}}
@@ -79,12 +80,22 @@ public final class MahoragaEntity extends PathfinderMob {
     public MahoragaEntity(EntityType<? extends MahoragaEntity> type,Level level){super(type,level);setPersistenceRequired();setMaxUpStep(1);}
     @Override protected void defineSynchedData(){super.defineSynchedData();entityData.define(WHEEL,0);entityData.define(TURN,-100L);entityData.define(EMERGE,-1L);entityData.define(ADAPT,0);entityData.define(ATTACK,0);entityData.define(ATTACK_START,0L);entityData.define(DISMISS,-1L);entityData.define(OWNER,Optional.empty());}
     public static AttributeSupplier attributes(){return Mob.createMobAttributes().add(Attributes.MAX_HEALTH,1000).add(Attributes.MOVEMENT_SPEED,.32).add(Attributes.FOLLOW_RANGE,48).add(Attributes.ARMOR,8).add(Attributes.KNOCKBACK_RESISTANCE,.85).build();}
-    @Override protected void registerGoals(){goalSelector.addGoal(0,new FloatGoal(this));goalSelector.addGoal(1,new MahoragaCombatGoal(this));goalSelector.addGoal(5,new LookAtPlayerGoal(this,net.minecraft.world.entity.player.Player.class,12));}
+    @Override protected void registerGoals(){goalSelector.addGoal(0,new FloatGoal(this));goalSelector.addGoal(1,new MahoragaCombatGoal(this));goalSelector.addGoal(3,new FollowSummoner(this));goalSelector.addGoal(5,new LookAtPlayerGoal(this,net.minecraft.world.entity.player.Player.class,12));}
     public float emergence(float partial){long start=entityData.get(EMERGE);float progress=start<0?1:DomainTimeline.smooth((level().getGameTime()+partial-start)/60f);long end=entityData.get(DISMISS);return end<0?progress:progress*(1-DomainTimeline.smooth((level().getGameTime()+partial-end)/30f));}
     public void beginEmergence(){entityData.set(EMERGE,level().getGameTime());}
     public void turnWheel(){entityData.set(WHEEL,entityData.get(WHEEL)+1);entityData.set(TURN,level().getGameTime());}
     public float wheelAngle(float partial){float step=entityData.get(WHEEL),p=DomainTimeline.smooth((level().getGameTime()+partial-entityData.get(TURN))/14f);return (step-(step>0?1-p:0))*(float)Math.PI/4;}
     public int attackType(){return entityData.get(ATTACK);}public float attackProgress(float partial){return attackType()==0?0:Math.max(0,Math.min(1,(level().getGameTime()+partial-entityData.get(ATTACK_START))/30f));}
+    private static final class FollowSummoner extends net.minecraft.world.entity.ai.goal.Goal {
+        private final MahoragaEntity actor;FollowSummoner(MahoragaEntity actor){this.actor=actor;setFlags(java.util.EnumSet.of(Flag.MOVE,Flag.LOOK));}
+        @Override public boolean canUse(){return actor.canAct()&&actor.owner()!=null&&actor.distanceToSqr(actor.owner())>6*6;}
+        @Override public boolean canContinueToUse(){return actor.canAct()&&actor.owner()!=null&&actor.distanceToSqr(actor.owner())>4*4;}
+        @Override public void tick(){var owner=actor.owner();if(owner!=null){actor.getNavigation().moveTo(owner,1.2);actor.getLookControl().setLookAt(owner,20,20);}}
+        @Override public void stop(){actor.getNavigation().stop();}
+    }
+    @Override protected net.minecraft.world.InteractionResult mobInteract(net.minecraft.world.entity.player.Player player,net.minecraft.world.InteractionHand hand){
+        if(player.getItemInHand(hand).isEmpty()){if(!level().isClientSide){var states=net.minecraft.network.chat.Component.empty();boolean any=false;for(var kind:Kind.values())if(adaptation(kind)>0){if(any)states.append("、");states.append(net.minecraft.network.chat.Component.translatable("adaptation.unlimitedvoid."+kind.name().toLowerCase(java.util.Locale.ROOT))).append(" "+adaptation(kind)+"/4");any=true;}if(!any)states.append(net.minecraft.network.chat.Component.translatable("adaptation.unlimitedvoid.none"));player.displayClientMessage(net.minecraft.network.chat.Component.translatable("message.unlimitedvoid.mahoraga_status",getName(),(int)Math.ceil(getHealth()),(int)Math.ceil(getMaxHealth()),states),true);}return net.minecraft.world.InteractionResult.sidedSuccess(level().isClientSide);}return super.mobInteract(player,hand);
+    }
     @Override protected float getStandingEyeHeight(Pose pose,EntityDimensions size){return 2.8f;}
     @Override public boolean removeWhenFarAway(double distance){return false;}
     @Override public void addAdditionalSaveData(net.minecraft.nbt.CompoundTag tag){super.addAdditionalSaveData(tag);tag.putInt("WheelTurns",entityData.get(WHEEL));ownerId().ifPresent(id->tag.putUUID("Summoner",id));tag.putInt("Adaptation",entityData.get(ADAPT));long now=level().getGameTime();for(var k:Kind.values()){int i=k.ordinal();var data=new net.minecraft.nbt.CompoundTag();data.putInt("Exposures",exposures[i]);data.putLong("Elapsed",Math.max(0,Math.min(1000000,now-first[i])));data.putLong("SinceStep",Math.max(0,Math.min(1000000,now-advanced[i])));tag.put("Adapt_"+k.name(),data);}tag.putInt("EmergenceAge",entityData.get(EMERGE)<0?60:(int)Math.max(0,Math.min(60,now-entityData.get(EMERGE))));}

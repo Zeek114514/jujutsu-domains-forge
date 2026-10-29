@@ -97,5 +97,15 @@
   "item.unlimitedvoid.megumi_sukuna_spawn_egg": "新宿宿傩生成蛋",
   "entity.unlimitedvoid.mahoraga": "八握剑异戒神将·魔虚罗",
   "item.unlimitedvoid.mahoraga_spawn_egg": "魔虚罗生成蛋",
-  "subtitles.unlimitedvoid.mahoraga_turn": "魔虚罗：法轮转动"
+  "subtitles.unlimitedvoid.mahoraga_turn": "魔虚罗：法轮转动",
+  "adaptation.unlimitedvoid.physical": "常规打击",
+  "adaptation.unlimitedvoid.blue": "苍",
+  "adaptation.unlimitedvoid.red": "赫",
+  "adaptation.unlimitedvoid.slash": "斩击",
+  "adaptation.unlimitedvoid.fire": "火焰",
+  "adaptation.unlimitedvoid.purple": "茈",
+  "adaptation.unlimitedvoid.infinity": "无下限",
+  "adaptation.unlimitedvoid.void": "无量空处",
+  "adaptation.unlimitedvoid.none": "暂无",
+  "message.unlimitedvoid.mahoraga_status": "%s · 生命 %s/%s · 适应：%s"
 }
