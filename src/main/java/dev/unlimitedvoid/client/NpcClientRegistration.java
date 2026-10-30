@@ -9,6 +9,7 @@ import net.minecraftforge.fml.common.Mod;
 public final class NpcClientRegistration {
     @SubscribeEvent public static void layers(EntityRenderersEvent.RegisterLayerDefinitions event){event.registerLayerDefinition(MahoragaModel.LAYER,MahoragaModel::layer);}
     @SubscribeEvent public static void registerNpcRenderers(EntityRenderersEvent.RegisterRenderers event){
+        event.registerEntityRenderer(DomainEntities.INNOCENT_SUN_DOG.get(),InnocentSunDogRenderer::new);
         event.registerEntityRenderer(DomainEntities.MAHORAGA.get(),MahoragaRenderer::new);
         com.mojang.logging.LogUtils.getLogger().info("NPC renderers registering");
         event.registerEntityRenderer(DomainEntities.AWAKENED_GOJO.get(),c->new JujutsuNpcRenderer(c,true));

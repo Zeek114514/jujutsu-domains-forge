@@ -123,6 +123,7 @@ public final class JujutsuNpc extends PathfinderMob {
     public static final class Registration {
         private static AttributeSupplier attributes(double hp,boolean gojo){return Mob.createMobAttributes().add(Attributes.MAX_HEALTH,hp).add(Attributes.MOVEMENT_SPEED,gojo?.34:.32).add(Attributes.FOLLOW_RANGE,32).add(Attributes.KNOCKBACK_RESISTANCE,1).build();}
         @SubscribeEvent public static void attributes(EntityAttributeCreationEvent event){
+            event.put(DomainEntities.INNOCENT_SUN_DOG.get(),InnocentSunDog.attributes());
             event.put(DomainEntities.MAHORAGA.get(),MahoragaEntity.attributes());
             event.put(DomainEntities.STUDENT_GOJO.get(),attributes(NpcVitals.STUDENT,true));event.put(DomainEntities.SUKUNA_16.get(),attributes(NpcVitals.SUKUNA,false));
             event.put(DomainEntities.AWAKENED_GOJO.get(),attributes(NpcVitals.AWAKENED,true));event.put(DomainEntities.SHINJUKU_GOJO.get(),attributes(NpcVitals.SHINJUKU,true));event.put(DomainEntities.TRUE_SUKUNA.get(),attributes(NpcVitals.TRUE_SUKUNA,false));event.put(DomainEntities.MEGUMI_SUKUNA.get(),attributes(NpcVitals.MEGUMI,false));

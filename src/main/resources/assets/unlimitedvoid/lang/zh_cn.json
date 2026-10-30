@@ -107,5 +107,7 @@
   "adaptation.unlimitedvoid.infinity": "无下限",
   "adaptation.unlimitedvoid.void": "无量空处",
   "adaptation.unlimitedvoid.none": "暂无",
-  "message.unlimitedvoid.mahoraga_status": "%s · 生命 %s/%s · 适应：%s"
+  "message.unlimitedvoid.mahoraga_status": "%s · 生命 %s/%s · 适应：%s",
+  "entity.unlimitedvoid.innocent_sun_dog": "无辜的孙狗",
+  "item.unlimitedvoid.innocent_sun_dog_spawn_egg": "无辜的孙狗"
 }

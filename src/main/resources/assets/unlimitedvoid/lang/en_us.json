@@ -107,5 +107,7 @@
   "adaptation.unlimitedvoid.infinity": "Infinity",
   "adaptation.unlimitedvoid.void": "Unlimited Void",
   "adaptation.unlimitedvoid.none": "None",
-  "message.unlimitedvoid.mahoraga_status": "%s · HP %s/%s · Adaptation: %s"
+  "message.unlimitedvoid.mahoraga_status": "%s · HP %s/%s · Adaptation: %s",
+  "entity.unlimitedvoid.innocent_sun_dog": "Innocent Sun Dog",
+  "item.unlimitedvoid.innocent_sun_dog_spawn_egg": "Innocent Sun Dog Spawn Egg"
 }
