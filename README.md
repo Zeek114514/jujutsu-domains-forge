@@ -1,6 +1,6 @@
 # 咒术领域 · Jujutsu Domains
 
-> 当前版本：**1.10.6**（魔虚罗造型、完整攻击动作、无上限成长与概率变身）。灶·开现已默认使用粒子火焰、火矢拖尾和爆燃烟尘。向空中的苍射入赫，或向赫射入苍，形成逐渐膨胀并大范围爆炸的自爆茈。
+> 当前版本：**1.10.7**（新增高清照片角色【无辜的孙狗】及独立刷怪蛋）。灶·开现已默认使用粒子火焰、火矢拖尾和爆燃烟尘。向空中的苍射入赫，或向赫射入苍，形成逐渐膨胀并大范围爆炸的自爆茈。
 
 [![Build](https://github.com/Zeek114514/jujutsu-domains-forge/actions/workflows/build.yml/badge.svg)](https://github.com/Zeek114514/jujutsu-domains-forge/actions/workflows/build.yml)
 [![Minecraft](https://img.shields.io/badge/Minecraft-1.20.1-62b47a)](https://www.minecraft.net/)
@@ -16,7 +16,7 @@
 ## 下载和安装
 
 1. 安装 **Minecraft Java 1.20.1、Forge 47.4.10 或更高的 47.x、Java 17**。
-2. 前往 [Releases](https://github.com/Zeek114514/jujutsu-domains-forge/releases/latest)，下载 `unlimited-void-1.20.1-1.10.6.jar`。
+2. 前往 [Releases](https://github.com/Zeek114514/jujutsu-domains-forge/releases/latest)，下载 `unlimited-void-1.20.1-1.10.7.jar`。
 3. 放进当前游戏实例的 `mods` 文件夹。升级时移走旧版同名模组，避免重复加载，随后重启游戏。
 4. 多人游戏中客户端与服务端都要安装相同版本。
 
@@ -24,7 +24,13 @@
 
 开发依赖为Forge47.4.10，实机验证使用Forge47.4.20。1.10.6见[攻击动作验证](docs/MAHORAGA_ATTACK_ANIMATION_VALIDATION.md)、[成长验证](docs/MAHORAGA_GROWTH_VALIDATION.md)与[法轮验证](docs/MAHORAGA_WHEEL_VALIDATION.md)；此前内容见[魔虚罗记录](docs/MAHORAGA_VALIDATION.md)和[宿傩平衡记录](docs/NPC_BALANCE_VALIDATION.md)；既有内容见[灶·开粒子记录](docs/FUGA_PARTICLES_VALIDATION.md)，自爆茈沿用[1.5.0记录](docs/PURPLE_DETONATION_VALIDATION.md)。此前记录按各自版本保留，不表示所有47.x、光影组合和硬件均已覆盖。御厨子血红天空/镜面的指定光影限制仍见[1.4.1记录](docs/SHRINE_SLASH_VALIDATION.md)。
 
-## 角色与战斗（1.10.6）
+## 角色与战斗（1.10.7）
+
+新增【无辜的孙狗】：100生命的和平NPC，会散步、浮水和看向玩家，使用标准方块玩家模型及1024×1024高清真人脸贴图。可在模组专属栏获取同名刷怪蛋，或使用 `/give @p unlimitedvoid:innocent_sun_dog_spawn_egg`。不自然刷新、不主动攻击。
+
+![无辜的孙狗实机截图](docs/images/sun-dog-1.10.7.png)
+
+[1.10.7实机验证与素材说明](docs/SUN_DOG_VALIDATION.md)。
 
 六种NPC使用用户提供的玩家皮肤。五条主要快速接近怪物近战；高专只用苍拳，觉醒/新宿使用苍拳和赫拳，分别短促吸近或击退。常规远程术式至少间隔8秒，进阶远程分支茈仍为5%。新宿遇原身宿傩优先贴近放茈。高专首次濒死以默认50%概率满血觉醒并立即放茈；觉醒/新宿低于5%触发一次自爆茈。
 
@@ -34,7 +40,7 @@
 
 所有五条可低概率无量空处，三种宿傩可普攻、解/捌、低概率伏魔御厨子与极低概率粒子灶·开。双方开始开领域时立即反开，同类NPC同维度只维持一个领域。虎皮交付手指→新宿（惠皮），新宿濒死以默认50%概率→原身并满血。惠皮宿傩现在可低概率从影池召唤魔虚罗：巨型立体模型、八握轮盘、逐步适应、近战与适应无下限后的空间斩。详见[魔虚罗指南](docs/MAHORAGA.md)。
 
-独立【咒术领域】创造栏包含七种生成蛋、眼罩和手指，共九个物品。原有物品变身路线保留。NPC不主动伤害玩家和普通友方生物，术式不破坏地形。
+独立【咒术领域】创造栏包含八种生成蛋、眼罩和手指，共十个物品。原有物品变身路线保留。NPC不主动伤害玩家和普通友方生物，术式不破坏地形。
 
 ![魔虚罗实机光影截图](docs/images/mahoraga-horizontal-1.10.5.png)
 
@@ -42,7 +48,7 @@
 
 [魔虚罗四种攻击的实机演示](docs/images/mahoraga-attacks-1.10.6.mp4)。
 
-配置、濒死优先级和原版玩家形态说明见[NPC指南](docs/NPCS.md)。客户端/服务端都需更新1.10.6（无下限通道协议7，领域协议14）。
+配置、濒死优先级和原版玩家形态说明见[NPC指南](docs/NPCS.md)。客户端/服务端都需更新1.10.7（无下限通道协议7，领域协议14）。
 
 ## 玩法
 

@@ -18,11 +18,12 @@ public final class DomainItems {
     public static final RegistryObject<Item> AWAKENED_GOJO=ITEMS.register("awakened_gojo_spawn_egg",()->new ForgeSpawnEggItem(DomainEntities.AWAKENED_GOJO,0xf5f1f8,0x7185c2,new Item.Properties()));
     public static final RegistryObject<Item> MEGUMI_SUKUNA=ITEMS.register("megumi_sukuna_spawn_egg",()->new ForgeSpawnEggItem(DomainEntities.MEGUMI_SUKUNA,0x171b23,0xe5d9cf,new Item.Properties()));
     public static final RegistryObject<Item> MAHORAGA=ITEMS.register("mahoraga_spawn_egg",()->new ForgeSpawnEggItem(DomainEntities.MAHORAGA,0xdedbd0,0x9c7c42,new Item.Properties()));
+    public static final RegistryObject<Item> INNOCENT_SUN_DOG=ITEMS.register("innocent_sun_dog_spawn_egg",()->new ForgeSpawnEggItem(DomainEntities.INNOCENT_SUN_DOG,0x4c5433,0x1d2d4c,new Item.Properties()));
     public static final RegistryObject<Item> BLINDFOLD=ITEMS.register("blindfold",()->new Item(new Item.Properties().stacksTo(16)));
     public static final RegistryObject<Item> SUKUNA_FINGER=ITEMS.register("sukuna_finger",()->new Item(new Item.Properties().stacksTo(20)));
     public static final DeferredRegister<CreativeModeTab> TABS=DeferredRegister.create(Registries.CREATIVE_MODE_TAB,UnlimitedVoid.ID);
     public static final RegistryObject<CreativeModeTab> JUJUTSU_TAB=TABS.register("jujutsu_domains",()->CreativeModeTab.builder()
         .title(Component.translatable("itemGroup.unlimitedvoid.jujutsu_domains"))
         .icon(()->new ItemStack(BLINDFOLD.get()))
-        .displayItems((parameters,output)->{output.accept(STUDENT_GOJO.get());output.accept(AWAKENED_GOJO.get());output.accept(SHINJUKU_GOJO.get());output.accept(SUKUNA_16.get());output.accept(MEGUMI_SUKUNA.get());output.accept(TRUE_SUKUNA.get());output.accept(MAHORAGA.get());output.accept(BLINDFOLD.get());output.accept(SUKUNA_FINGER.get());}).build());
+        .displayItems((parameters,output)->{output.accept(STUDENT_GOJO.get());output.accept(AWAKENED_GOJO.get());output.accept(SHINJUKU_GOJO.get());output.accept(SUKUNA_16.get());output.accept(MEGUMI_SUKUNA.get());output.accept(TRUE_SUKUNA.get());output.accept(MAHORAGA.get());output.accept(INNOCENT_SUN_DOG.get());output.accept(BLINDFOLD.get());output.accept(SUKUNA_FINGER.get());}).build());
 }
