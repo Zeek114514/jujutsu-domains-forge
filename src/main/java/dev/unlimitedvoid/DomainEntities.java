@@ -8,6 +8,7 @@ import net.minecraftforge.registries.*;
 public final class DomainEntities {
     public static final DeferredRegister<EntityType<?>> TYPES=DeferredRegister.create(ForgeRegistries.ENTITY_TYPES,UnlimitedVoid.ID);
     public static final RegistryObject<EntityType<dev.unlimitedvoid.entity.InnocentSunDog>> INNOCENT_SUN_DOG=TYPES.register("innocent_sun_dog",()->EntityType.Builder.<dev.unlimitedvoid.entity.InnocentSunDog>of(dev.unlimitedvoid.entity.InnocentSunDog::new,MobCategory.CREATURE).sized(.6f,1.8f).clientTrackingRange(10).updateInterval(3).build(UnlimitedVoid.ID+":innocent_sun_dog"));
+    public static final RegistryObject<EntityType<dev.unlimitedvoid.entity.InnocentSunDog>> SUN_DOG_SERVANT=TYPES.register("sun_dog_servant",()->EntityType.Builder.<dev.unlimitedvoid.entity.InnocentSunDog>of(dev.unlimitedvoid.entity.InnocentSunDog::new,MobCategory.CREATURE).sized(.6f,1.8f).clientTrackingRange(10).updateInterval(3).build(UnlimitedVoid.ID+":sun_dog_servant"));
     public static final RegistryObject<EntityType<ShrineEntity>> SHRINE=TYPES.register("shrine",
             ()->EntityType.Builder.<ShrineEntity>of(ShrineEntity::new,MobCategory.MISC).sized(18,11).noSave()
                     .clientTrackingRange(16).updateInterval(200).build("unlimitedvoid:shrine"));

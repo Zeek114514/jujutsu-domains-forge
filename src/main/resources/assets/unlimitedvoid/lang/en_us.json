@@ -109,5 +109,7 @@
   "adaptation.unlimitedvoid.none": "None",
   "message.unlimitedvoid.mahoraga_status": "%s · HP %s/%s · Adaptation: %s",
   "entity.unlimitedvoid.innocent_sun_dog": "Innocent Sun Dog",
-  "item.unlimitedvoid.innocent_sun_dog_spawn_egg": "Innocent Sun Dog Spawn Egg"
+  "item.unlimitedvoid.innocent_sun_dog_spawn_egg": "Innocent Sun Dog Spawn Egg",
+  "entity.unlimitedvoid.sun_dog_servant": "Sun Dog's Slave",
+  "item.unlimitedvoid.sun_dog_servant_spawn_egg": "Sun Dog's Slave Spawn Egg"
 }
