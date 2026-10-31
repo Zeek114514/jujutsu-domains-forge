@@ -1,6 +1,6 @@
 # 咒术领域 · Jujutsu Domains
 
-> 当前版本：**1.10.7**（新增高清照片角色【无辜的孙狗】及独立刷怪蛋）。灶·开现已默认使用粒子火焰、火矢拖尾和爆燃烟尘。向空中的苍射入赫，或向赫射入苍，形成逐渐膨胀并大范围爆炸的自爆茈。
+> 当前版本：**1.11.0**（三段近战、命中硬直、技能衔接与照片NPC互动）。灶·开现已默认使用粒子火焰、火矢拖尾和爆燃烟尘。向空中的苍射入赫，或向赫射入苍，形成逐渐膨胀并大范围爆炸的自爆茈。
 
 [![Build](https://github.com/Zeek114514/jujutsu-domains-forge/actions/workflows/build.yml/badge.svg)](https://github.com/Zeek114514/jujutsu-domains-forge/actions/workflows/build.yml)
 [![Minecraft](https://img.shields.io/badge/Minecraft-1.20.1-62b47a)](https://www.minecraft.net/)
@@ -16,7 +16,7 @@
 ## 下载和安装
 
 1. 安装 **Minecraft Java 1.20.1、Forge 47.4.10 或更高的 47.x、Java 17**。
-2. 前往 [Releases](https://github.com/Zeek114514/jujutsu-domains-forge/releases/latest)，下载 `unlimited-void-1.20.1-1.10.7.jar`。
+2. 前往 [Releases](https://github.com/Zeek114514/jujutsu-domains-forge/releases/latest)，下载 `unlimited-void-1.20.1-1.11.0.jar`。
 3. 放进当前游戏实例的 `mods` 文件夹。升级时移走旧版同名模组，避免重复加载，随后重启游戏。
 4. 多人游戏中客户端与服务端都要安装相同版本。
 
@@ -24,7 +24,17 @@
 
 开发依赖为Forge47.4.10，实机验证使用Forge47.4.20。1.10.6见[攻击动作验证](docs/MAHORAGA_ATTACK_ANIMATION_VALIDATION.md)、[成长验证](docs/MAHORAGA_GROWTH_VALIDATION.md)与[法轮验证](docs/MAHORAGA_WHEEL_VALIDATION.md)；此前内容见[魔虚罗记录](docs/MAHORAGA_VALIDATION.md)和[宿傩平衡记录](docs/NPC_BALANCE_VALIDATION.md)；既有内容见[灶·开粒子记录](docs/FUGA_PARTICLES_VALIDATION.md)，自爆茈沿用[1.5.0记录](docs/PURPLE_DETONATION_VALIDATION.md)。此前记录按各自版本保留，不表示所有47.x、光影组合和硬件均已覆盖。御厨子血红天空/镜面的指定光影限制仍见[1.4.1记录](docs/SHRINE_SLASH_VALIDATION.md)。
 
-## 角色与战斗（1.10.7）
+## 角色与战斗（1.11.0）
+
+五条以左右苍拳接收尾拳，进阶形态以赫拳收尾；宿傩以拳击接斩击。加入转腰带肩、踏步、蓄势和收势，伤害与动作共用接触帧。成功命中后有4～6刻短硬直，20刻保护间隔避免连续控制；收势后才接普通术式，宿傩冷却期间继续追击。
+
+[近战实机预览：前半慢放，后半自动对战](docs/images/npc-melee-1.11.0.mp4) · [2257项规则检查、60次近战实机断言与29项宿傩回归记录](docs/NPC_MELEE_WEIGHT_VALIDATION.md)
+
+新增【孙狗的奴隶】，使用用户指定衣服和最新真人脸贴图，100生命，独立刷怪蛋：`/give @p unlimitedvoid:sun_dog_servant_spawn_egg`。无辜的孙狗靠近后自动拴绳，默认跟随；近距离每8秒以20%概率从身后踢一脚，轻微击退、不扣血。
+
+![第二位照片角色实机](docs/images/sun-dog-servant-1.11.0.png)
+
+[角色与脸部来源](docs/SUN_DOG_SERVANT_VALIDATION.md) · [拴绳跟随互动验证](docs/SUN_DOG_PRANK_VALIDATION.md)
 
 新增【无辜的孙狗】：100生命的和平NPC，会散步、浮水和看向玩家，使用标准方块玩家模型及1024×1024高清真人脸贴图。可在模组专属栏获取同名刷怪蛋，或使用 `/give @p unlimitedvoid:innocent_sun_dog_spawn_egg`。不自然刷新、不主动攻击。
 
@@ -40,7 +50,7 @@
 
 所有五条可低概率无量空处，三种宿傩可普攻、解/捌、低概率伏魔御厨子与极低概率粒子灶·开。双方开始开领域时立即反开，同类NPC同维度只维持一个领域。虎皮交付手指→新宿（惠皮），新宿濒死以默认50%概率→原身并满血。惠皮宿傩现在可低概率从影池召唤魔虚罗：巨型立体模型、八握轮盘、逐步适应、近战与适应无下限后的空间斩。详见[魔虚罗指南](docs/MAHORAGA.md)。
 
-独立【咒术领域】创造栏包含八种生成蛋、眼罩和手指，共十个物品。原有物品变身路线保留。NPC不主动伤害玩家和普通友方生物，术式不破坏地形。
+独立【咒术领域】创造栏包含九种生成蛋、眼罩和手指，共十一个物品。原有物品变身路线保留。NPC不主动伤害玩家和普通友方生物，术式不破坏地形。
 
 ![魔虚罗实机光影截图](docs/images/mahoraga-horizontal-1.10.5.png)
 
@@ -48,7 +58,7 @@
 
 [魔虚罗四种攻击的实机演示](docs/images/mahoraga-attacks-1.10.6.mp4)。
 
-配置、濒死优先级和原版玩家形态说明见[NPC指南](docs/NPCS.md)。客户端/服务端都需更新1.10.7（无下限通道协议7，领域协议14）。
+配置、濒死优先级和原版玩家形态说明见[NPC指南](docs/NPCS.md)。客户端/服务端都需更新1.11.0（无下限通道协议8，领域协议14）。
 
 ## 玩法
 

@@ -1,7 +1,7 @@
 plugins {
     id 'net.minecraftforge.gradle' version '6.0.54'
 }
-version = '1.10.7'
+version = '1.11.0'
 group = 'dev.unlimitedvoid'
 base { archivesName = 'unlimited-void-1.20.1' }
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
@@ -84,3 +84,11 @@ tasks.register('validateMahoraga', JavaExec) {
     jvmArgs '-Djava.awt.headless=true'
 }
 tasks.named('check') { dependsOn 'validateMahoraga' }
+
+tasks.register('validateNpcAttackMotion', JavaExec) {
+    dependsOn 'classes', 'validationClasses'
+    classpath = sourceSets.validation.runtimeClasspath
+    mainClass = 'dev.unlimitedvoid.NpcAttackMotionCheck'
+    jvmArgs '-Djava.awt.headless=true'
+}
+tasks.named('check') { dependsOn 'validateNpcAttackMotion' }

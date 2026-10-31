@@ -31,7 +31,7 @@ public final class NpcTechniqueService {
     public static boolean start(JujutsuNpc npc,LimitlessKind kind,LivingEntity target,boolean emergency){return start(npc,kind,target,emergency,false);}
     public static boolean instantPurple(JujutsuNpc npc,LivingEntity target){return start(npc,LimitlessKind.PURPLE,target,false,true);}
     private static boolean start(JujutsuNpc npc,LimitlessKind kind,LivingEntity target,boolean emergency,boolean instant){
-        if(!npc.isAlive()||!npc.isGojo()||DomainService.isCaptive(npc.getUUID())||casting(npc)||CASTS.size()+LimitlessService.activeCount()>=8)return false;
+        if((!emergency&&(npc.staggered()||npc.punchKind()>=0))||!npc.isAlive()||!npc.isGojo()||DomainService.isCaptive(npc.getUUID())||casting(npc)||CASTS.size()+LimitlessService.activeCount()>=8)return false;
         if(!emergency&&!instant&&(target==null||!enemy(npc,target)))return false;
         var c=new Cast(npc,kind,target);if(instant){c.phase=1;c.position=c.origin=npc.getEyePosition();}if(emergency){c.phase=PurpleDetonation.GROWING;c.position=npc.getEyePosition();}
         CASTS.put(c.id,c);return true;

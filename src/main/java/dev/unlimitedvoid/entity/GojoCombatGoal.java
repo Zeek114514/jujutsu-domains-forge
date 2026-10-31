@@ -20,6 +20,7 @@ public final class GojoCombatGoal extends Goal {
     }
     @Override public void tick(){
         long now=npc.level().getGameTime();
+        if(npc.staggered()){npc.getNavigation().stop();return;}
         if(NpcCombatRules.lastResort(npc.getHealth(),npc.getMaxHealth())&&!npc.isAwakened())npc.awakenFromDanger();
         if(npc.awakeningBurstPending()){
             DomainService.dismissNpc(npc);npc.cancelPunch();NpcTechniqueService.cancel(npc);npc.getNavigation().stop();find();
@@ -30,7 +31,7 @@ public final class GojoCombatGoal extends Goal {
             if(NpcTechniqueService.start(npc,LimitlessKind.PURPLE,null,true))npc.markLastResort();return;
         }
         if(scan++%10==0||target==null||!NpcTechniqueService.enemy(npc,target))find();npc.setTarget(target);
-        if(target==null)return;if(DomainService.isCaptive(npc.getUUID())||DomainService.npcChanting(npc)){npc.getNavigation().stop();return;}if(NpcDomainService.spontaneous(npc))return;boolean duel=npc.isShinjuku()&&NpcTechniqueService.trueSukuna(target);
+        if(target==null)return;if(DomainService.isCaptive(npc.getUUID())||DomainService.npcChanting(npc)){npc.getNavigation().stop();return;}if(npc.punchKind()>=0){npc.getNavigation().stop();return;}if(NpcDomainService.spontaneous(npc))return;boolean duel=npc.isShinjuku()&&NpcTechniqueService.trueSukuna(target);
         if(duel&&!target.getUUID().equals(duelFocus)){npc.cancelPunch();NpcTechniqueService.cancel(npc);ready=0;duelFocus=target.getUUID();}
         if(!duel)duelFocus=null;boolean opening=duel&&!target.getUUID().equals(duelSpent);
         npc.getLookControl().setLookAt(target,30,30);
@@ -47,8 +48,8 @@ public final class GojoCombatGoal extends Goal {
         }
         npc.getNavigation().stop();
         if(now<punchReady||NpcTechniqueService.charging(npc)||npc.punchKind()>=0)return;
-        if(!opening&&now>=ready&&!NpcTechniqueService.casting(npc)&&tryRemote(now))return;
-        var kind=NpcMeleeRules.punch(npc.isAwakened(),npc.getRandom().nextInt(100));
+        if(!opening&&npc.nextComboStep()==0&&now>=ready&&!NpcTechniqueService.casting(npc)&&tryRemote(now))return;
+        var kind=npc.isAwakened()&&npc.nextComboStep()==2?LimitlessKind.RED:LimitlessKind.BLUE;
         if(NpcMeleeService.start(npc,target,kind))punchReady=now+NpcMeleeRules.INTERVAL;
     }
     private boolean tryRemote(long now){

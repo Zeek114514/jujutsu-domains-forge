@@ -109,5 +109,7 @@
   "adaptation.unlimitedvoid.none": "暂无",
   "message.unlimitedvoid.mahoraga_status": "%s · 生命 %s/%s · 适应：%s",
   "entity.unlimitedvoid.innocent_sun_dog": "无辜的孙狗",
-  "item.unlimitedvoid.innocent_sun_dog_spawn_egg": "无辜的孙狗"
+  "item.unlimitedvoid.innocent_sun_dog_spawn_egg": "无辜的孙狗",
+  "entity.unlimitedvoid.sun_dog_servant": "孙狗的奴隶",
+  "item.unlimitedvoid.sun_dog_servant_spawn_egg": "孙狗的奴隶"
 }
