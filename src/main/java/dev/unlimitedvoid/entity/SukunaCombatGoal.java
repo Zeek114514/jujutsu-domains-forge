@@ -21,6 +21,7 @@ public final class SukunaCombatGoal extends Goal {
         if(npc.punchKind()>=0){npc.getNavigation().stop();return;}
         if(NpcDomainService.spontaneous(npc))return;
         if(SukunaCombatService.descend(npc,target))return;
+        if(NpcTactics.tick(npc,target))return;
         long now=npc.level().getGameTime();
         if(now>=rareAt){rareAt=now+NpcBattleRules.ROLL_INTERVAL;if(NpcBattleRules.fuga(npc.getRandom().nextInt(1000))&&FugaService.request(npc))return;if(npc.isMegumi()&&NpcBattleRules.mahoraga(npc.getRandom().nextInt(1000))&&SukunaCombatService.summon(npc,target))return;}
         double distance=npc.distanceToSqr(target);

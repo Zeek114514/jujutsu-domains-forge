@@ -38,6 +38,7 @@ public final class FugaService {
         int now=player.server.getTickCount();
         if(CASTS.containsKey(player.getUUID()) || LimitlessService.casting(player.getUUID()) || now<READY.getOrDefault(player.getUUID(),0)) return;
         if(CASTS.size()>=FugaTimeline.MAX_CASTS) return;
+        if(!ProgressionService.spend(player,3))return;
         Cast cast=new Cast(player,now);
         CASTS.put(player.getUUID(),cast); READY.put(player.getUUID(),now+FugaTimeline.COOLDOWN);
         status(player);

@@ -201,3 +201,7 @@ v1.1.0通过本地构建、147项无窗口检查、双客户端本机TCP联网�
 本轮完整记录：[NPC领域与宿傩验证](docs/NPC_DOMAINS_VALIDATION.md)。
 
 [1.9.1宿傩与形态战力验证](docs/NPC_BALANCE_VALIDATION.md)。
+
+## 本地1.12.0开发版本
+
+已完成顺序玩法扩展：战斗AI、瞄准状态、潜行右键管理与红蓝对战、生存术式路线和[P]成长页，以及双客户端持续群战验证。当前公开Release仍为1.11.0。[1.12本地指南](docs/ROADMAP_1_12.md) · [验证与截图](docs/ROADMAP_1_12_VALIDATION.md)。

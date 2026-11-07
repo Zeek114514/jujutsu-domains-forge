@@ -33,6 +33,7 @@ public final class LimitlessService {
     private static boolean chanting(ServerPlayer p){return DomainService.snapshot(p).stream().anyMatch(d->d.owner().equals(p.getUUID())&&d.closing()<0&&d.age()<DomainTimeline.chant(d.kind()));}
     public static void request(ServerPlayer p,LimitlessKind kind){
         if(!p.isAlive()||p.isSpectator()||DomainService.isCaptive(p.getUUID())||chanting(p)||FugaService.casting(p.getUUID())||casting(p.getUUID())||cooldown(p,kind)>0||CASTS.size()+NpcTechniqueService.activeCount()>=8)return;
+        if(!ProgressionService.spend(p,kind.ordinal()))return;
         var c=new Cast(p,kind);CASTS.put(c.id,c);
         READY.computeIfAbsent(p.getUUID(),id->new int[3])[kind.ordinal()]=p.server.getTickCount()+kind.cooldown;
         syncAll(p.server);

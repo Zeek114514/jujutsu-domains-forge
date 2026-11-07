@@ -38,6 +38,7 @@ public final class InnocentSunDog extends PathfinderMob {
     }
 
     @Override protected void registerGoals() {
+        goalSelector.addGoal(0,new NpcOrderGoal(this));
         goalSelector.addGoal(0, new FloatGoal(this));
         goalSelector.addGoal(1, new SunDogPrankGoal(this));
         goalSelector.addGoal(1, new net.minecraft.world.entity.ai.goal.Goal(){

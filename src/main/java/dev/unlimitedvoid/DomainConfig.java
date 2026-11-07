@@ -4,6 +4,7 @@ import net.minecraftforge.common.ForgeConfigSpec;
 
 public final class DomainConfig {
     public static final ForgeConfigSpec SPEC;
+    public static final ForgeConfigSpec.BooleanValue SURVIVAL_PROGRESSION;
     public static final ForgeConfigSpec.BooleanValue GOJO_INFINITY;
     public static final ForgeConfigSpec.DoubleValue NPC_DANGER_TRANSFORM_CHANCE;
     public static final ForgeConfigSpec.IntValue SHRINE_RADIUS;
@@ -19,6 +20,7 @@ public final class DomainConfig {
     public static final ForgeConfigSpec.DoubleValue PURPLE_BLAST_RADIUS,PURPLE_BLAST_DAMAGE,PURPLE_BACKLASH;
     static {
         ForgeConfigSpec.Builder b=new ForgeConfigSpec.Builder();
+        SURVIVAL_PROGRESSION=b.comment("Survival technique paths, mastery and cursed energy. Creative remains unrestricted.").define("survivalProgression",true);
         NPC_DANGER_TRANSFORM_CHANCE=b.comment("One lifetime roll for Student Gojo awakening / Megumi Sukuna true form at near death. Failure never rerolls, including after reload.").defineInRange("npcNearDeathTransformationChance",.5,0,1);
         GOJO_INFINITY=b.comment("Gojo NPC passive Infinity: ordinary melee and projectiles.").define("gojoInfinity",true);
         SHRINE_RADIUS=b.comment("Open domain radius in blocks; 1 block is treated as 1 metre. Loaded targets only.").defineInRange("shrineRadius",200,16,200);

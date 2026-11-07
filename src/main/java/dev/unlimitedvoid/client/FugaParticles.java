@@ -18,12 +18,12 @@ final class FugaParticles {
     static int peak;
     static void clear(){LIVE.forEach(Particle::remove);LIVE.clear();peak=0;}
     static void stop(UUID owner){LIVE.removeIf(p->{if(p.owner.equals(owner)){p.remove();return true;}return false;});}
-    static void begin(){LIVE.removeIf(p->!p.isAlive());budget=MAX_SPAWN;}
+    static void begin(){LIVE.removeIf(p->!p.isAlive());while(LIVE.size()>ClientQuality.aliveParticles())LIVE.remove(LIVE.size()-1).remove();budget=ClientQuality.particlesPerTick();}
     static int alive(){return LIVE.size();}
     static void tick(FugaClient.Effect e,int castCount){
         var mc=Minecraft.getInstance();var level=mc.level;if(level==null)return;
         float age=e.age(level,0),burst=FugaTimeline.burstAge(age,e.flight);
-        if(e.from.distanceToSqr(mc.gameRenderer.getMainCamera().getPosition())>768*768&&e.to.distanceToSqr(mc.gameRenderer.getMainCamera().getPosition())>768*768)return;
+        if(e.from.distanceToSqr(mc.gameRenderer.getMainCamera().getPosition())>ClientQuality.distance()*ClientQuality.distance()&&e.to.distanceToSqr(mc.gameRenderer.getMainCamera().getPosition())>ClientQuality.distance()*ClientQuality.distance())return;
         int stride=Math.max(1,castCount);if(mc.options.particles().get().getId()>0)stride*=2;
         var r=level.random;
         Vec3 d=e.direction(level,0),side=d.cross(new Vec3(0,1,0)).normalize();if(side.lengthSqr()<.01)side=new Vec3(1,0,0);
@@ -84,7 +84,7 @@ final class FugaParticles {
     }
     private static Vec3 jitter(ClientLevel level,double size){var r=level.random;return new Vec3((r.nextDouble()-.5)*size*2,(r.nextDouble()-.5)*size*2,(r.nextDouble()-.5)*size*2);}
     private static void emit(FugaClient.Effect e,Vec3 p,Vec3 v,float size,int life,boolean smoke){
-        if(budget<=0||LIVE.size()>=MAX_ALIVE)return;
+        if(budget<=0||LIVE.size()>=ClientQuality.aliveParticles())return;
         var mc=Minecraft.getInstance();var texture=mc.getTextureManager().getTexture(TextureAtlas.LOCATION_PARTICLES);
         if(!(texture instanceof TextureAtlas atlas))return;
         var particle=new Puff(mc.level,e.owner,p,v,size,life,smoke,atlas);
