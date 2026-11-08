@@ -5,12 +5,12 @@ issueTrackerURL="https://github.com/Zeek114514/jujutsu-domains-forge/issues"
 
 [[mods]]
 modId="unlimitedvoid"
-version="1.11.0"
+version="1.12.0"
 displayName="Jujutsu Domains / 咒术领域"
 authors="Zeek114514"
 displayURL="https://github.com/Zeek114514/jujutsu-domains-forge"
 displayTest="MATCH_VERSION"
-description='''Unlimited Void closed barrier and Malevolent Shrine open slashing domain. U expands or dismisses, J switches, K resets burnout. Shrine has up to 200-block radius, adaptive Cleave and Dismantle, and shell breaking. Install on server and clients.'''
+description='''Jujutsu domains, Gojo/Sukuna combat and Mahoraga adaptation. Special-grade cursed tools with original OBJ models; Playful Cloud switches between three sections, a whole staff and sharpened dual blades. Includes NPC management, survival progression and cinematic Fuga fire. Install matching builds on server and clients.'''
 [[dependencies.unlimitedvoid]]
 modId="forge"
 mandatory=true

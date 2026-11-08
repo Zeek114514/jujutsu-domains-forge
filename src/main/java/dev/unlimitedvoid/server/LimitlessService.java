@@ -27,12 +27,15 @@ public final class LimitlessService {
         public State(UUID id,UUID owner,LimitlessKind kind,Vec3 position,Vec3 direction,int phase,int charge,long start,long phaseStart){this(id,owner,kind,position,direction,phase,charge,start,phaseStart,0);}
     }
     public static int activeCount(){return CASTS.size();}
+    public static void nullify(UUID owner){CASTS.values().removeIf(c->c.owner.equals(owner)&&c.phase!=PurpleDetonation.BLAST);}
     public static boolean casting(UUID owner){return CASTS.values().stream().anyMatch(c->c.owner.equals(owner)&&c.phase==0);}
     public static int cooldown(ServerPlayer p,LimitlessKind kind){var ready=READY.get(p.getUUID());return ready==null?0:Math.max(0,ready[kind.ordinal()]-p.server.getTickCount());}
     public static void reset(ServerPlayer p){READY.remove(p.getUUID());sync(p);}
     private static boolean chanting(ServerPlayer p){return DomainService.snapshot(p).stream().anyMatch(d->d.owner().equals(p.getUUID())&&d.closing()<0&&d.age()<DomainTimeline.chant(d.kind()));}
     public static void request(ServerPlayer p,LimitlessKind kind){
+        if(CursedToolCombat.nullified(p))return;
         if(!p.isAlive()||p.isSpectator()||DomainService.isCaptive(p.getUUID())||chanting(p)||FugaService.casting(p.getUUID())||casting(p.getUUID())||cooldown(p,kind)>0||CASTS.size()+NpcTechniqueService.activeCount()>=8)return;
+        if(!ProgressionService.spend(p,kind.ordinal()))return;
         var c=new Cast(p,kind);CASTS.put(c.id,c);
         READY.computeIfAbsent(p.getUUID(),id->new int[3])[kind.ordinal()]=p.server.getTickCount()+kind.cooldown;
         syncAll(p.server);

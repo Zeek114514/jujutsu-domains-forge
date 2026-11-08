@@ -13,7 +13,7 @@ final class SunDogPrankGoal extends Goal {
     private int elapsed;
     private boolean kicking,contact;
     SunDogPrankGoal(InnocentSunDog actor){this.actor=actor;setFlags(EnumSet.of(Flag.MOVE,Flag.LOOK));}
-    private boolean valid(InnocentSunDog other){return other.isAlive()&&!other.isNoAi()&&other.getType()==DomainEntities.SUN_DOG_SERVANT.get()&&(!other.isLeashed()||other.getLeashHolder()==actor)&&actor.hasLineOfSight(other);}
+    private boolean valid(InnocentSunDog other){return dev.unlimitedvoid.server.NpcControlService.mode(other)==0&&other.isAlive()&&!other.isNoAi()&&other.getType()==DomainEntities.SUN_DOG_SERVANT.get()&&(!other.isLeashed()||other.getLeashHolder()==actor)&&actor.hasLineOfSight(other);}
     @Override public boolean canUse(){
         if(!actor.isSunDog()||actor.level().getGameTime()<actor.nextPrankAt)return false;
         partner=actor.level().getEntitiesOfClass(InnocentSunDog.class,actor.getBoundingBox().inflate(3),this::valid).stream()

@@ -17,12 +17,13 @@ import net.minecraftforge.fml.common.Mod;
 /** Defensive Infinity only: no combat target, reflection damage or world-wide projectile scans. */
 @Mod.EventBusSubscriber(modid=UnlimitedVoid.ID)
 public final class NpcInfinity {
-    private static boolean active(JujutsuNpc npc){return npc.isAlive()&&npc.isGojo()&&DomainConfig.GOJO_INFINITY.get();}
+    private static boolean active(JujutsuNpc npc){return npc.isAlive()&&npc.isGojo()&&DomainConfig.GOJO_INFINITY.get()&&!CursedToolCombat.nullified(npc);}
     @SubscribeEvent public static void attack(LivingAttackEvent event){
         if(!(event.getEntity() instanceof JujutsuNpc npc)||npc.level().isClientSide||!active(npc))return;
         var source=event.getSource();
+        if(CursedToolCombat.spearContact(source,npc))return;
         if(source.is(DamageTypeTags.BYPASSES_INVULNERABILITY))return;
-        if(source.is(DamageTypeTags.IS_PROJECTILE)||source.is(DamageTypes.PLAYER_ATTACK)||source.is(DamageTypes.MOB_ATTACK)||source.is(DamageTypes.MOB_ATTACK_NO_AGGRO)){
+        if(source.is(DamageTypeTags.IS_PROJECTILE)||source.is(DamageTypes.PLAYER_ATTACK)||source.is(CursedToolCombat.SOUL_CUT)||source.is(DamageTypes.MOB_ATTACK)||source.is(DamageTypes.MOB_ATTACK_NO_AGGRO)){
             if(source.getEntity() instanceof dev.unlimitedvoid.entity.MahoragaEntity mahoraga){if(mahoraga.adaptation(dev.unlimitedvoid.MahoragaRules.Kind.INFINITY)>=4)return;mahoraga.observe(dev.unlimitedvoid.MahoragaRules.Kind.INFINITY);}
             // Domain amplification permits deliberate close contact, not long-range Dismantle.
             if(source.getEntity() instanceof JujutsuNpc sukuna&&!sukuna.isGojo()&&sukuna.isAlive()&&!sukuna.isNoAi()&&sukuna.distanceToSqr(npc)<=4.5*4.5){

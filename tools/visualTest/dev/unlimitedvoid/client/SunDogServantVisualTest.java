@@ -31,6 +31,7 @@ public final class SunDogServantVisualTest {
         if(!Boolean.getBoolean("uv.sunDogServantTest")||event.phase!=TickEvent.Phase.END)return;
         var mc=Minecraft.getInstance();GLFW.glfwHideWindow(mc.getWindow().getWindow());
         if(!started&&mc.screen instanceof TitleScreen){started=true;mc.createWorldOpenFlows().createFreshLevel("Sun-Dog-QA-"+System.currentTimeMillis(),new LevelSettings("Sun Dog QA",GameType.CREATIVE,false,Difficulty.PEACEFUL,true,new GameRules(),WorldDataConfiguration.DEFAULT),new WorldOptions(12345,false,false),a->a.registryOrThrow(Registries.WORLD_PRESET).getHolderOrThrow(WorldPresets.FLAT).value().createWorldDimensions());}
+        if(mc.screen instanceof NpcManagementScreen)mc.setScreen(null);
         if(mc.player==null||mc.level==null||mc.screen!=null)return;
         if(warmup++<140)return;ticks++;
         if(ticks==1){
@@ -61,6 +62,13 @@ public final class SunDogServantVisualTest {
             try(var stream=mc.getResourceManager().getResource(renderer.getTextureLocation(actors.get(0))).orElseThrow().open();var image=com.mojang.blaze3d.platform.NativeImage.read(stream)){require(image.getWidth()==1024&&image.getHeight()==1024,"HD skin loaded at 1024 square");}catch(java.io.IOException ex){throw new RuntimeException(ex);}
             mc.options.hideGui=true;
         }
+        if(ticks==95)mc.getSingleplayerServer().execute(()->{
+            var p=mc.getSingleplayerServer().getPlayerList().getPlayers().get(0);var npc=p.serverLevel().getEntitiesOfClass(InnocentSunDog.class,new AABB(-2,-62,-2,2,-56,2)).get(0);
+            var holder=DomainEntities.INNOCENT_SUN_DOG.get().create(p.serverLevel());holder.moveTo(2,-60,.5,0,0);holder.setNoAi(true);p.serverLevel().addFreshEntity(holder);npc.setLeashedTo(holder,true);
+            dev.unlimitedvoid.server.NpcControlService.request(p,npc.getId(),2);
+            require(!npc.isLeashed()&&dev.unlimitedvoid.server.NpcControlService.mode(npc)==2,"manual wait overrides existing leash");
+            try{var type=Class.forName("dev.unlimitedvoid.entity.SunDogPrankGoal");var constructor=type.getDeclaredConstructor(InnocentSunDog.class);constructor.setAccessible(true);var goal=constructor.newInstance(holder);var valid=type.getDeclaredMethod("valid",InnocentSunDog.class);valid.setAccessible(true);require(!(boolean)valid.invoke(goal,npc),"automatic prank cannot recapture manually controlled follower");}catch(Exception ex){throw new RuntimeException(ex);}
+        });
         if(ticks==90)Screenshot.grab(mc.gameDirectory,"sun-dog-servant-ingame.png",mc.getMainRenderTarget(),c->{});
         if(ticks==110){LogUtils.getLogger().info("SUN_DOG_SERVANT_TEST_COMPLETE");mc.stop();}
     }

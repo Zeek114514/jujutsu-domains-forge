@@ -1,7 +1,7 @@
 plugins {
     id 'net.minecraftforge.gradle' version '6.0.54'
 }
-version = '1.11.0'
+version = '1.12.0'
 group = 'dev.unlimitedvoid'
 base { archivesName = 'unlimited-void-1.20.1' }
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
@@ -92,3 +92,11 @@ tasks.register('validateNpcAttackMotion', JavaExec) {
     jvmArgs '-Djava.awt.headless=true'
 }
 tasks.named('check') { dependsOn 'validateNpcAttackMotion' }
+
+tasks.register('validateProgression', JavaExec) {
+    dependsOn 'classes', 'validationClasses'
+    classpath = sourceSets.validation.runtimeClasspath
+    mainClass = 'dev.unlimitedvoid.ProgressionRulesCheck'
+    jvmArgs '-Djava.awt.headless=true'
+}
+tasks.named('check') { dependsOn 'validateProgression' }

@@ -111,5 +111,21 @@
   "entity.unlimitedvoid.innocent_sun_dog": "无辜的孙狗",
   "item.unlimitedvoid.innocent_sun_dog_spawn_egg": "无辜的孙狗",
   "entity.unlimitedvoid.sun_dog_servant": "孙狗的奴隶",
-  "item.unlimitedvoid.sun_dog_servant_spawn_egg": "孙狗的奴隶"
+  "item.unlimitedvoid.sun_dog_servant_spawn_egg": "孙狗的奴隶",
+  "key.unlimitedvoid.progression": "术式成长",
+  "item.unlimitedvoid.inverted_spear_of_heaven": "天逆鉾",
+  "item.unlimitedvoid.split_soul_katana": "释魂刀",
+  "item.unlimitedvoid.playful_cloud": "游云",
+  "tooltip.unlimitedvoid.special_grade": "特级咒具",
+  "tooltip.unlimitedvoid.cursed_tool.spear": "接触强制解除目标正在发动的术式；压制2秒",
+  "tooltip.unlimitedvoid.cursed_tool.soul": "潜行右键开启灵魂感知30秒；感知时斩击无视护甲与抗性",
+  "tooltip.unlimitedvoid.cursed_tool.cloud": "纯物理咒具；威力随攻击蓄力、力量属性提升",
+  "death.attack.unlimitedvoid.soul_cut": "%1$s的灵魂被%2$s斩断了",
+  "death.attack.unlimitedvoid.soul_cut.item": "%1$s的灵魂被%2$s用%3$s斩断了",
+  "effect.unlimitedvoid.soul_sight": "灵魂感知",
+  "tooltip.unlimitedvoid.cloud_form.0": "形态：三节棍",
+  "tooltip.unlimitedvoid.cloud_form.1": "形态：整棍",
+  "tooltip.unlimitedvoid.cloud_form.2": "形态：削尖双刀",
+  "tooltip.unlimitedvoid.cloud_controls": "右键切换三节/整棍；潜行右键削尖/收回双刀",
+  "message.unlimitedvoid.cloud_offhand": "腾空副手后才能使用双刀"
 }

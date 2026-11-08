@@ -17,6 +17,11 @@ public final class JujutsuNpc extends PathfinderMob {
     private static final net.minecraft.network.syncher.EntityDataAccessor<Integer> COMBO_STEP=net.minecraft.network.syncher.SynchedEntityData.defineId(JujutsuNpc.class,net.minecraft.network.syncher.EntityDataSerializers.INT);
     private static final net.minecraft.network.syncher.EntityDataAccessor<Long> STAGGER_START=net.minecraft.network.syncher.SynchedEntityData.defineId(JujutsuNpc.class,net.minecraft.network.syncher.EntityDataSerializers.LONG);
     private static final net.minecraft.network.syncher.EntityDataAccessor<Integer> STAGGER_LENGTH=net.minecraft.network.syncher.SynchedEntityData.defineId(JujutsuNpc.class,net.minecraft.network.syncher.EntityDataSerializers.INT);
+    private static final net.minecraft.network.syncher.EntityDataAccessor<Integer> TACTIC=net.minecraft.network.syncher.SynchedEntityData.defineId(JujutsuNpc.class,net.minecraft.network.syncher.EntityDataSerializers.INT);
+    private static final net.minecraft.network.syncher.EntityDataAccessor<Long> TACTIC_END=net.minecraft.network.syncher.SynchedEntityData.defineId(JujutsuNpc.class,net.minecraft.network.syncher.EntityDataSerializers.LONG);
+    public long nextTacticAt,tacticUntil;
+    public void showTactic(int action,int ticks){entityData.set(TACTIC,action);entityData.set(TACTIC_END,level().getGameTime()+ticks);}
+    public int tactic(){return level().getGameTime()<entityData.get(TACTIC_END)?entityData.get(TACTIC):0;}
     private int comboNext;private long comboUntil,staggerReady;private java.util.UUID comboTarget;
     public int comboStep(){return entityData.get(COMBO_STEP);}
     public int nextComboStep(){return level().getGameTime()<comboUntil?comboNext:0;}
@@ -30,7 +35,7 @@ public final class JujutsuNpc extends PathfinderMob {
     }
     private static final net.minecraft.network.syncher.EntityDataAccessor<Boolean> AWAKENED=net.minecraft.network.syncher.SynchedEntityData.defineId(JujutsuNpc.class,net.minecraft.network.syncher.EntityDataSerializers.BOOLEAN);
     private static final net.minecraft.network.syncher.EntityDataAccessor<Boolean> ASCENDED=net.minecraft.network.syncher.SynchedEntityData.defineId(JujutsuNpc.class,net.minecraft.network.syncher.EntityDataSerializers.BOOLEAN);
-    @Override protected void defineSynchedData(){super.defineSynchedData();entityData.define(COMBO_STEP,0);entityData.define(STAGGER_START,-1000L);entityData.define(STAGGER_LENGTH,0);entityData.define(AWAKENED,false);entityData.define(ASCENDED,false);entityData.define(PUNCH_KIND,-1);entityData.define(PUNCH_START,0L);entityData.define(MEGUMI,false);entityData.define(MAHORAGA_POSE,-100L);}
+    @Override protected void defineSynchedData(){super.defineSynchedData();entityData.define(TACTIC,0);entityData.define(TACTIC_END,0L);entityData.define(COMBO_STEP,0);entityData.define(STAGGER_START,-1000L);entityData.define(STAGGER_LENGTH,0);entityData.define(AWAKENED,false);entityData.define(ASCENDED,false);entityData.define(PUNCH_KIND,-1);entityData.define(PUNCH_START,0L);entityData.define(MEGUMI,false);entityData.define(MAHORAGA_POSE,-100L);}
     private static final net.minecraft.network.syncher.EntityDataAccessor<Integer> PUNCH_KIND=net.minecraft.network.syncher.SynchedEntityData.defineId(JujutsuNpc.class,net.minecraft.network.syncher.EntityDataSerializers.INT);
     private static final net.minecraft.network.syncher.EntityDataAccessor<Long> PUNCH_START=net.minecraft.network.syncher.SynchedEntityData.defineId(JujutsuNpc.class,net.minecraft.network.syncher.EntityDataSerializers.LONG);
     private static final net.minecraft.network.syncher.EntityDataAccessor<Boolean> MEGUMI=net.minecraft.network.syncher.SynchedEntityData.defineId(JujutsuNpc.class,net.minecraft.network.syncher.EntityDataSerializers.BOOLEAN);
@@ -101,6 +106,7 @@ public final class JujutsuNpc extends PathfinderMob {
     public boolean isGojo(){return getType()==DomainEntities.STUDENT_GOJO.get()||getType()==DomainEntities.SHINJUKU_GOJO.get()||getType()==DomainEntities.AWAKENED_GOJO.get();}
     private boolean isAdvancedType(){return getType()==DomainEntities.SHINJUKU_GOJO.get()||getType()==DomainEntities.TRUE_SUKUNA.get();}
     @Override protected void registerGoals(){
+        goalSelector.addGoal(0,new NpcOrderGoal(this));
         goalSelector.addGoal(0,new FloatGoal(this));
         goalSelector.addGoal(1,new GojoCombatGoal(this));
         goalSelector.addGoal(1,new SukunaCombatGoal(this));

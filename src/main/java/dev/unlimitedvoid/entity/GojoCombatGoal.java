@@ -41,6 +41,7 @@ public final class GojoCombatGoal extends Goal {
             if(distance>1.8*1.8||!visible){npc.getNavigation().moveTo(target,1.65);return;}
             if(now>=ready&&!NpcTechniqueService.casting(npc)&&NpcTechniqueService.instantPurple(npc,target)){duelSpent=target.getUUID();ready=now+LimitlessKind.PURPLE.cooldown;punchReady=now+NpcMeleeRules.INTERVAL;return;}
         }
+        if(!opening&&NpcTactics.tick(npc,target))return;
         if(distance>NpcMeleeRules.REACH*NpcMeleeRules.REACH||!visible){
             npc.getNavigation().moveTo(target,1.35);
             if(!opening&&distance>36&&distance<24*24&&visible&&now>=ready&&now>=punchReady&&!NpcTechniqueService.casting(npc))tryRemote(now);

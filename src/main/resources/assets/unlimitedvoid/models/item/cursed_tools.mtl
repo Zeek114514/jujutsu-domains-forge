@@ -1,0 +1,31 @@
+newmtl steel
+Kd 1 1 1
+map_Kd unlimitedvoid:item/cursed_steel
+
+newmtl edge
+Kd 1 1 1
+map_Kd unlimitedvoid:item/cursed_edge
+
+newmtl shadow
+Kd 1 1 1
+map_Kd unlimitedvoid:item/cursed_shadow
+
+newmtl black
+Kd 1 1 1
+map_Kd unlimitedvoid:item/cursed_black
+
+newmtl wrap
+Kd 1 1 1
+map_Kd unlimitedvoid:item/cursed_wrap
+
+newmtl red
+Kd 1 1 1
+map_Kd unlimitedvoid:item/cursed_red
+
+newmtl fur
+Kd 1 1 1
+map_Kd unlimitedvoid:item/cursed_fur
+
+newmtl furshade
+Kd 1 1 1
+map_Kd unlimitedvoid:item/cursed_furshade

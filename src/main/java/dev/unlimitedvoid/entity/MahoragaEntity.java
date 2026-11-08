@@ -38,8 +38,10 @@ public final class MahoragaEntity extends PathfinderMob {
     public boolean emerging(){return entityData.get(EMERGE)>=0&&level().getGameTime()-entityData.get(EMERGE)<60;}
     public boolean dismissing(){return entityData.get(DISMISS)>=0;}
     public void dismiss(){if(!dismissing()){entityData.set(DISMISS,level().getGameTime());getNavigation().stop();attackTarget=null;entityData.set(ATTACK,0);}}
-    public boolean canAct(){var owner=owner();return isAlive()&&!isNoAi()&&!emerging()&&!dismissing()&&!DomainService.isCaptive(getUUID())&&(ownerId().isEmpty()||owner!=null&&owner.isAlive()&&!owner.isNoAi());}
-    public boolean enemy(LivingEntity target){var owner=owner();return target!=this&&target.isAlive()&&!isAlliedTo(target)&&(owner==null||!owner.isAlliedTo(target))&&(target instanceof net.minecraft.world.entity.monster.Enemy||target instanceof JujutsuNpc n&&n.isGojo());}
+    public boolean canAct(){var owner=owner();return dev.unlimitedvoid.server.NpcControlService.canFight(this)&&isAlive()&&!isNoAi()&&!emerging()&&!dismissing()&&!DomainService.isCaptive(getUUID())&&(ownerId().isEmpty()||owner!=null&&owner.isAlive()&&!owner.isNoAi());}
+    public boolean enemy(LivingEntity target){var owner=owner();if(owner!=null&&!dev.unlimitedvoid.server.NpcControlService.canFight(owner))return false;if(!dev.unlimitedvoid.server.NpcControlService.canFight(this)||target==this||!target.isAlive()||isAlliedTo(target)||owner!=null&&owner.isAlliedTo(target))return false;
+        if(target instanceof JujutsuNpc||target instanceof MahoragaEntity){Boolean team=dev.unlimitedvoid.server.NpcControlService.teamEnemy(this,target);if(team!=null)return team;}
+        return target instanceof net.minecraft.world.entity.monster.Enemy||target instanceof JujutsuNpc n&&n.isGojo();}
     public double forceFactor(Kind kind){return MahoragaRules.forceFactor(adaptation(kind));}
     public boolean hurtAs(Kind kind,DamageSource source,float amount){Kind before=forcedKind;forcedKind=kind;try{return hurt(source,amount);}finally{forcedKind=before;}}
     private Kind kind(DamageSource source){
@@ -86,7 +88,7 @@ public final class MahoragaEntity extends PathfinderMob {
     public MahoragaEntity(EntityType<? extends MahoragaEntity> type,Level level){super(type,level);setPersistenceRequired();setMaxUpStep(1);}
     @Override protected void defineSynchedData(){super.defineSynchedData();entityData.define(GROWTH_COUNT,0L);entityData.define(WHEEL,0);entityData.define(TURN,-100L);entityData.define(EMERGE,-1L);entityData.define(ADAPT,0);entityData.define(ATTACK,0);entityData.define(ATTACK_START,0L);entityData.define(DISMISS,-1L);entityData.define(OWNER,Optional.empty());}
     public static AttributeSupplier attributes(){return Mob.createMobAttributes().add(Attributes.MAX_HEALTH,1000).add(Attributes.MOVEMENT_SPEED,.32).add(Attributes.FOLLOW_RANGE,48).add(Attributes.ARMOR,8).add(Attributes.KNOCKBACK_RESISTANCE,.85).build();}
-    @Override protected void registerGoals(){goalSelector.addGoal(0,new FloatGoal(this));goalSelector.addGoal(1,new MahoragaCombatGoal(this));goalSelector.addGoal(3,new FollowSummoner(this));goalSelector.addGoal(5,new LookAtPlayerGoal(this,net.minecraft.world.entity.player.Player.class,12));}
+    @Override protected void registerGoals(){goalSelector.addGoal(0,new NpcOrderGoal(this));goalSelector.addGoal(0,new FloatGoal(this));goalSelector.addGoal(1,new MahoragaCombatGoal(this));goalSelector.addGoal(3,new FollowSummoner(this));goalSelector.addGoal(5,new LookAtPlayerGoal(this,net.minecraft.world.entity.player.Player.class,12));}
     public float emergence(float partial){long start=entityData.get(EMERGE);float progress=start<0?1:DomainTimeline.smooth((level().getGameTime()+partial-start)/60f);long end=entityData.get(DISMISS);return end<0?progress:progress*(1-DomainTimeline.smooth((level().getGameTime()+partial-end)/30f));}
     public void beginEmergence(){entityData.set(EMERGE,level().getGameTime());}
     public void turnWheel(){entityData.set(WHEEL,entityData.get(WHEEL)+1);entityData.set(TURN,level().getGameTime());}
