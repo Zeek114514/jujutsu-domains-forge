@@ -1,6 +1,6 @@
 # 咒术领域 · Jujutsu Domains
 
-> 当前版本：**1.11.0**（三段近战、命中硬直、技能衔接与照片NPC互动）。灶·开现已默认使用粒子火焰、火矢拖尾和爆燃烟尘。向空中的苍射入赫，或向赫射入苍，形成逐渐膨胀并大范围爆炸的自爆茈。
+> 当前版本：**1.12.0**。新增独立网格特级咒具、游云三节/整棍/削尖双刀形态、NPC管理与生存成长；灶·开重做超大火焰弓、巨型火柱、翻卷烟冠和冲击波。天逆鉾刀柄加粗，释魂刀刀柄加粗并加长。
 
 [![Build](https://github.com/Zeek114514/jujutsu-domains-forge/actions/workflows/build.yml/badge.svg)](https://github.com/Zeek114514/jujutsu-domains-forge/actions/workflows/build.yml)
 [![Minecraft](https://img.shields.io/badge/Minecraft-1.20.1-62b47a)](https://www.minecraft.net/)
@@ -15,8 +15,10 @@
 
 ## 下载和安装
 
+新增内容见[特级咒具与三形态游云](docs/CURSED_TOOLS.md)、[玩法更新](docs/ROADMAP_1_12.md)、[灶·开新版特效](docs/FUGA_CATACLYSM_PREVIEW.md)及[1.12.0发布验证](docs/RELEASE_1_12_VALIDATION.md)。
+
 1. 安装 **Minecraft Java 1.20.1、Forge 47.4.10 或更高的 47.x、Java 17**。
-2. 前往 [Releases](https://github.com/Zeek114514/jujutsu-domains-forge/releases/latest)，下载 `unlimited-void-1.20.1-1.11.0.jar`。
+2. 前往 [Releases](https://github.com/Zeek114514/jujutsu-domains-forge/releases/latest)，下载 `unlimited-void-1.20.1-1.12.0.jar`。
 3. 放进当前游戏实例的 `mods` 文件夹。升级时移走旧版同名模组，避免重复加载，随后重启游戏。
 4. 多人游戏中客户端与服务端都要安装相同版本。
 
@@ -24,7 +26,23 @@
 
 开发依赖为Forge47.4.10，实机验证使用Forge47.4.20。1.10.6见[攻击动作验证](docs/MAHORAGA_ATTACK_ANIMATION_VALIDATION.md)、[成长验证](docs/MAHORAGA_GROWTH_VALIDATION.md)与[法轮验证](docs/MAHORAGA_WHEEL_VALIDATION.md)；此前内容见[魔虚罗记录](docs/MAHORAGA_VALIDATION.md)和[宿傩平衡记录](docs/NPC_BALANCE_VALIDATION.md)；既有内容见[灶·开粒子记录](docs/FUGA_PARTICLES_VALIDATION.md)，自爆茈沿用[1.5.0记录](docs/PURPLE_DETONATION_VALIDATION.md)。此前记录按各自版本保留，不表示所有47.x、光影组合和硬件均已覆盖。御厨子血红天空/镜面的指定光影限制仍见[1.4.1记录](docs/SHRINE_SLASH_VALIDATION.md)。
 
-## 角色与战斗（1.11.0）
+## 特级咒具与游云三形态（1.12.0）
+
+三件武器使用原创OBJ网格、专用材质，加入模组自己的创造栏。天逆鉾接触解除目前已有的目标术式；释魂刀潜行右键开启灵魂感知后发挥穿透效果；游云为纯物理武器，随攻击蓄力和力量效果增强。
+
+游云右键切换三节棍/整棍，潜行右键主动削尖进入双刀，再次操作可收回。双刀需腾空副手；两手显示来自同一件武器，不复制物品或替换原副手。整棍较慢、触及更远，双刀单次较轻、攻击更快。
+
+![特级咒具独立网格实机](docs/images/cursed-tools-1.12.0.png)
+
+![游云三种形态](docs/images/playful-cloud-forms-1.12.0.png)
+
+## 管理、成长与灶·开（1.12.0）
+
+潜行右键NPC打开管理页，可设置跟随、待命、红蓝阵营，保存并重置最多24人的对战。生存玩家持眼罩/手指潜行右键选择路线，击败怪物提升熟练度，技能有解锁条件与咒力消耗；创造模式可自由测试。按P查看成长和三档火焰质量。
+
+灶·开保留服务端伤害规则，以连续发光的超大火焰弓蓄力，命中后白热爆心升为巨型火柱、翻卷烟冠与地面冲击波，再逐渐消散。地形破坏仍默认关闭。[720p实机演示](docs/images/fuga-large-flame-bow-1.12.0.mp4)。
+
+## 既有角色与战斗
 
 五条以左右苍拳接收尾拳，进阶形态以赫拳收尾；宿傩以拳击接斩击。加入转腰带肩、踏步、蓄势和收势，伤害与动作共用接触帧。成功命中后有4～6刻短硬直，20刻保护间隔避免连续控制；收势后才接普通术式，宿傩冷却期间继续追击。
 
@@ -50,7 +68,7 @@
 
 所有五条可低概率无量空处，三种宿傩可普攻、解/捌、低概率伏魔御厨子与极低概率粒子灶·开。双方开始开领域时立即反开，同类NPC同维度只维持一个领域。虎皮交付手指→新宿（惠皮），新宿濒死以默认50%概率→原身并满血。惠皮宿傩现在可低概率从影池召唤魔虚罗：巨型立体模型、八握轮盘、逐步适应、近战与适应无下限后的空间斩。详见[魔虚罗指南](docs/MAHORAGA.md)。
 
-独立【咒术领域】创造栏包含九种生成蛋、眼罩和手指，共十一个物品。原有物品变身路线保留。NPC不主动伤害玩家和普通友方生物，术式不破坏地形。
+独立【咒术领域】创造栏包含九种生成蛋、眼罩、手指和三件特级咒具，共十四个物品。原有物品变身路线保留。NPC不主动伤害玩家和普通友方生物，术式不破坏地形。
 
 ![魔虚罗实机光影截图](docs/images/mahoraga-horizontal-1.10.5.png)
 
@@ -58,7 +76,7 @@
 
 [魔虚罗四种攻击的实机演示](docs/images/mahoraga-attacks-1.10.6.mp4)。
 
-配置、濒死优先级和原版玩家形态说明见[NPC指南](docs/NPCS.md)。客户端/服务端都需更新1.11.0（无下限通道协议8，领域协议14）。
+配置、濒死优先级和原版玩家形态说明见[NPC指南](docs/NPCS.md)。客户端/服务端都需更新1.12.0（无下限协议9，领域协议14，管理/成长通道各为1）。
 
 ## 玩法
 

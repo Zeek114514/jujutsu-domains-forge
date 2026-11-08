@@ -80,6 +80,9 @@ public final class DomainService {
         DomainNetwork.sync(player);
     }
     public static float barrierIntegrity(UUID owner) { return BARRIER_HP.getOrDefault(owner,100f)/100f; }
+    public static void nullify(UUID caster){
+        for(var d:List.copyOf(DOMAINS.values()))if(d.casterId.equals(caster)&&d.closingAt<0){dismiss(d.owner);syncAll(d.level.getServer());}
+    }
     private static void dismiss(UUID owner) {
         Domain domain=DOMAINS.get(owner);
         if(domain==null || domain.closingAt>=0)return;
@@ -192,6 +195,7 @@ public final class DomainService {
 
     /** Empty activation packets cannot provide positions, damage, radius, or duration. */
     public static void toggle(ServerPlayer player) {
+        if(CursedToolCombat.nullified(player))return;
         MinecraftServer server = player.getServer();
         if (server == null || !player.isAlive() || player.isSpectator()) return;
         int now = server.getTickCount();
@@ -245,6 +249,7 @@ public final class DomainService {
     public static void dismissNpc(dev.unlimitedvoid.entity.JujutsuNpc npc){var d=DOMAINS.get(npc.getUUID());if(d!=null&&d.npc)dismiss(d.owner);}
     /** Reserve the family slot before broadcasting; recursive counter-expansions see this reservation. */
     public static boolean expandNpc(dev.unlimitedvoid.entity.JujutsuNpc npc,boolean counter){
+        if(CursedToolCombat.nullified(npc))return false;
         if(!NpcControlService.canFight(npc)||!(npc.level() instanceof ServerLevel level)||!npc.isAlive()||npc.isNoAi()||isCaptive(npc.getUUID())||(!counter&&!npc.domainReady())||DOMAINS.containsKey(npc.getUUID())||DOMAINS.size()>=MAX_DOMAINS)return false;
         DomainKind kind=npc.isGojo()?DomainKind.VOID:DomainKind.SHRINE;
         if(npcFamilyDomain(level,kind))return false;

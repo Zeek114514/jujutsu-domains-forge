@@ -124,9 +124,9 @@ public final class FugaClient {
         event.setRoll(event.getRoll()+(float)(Math.sin(time*1.7)*shake*.6));
     }
     @SubscribeEvent public static void render(RenderLevelStageEvent event) {
-        if(FugaParticles.ENABLED)return;
         if(event.getStage()!=RenderLevelStageEvent.Stage.AFTER_PARTICLES||EFFECTS.isEmpty())return;
         var mc=Minecraft.getInstance();if(mc.level==null||mc.player==null)return;
+        if(FugaParticles.ENABLED){FugaBowRenderer.render(event,EFFECTS.values());return;}
         FugaRenderer.render(event,EFFECTS.values());
     }
     static final class Effect {

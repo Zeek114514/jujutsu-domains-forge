@@ -11,6 +11,9 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber(modid=UnlimitedVoid.ID,bus=Mod.EventBusSubscriber.Bus.MOD)
 public final class DomainItems {
     public static final DeferredRegister<Item> ITEMS=DeferredRegister.create(ForgeRegistries.ITEMS,UnlimitedVoid.ID);
+    public static final RegistryObject<Item> INVERTED_SPEAR=ITEMS.register("inverted_spear_of_heaven",()->new dev.unlimitedvoid.item.CursedToolItem(dev.unlimitedvoid.item.CursedToolItem.Kind.SPEAR));
+    public static final RegistryObject<Item> SPLIT_SOUL_KATANA=ITEMS.register("split_soul_katana",()->new dev.unlimitedvoid.item.CursedToolItem(dev.unlimitedvoid.item.CursedToolItem.Kind.SOUL));
+    public static final RegistryObject<Item> PLAYFUL_CLOUD=ITEMS.register("playful_cloud",()->new dev.unlimitedvoid.item.CursedToolItem(dev.unlimitedvoid.item.CursedToolItem.Kind.CLOUD));
     public static final RegistryObject<Item> STUDENT_GOJO=ITEMS.register("student_gojo_spawn_egg",()->new ForgeSpawnEggItem(DomainEntities.STUDENT_GOJO,0x182033,0xf0f3ff,new Item.Properties()));
     public static final RegistryObject<Item> SUKUNA_16=ITEMS.register("sukuna_16_spawn_egg",()->new ForgeSpawnEggItem(DomainEntities.SUKUNA_16,0x951f32,0xd99b95,new Item.Properties()));
     public static final RegistryObject<Item> SHINJUKU_GOJO=ITEMS.register("shinjuku_gojo_spawn_egg",()->new ForgeSpawnEggItem(DomainEntities.SHINJUKU_GOJO,0x20252c,0xdde3f3,new Item.Properties()));
@@ -26,5 +29,5 @@ public final class DomainItems {
     public static final RegistryObject<CreativeModeTab> JUJUTSU_TAB=TABS.register("jujutsu_domains",()->CreativeModeTab.builder()
         .title(Component.translatable("itemGroup.unlimitedvoid.jujutsu_domains"))
         .icon(()->new ItemStack(BLINDFOLD.get()))
-        .displayItems((parameters,output)->{output.accept(STUDENT_GOJO.get());output.accept(AWAKENED_GOJO.get());output.accept(SHINJUKU_GOJO.get());output.accept(SUKUNA_16.get());output.accept(MEGUMI_SUKUNA.get());output.accept(TRUE_SUKUNA.get());output.accept(MAHORAGA.get());output.accept(INNOCENT_SUN_DOG.get());output.accept(SUN_DOG_SERVANT.get());output.accept(BLINDFOLD.get());output.accept(SUKUNA_FINGER.get());}).build());
+        .displayItems((parameters,output)->{output.accept(STUDENT_GOJO.get());output.accept(AWAKENED_GOJO.get());output.accept(SHINJUKU_GOJO.get());output.accept(SUKUNA_16.get());output.accept(MEGUMI_SUKUNA.get());output.accept(TRUE_SUKUNA.get());output.accept(MAHORAGA.get());output.accept(INNOCENT_SUN_DOG.get());output.accept(SUN_DOG_SERVANT.get());output.accept(BLINDFOLD.get());output.accept(SUKUNA_FINGER.get());output.accept(INVERTED_SPEAR.get());output.accept(SPLIT_SOUL_KATANA.get());output.accept(PLAYFUL_CLOUD.get());}).build());
 }

@@ -34,6 +34,7 @@ public final class FugaService {
         LAST_RESET.put(p.getUUID(),now);READY.remove(p.getUUID());DomainNetwork.fugaStatus(p);
     }
     public static void request(ServerPlayer player) {
+        if(CursedToolCombat.nullified(player))return;
         if(!player.isAlive() || player.isSpectator() || DomainService.isCaptive(player.getUUID())) return;
         int now=player.server.getTickCount();
         if(CASTS.containsKey(player.getUUID()) || LimitlessService.casting(player.getUUID()) || now<READY.getOrDefault(player.getUUID(),0)) return;
@@ -46,6 +47,7 @@ public final class FugaService {
     }
     public static void cancel(UUID owner){var c=CASTS.remove(owner);if(c!=null)for(var p:c.level.players())if(c.listeners.contains(p.getUUID()))send(c,p,2);}
     public static boolean request(dev.unlimitedvoid.entity.JujutsuNpc npc){
+        if(CursedToolCombat.nullified(npc))return false;
         if(npc.isGojo()||!npc.isAlive()||npc.isNoAi()||DomainService.isCaptive(npc.getUUID())||DomainService.npcChanting(npc)||CASTS.containsKey(npc.getUUID())||CASTS.size()>=FugaTimeline.MAX_CASTS||npc.level().getServer().getTickCount()<READY.getOrDefault(npc.getUUID(),0))return false;
         npc.cancelPunch();var c=new Cast(npc,npc.level().getServer().getTickCount());CASTS.put(npc.getUUID(),c);READY.put(npc.getUUID(),c.start+FugaTimeline.COOLDOWN);npc.getNavigation().stop();syncObservers(c);return true;
     }

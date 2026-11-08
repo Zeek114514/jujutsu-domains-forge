@@ -1,1 +1,7 @@
-{"replace": false, "values": ["unlimitedvoid:cleave"]}
+{
+  "replace": false,
+  "values": [
+    "unlimitedvoid:cleave",
+    "unlimitedvoid:soul_cut"
+  ]
+}

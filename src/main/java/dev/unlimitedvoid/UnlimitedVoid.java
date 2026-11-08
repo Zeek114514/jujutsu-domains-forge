@@ -12,6 +12,7 @@ public final class UnlimitedVoid {
         DomainSounds.EVENTS.register(net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext.get().getModEventBus());
         DomainEntities.TYPES.register(net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext.get().getModEventBus());
         DomainItems.ITEMS.register(net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext.get().getModEventBus());
+        CursedToolEffects.EFFECTS.register(net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext.get().getModEventBus());
         DomainItems.TABS.register(net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext.get().getModEventBus());
         dev.unlimitedvoid.network.NpcControlNetwork.register();
         dev.unlimitedvoid.network.ProgressionNetwork.register();

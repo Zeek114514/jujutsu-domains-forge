@@ -20,6 +20,8 @@ CC0-1.0 基础录音来自 greyfeather、Merrick079、hedonfire。来源、哈�
 
 ## 依赖与构建工具
 
+1.12.0新增咒具OBJ网格、MTL材质、程序绘制材质/灵魂感知图标，以及灶·开粒子遮罩与火焰弓发光网格由本项目制作。咒具造型参考用户提供的漫画/产品展示图；没有把这些参考图片或原版方块纹理作为新咒具素材打包。程序生成器随源代码提供，不改变原作角色设定的权利归属。
+
 Minecraft 与 Forge 通过开发依赖获取，不将游戏本体或完整 Forge 发行版提交进仓库。Gradle Wrapper 与构建依赖受各自许可约束；Gradle 许可见 https://github.com/gradle/gradle/blob/master/LICENSE ，Forge 许可见 https://github.com/MinecraftForge/MinecraftForge/blob/1.20.x/LICENSE.txt 。
 
 本项目是非官方同人模组。若对素材使用有疑问，请通过仓库 Issues 联系维护者。

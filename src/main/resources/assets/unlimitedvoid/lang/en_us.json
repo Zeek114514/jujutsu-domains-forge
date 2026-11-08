@@ -112,5 +112,20 @@
   "item.unlimitedvoid.innocent_sun_dog_spawn_egg": "Innocent Sun Dog Spawn Egg",
   "entity.unlimitedvoid.sun_dog_servant": "Sun Dog's Slave",
   "item.unlimitedvoid.sun_dog_servant_spawn_egg": "Sun Dog's Slave Spawn Egg",
-  "key.unlimitedvoid.progression": "Technique Progression"
+  "key.unlimitedvoid.progression": "Technique Progression",
+  "item.unlimitedvoid.inverted_spear_of_heaven": "Inverted Spear of Heaven",
+  "item.unlimitedvoid.split_soul_katana": "Split Soul Katana",
+  "item.unlimitedvoid.playful_cloud": "Playful Cloud",
+  "tooltip.unlimitedvoid.special_grade": "Special Grade Cursed Tool",
+  "tooltip.unlimitedvoid.cursed_tool.spear": "Contact cancels active techniques and suppresses recasting for 2s",
+  "tooltip.unlimitedvoid.cursed_tool.soul": "Sneak-right-click: Soul Sight for 30s; perceived souls bypass armor and resistance",
+  "tooltip.unlimitedvoid.cursed_tool.cloud": "Pure physical force; power scales with attack charge and Strength",
+  "death.attack.unlimitedvoid.soul_cut": "%1$s's soul was cut by %2$s",
+  "death.attack.unlimitedvoid.soul_cut.item": "%1$s's soul was cut by %2$s using %3$s",
+  "effect.unlimitedvoid.soul_sight": "Soul Sight",
+  "tooltip.unlimitedvoid.cloud_form.0": "Form: three-section staff",
+  "tooltip.unlimitedvoid.cloud_form.1": "Form: long staff",
+  "tooltip.unlimitedvoid.cloud_form.2": "Form: sharpened dual blades",
+  "tooltip.unlimitedvoid.cloud_controls": "Right-click: staff forms; sneak-right-click: sharpen/retract blades",
+  "message.unlimitedvoid.cloud_offhand": "Empty your off hand before using dual blades"
 }
