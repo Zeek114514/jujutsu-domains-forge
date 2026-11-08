@@ -16,25 +16,28 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-/** Render a second physical blade from the one weapon's form; never create or replace inventory items. */
+/** Matched first-person viewmodels and a world offhand blade, without creating inventory items. */
 @Mod.EventBusSubscriber(modid=UnlimitedVoid.ID,value=Dist.CLIENT)
 public final class CloudDualHands {
     @SubscribeEvent public static void hand(RenderHandEvent event){
         var mc=Minecraft.getInstance();var p=mc.player;
-        if(p==null||mc.getCameraEntity()!=p||event.getHand()!=InteractionHand.MAIN_HAND||!CursedToolItem.dual(p)||p.isInvisible()||FugaClient.handProgress()>=0)return;
-        if(!(mc.getEntityRenderDispatcher().getRenderer(p) instanceof PlayerRenderer renderer))return;
-        boolean left=p.getMainArm()==HumanoidArm.RIGHT;float sign=left?-1:1;
+        if(p==null||mc.getCameraEntity()!=p||!CursedToolItem.dual(p)||p.isInvisible()||FugaClient.handProgress()>=0)return;
+        // Replace both native hand passes: adding a separately rotated skin arm to the
+        // native main-hand item caused the arm to cross the crosshair and the scales to differ.
+        event.setCanceled(true);
+        if(event.getHand()!=InteractionHand.MAIN_HAND)return;
         var pose=event.getPoseStack();float swing=(float)Math.sin(p.getAttackAnim(event.getPartialTick())*Math.PI);
-        pose.pushPose();
-        try{
-            pose.translate(sign*.54,-.48+swing*.1,-.72);pose.mulPose(Axis.XP.rotationDegrees(-80-swing*25));pose.mulPose(Axis.YP.rotationDegrees(-sign*20));
-            if(left)renderer.renderLeftHand(pose,event.getMultiBufferSource(),event.getPackedLight(),p);else renderer.renderRightHand(pose,event.getMultiBufferSource(),event.getPackedLight(),p);
-        }finally{pose.popPose();}
-        pose.pushPose();
-        try{
-            pose.translate(sign*.55-swing*sign*.16,-.43+swing*.12,-.8);pose.mulPose(Axis.YP.rotationDegrees(sign*15));pose.mulPose(Axis.ZP.rotationDegrees(-sign*12+swing*sign*30));
-            mc.getItemRenderer().renderStatic(p,p.getMainHandItem(),left?ItemDisplayContext.FIRST_PERSON_LEFT_HAND:ItemDisplayContext.FIRST_PERSON_RIGHT_HAND,left,pose,event.getMultiBufferSource(),mc.level,event.getPackedLight(),net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY,p.getId());
-        }finally{pose.popPose();}
+        for(boolean left:new boolean[]{false,true}){
+            float sign=left?-1:1;pose.pushPose();
+            try{
+                // The native equip height follows its cached one-hand stack; applying it to
+                // both custom blades made them disappear after durability/form/arm updates.
+                pose.translate(sign*(.56-.10*swing),-.52+.05*swing,-.72-.04*swing);
+                pose.mulPose(Axis.ZP.rotationDegrees(sign*(18+12*swing)));
+                pose.mulPose(Axis.XP.rotationDegrees(-10));
+                mc.getItemRenderer().renderStatic(p,p.getMainHandItem(),left?ItemDisplayContext.FIRST_PERSON_LEFT_HAND:ItemDisplayContext.FIRST_PERSON_RIGHT_HAND,left,pose,event.getMultiBufferSource(),mc.level,event.getPackedLight(),net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY,p.getId());
+            }finally{pose.popPose();}
+        }
     }
     @Mod.EventBusSubscriber(modid=UnlimitedVoid.ID,value=Dist.CLIENT,bus=Mod.EventBusSubscriber.Bus.MOD)
     public static final class Layers {

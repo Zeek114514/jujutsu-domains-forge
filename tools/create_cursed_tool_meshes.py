@@ -140,6 +140,13 @@ def generate():
     m.tube((8,16.8,8),(7.78,20,8),.35,'edge',20,r2=.015)
     m.tube((8,-.25,8),(8,0,8),.23,'shadow',16)
     m.save('playful_cloud_blade',.8)
+    blade_path=ROOT/'models/item/playful_cloud_blade.json';blade=json.loads(blade_path.read_text())
+    # Viewmodel sizing is separate from the actual weapon mesh and world/GUI transforms.
+    for hand in ('righthand','lefthand'):
+        # Camera-space roll is mirrored explicitly by CloudDualHands, not compounded
+        # with opposite JSON yaw/pitch rotations that skew the left blade outward.
+        blade['display']['firstperson_'+hand]={'rotation':[0,0,0],'translation':[0,5.5,0],'scale':[.42]*3}
+    blade_path.write_text(json.dumps(blade,indent=2)+'\n',encoding='utf-8')
     path=ROOT/'models/item/playful_cloud.json';data=json.loads(path.read_text())
     data['overrides']=[{'predicate':{'unlimitedvoid:cloud_form':1},'model':'unlimitedvoid:item/playful_cloud_staff'},
                        {'predicate':{'unlimitedvoid:cloud_form':2},'model':'unlimitedvoid:item/playful_cloud_blade'}]
