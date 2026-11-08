@@ -1,6 +1,6 @@
 # 咒术领域 · Jujutsu Domains
 
-> 当前版本：**1.12.0**。新增独立网格特级咒具、游云三节/整棍/削尖双刀形态、NPC管理与生存成长；灶·开重做超大火焰弓、巨型火柱、翻卷烟冠和冲击波。天逆鉾刀柄加粗，释魂刀刀柄加粗并加长。
+> 当前版本：**1.12.1 热修复**。修正游云双刀第一人称尺寸、左右握持布局及穿到画面中央的错误手臂。保留1.12.0的独立网格咒具、游云三形态、管理/成长与灶·开重制内容。
 
 [![Build](https://github.com/Zeek114514/jujutsu-domains-forge/actions/workflows/build.yml/badge.svg)](https://github.com/Zeek114514/jujutsu-domains-forge/actions/workflows/build.yml)
 [![Minecraft](https://img.shields.io/badge/Minecraft-1.20.1-62b47a)](https://www.minecraft.net/)
@@ -18,7 +18,7 @@
 新增内容见[特级咒具与三形态游云](docs/CURSED_TOOLS.md)、[玩法更新](docs/ROADMAP_1_12.md)、[灶·开新版特效](docs/FUGA_CATACLYSM_PREVIEW.md)及[1.12.0发布验证](docs/RELEASE_1_12_VALIDATION.md)。
 
 1. 安装 **Minecraft Java 1.20.1、Forge 47.4.10 或更高的 47.x、Java 17**。
-2. 前往 [Releases](https://github.com/Zeek114514/jujutsu-domains-forge/releases/latest)，下载 `unlimited-void-1.20.1-1.12.0.jar`。
+2. 前往 [Releases](https://github.com/Zeek114514/jujutsu-domains-forge/releases/latest)，下载 `unlimited-void-1.20.1-1.12.1.jar`。
 3. 放进当前游戏实例的 `mods` 文件夹。升级时移走旧版同名模组，避免重复加载，随后重启游戏。
 4. 多人游戏中客户端与服务端都要安装相同版本。
 
@@ -27,6 +27,8 @@
 开发依赖为Forge47.4.10，实机验证使用Forge47.4.20。1.10.6见[攻击动作验证](docs/MAHORAGA_ATTACK_ANIMATION_VALIDATION.md)、[成长验证](docs/MAHORAGA_GROWTH_VALIDATION.md)与[法轮验证](docs/MAHORAGA_WHEEL_VALIDATION.md)；此前内容见[魔虚罗记录](docs/MAHORAGA_VALIDATION.md)和[宿傩平衡记录](docs/NPC_BALANCE_VALIDATION.md)；既有内容见[灶·开粒子记录](docs/FUGA_PARTICLES_VALIDATION.md)，自爆茈沿用[1.5.0记录](docs/PURPLE_DETONATION_VALIDATION.md)。此前记录按各自版本保留，不表示所有47.x、光影组合和硬件均已覆盖。御厨子血红天空/镜面的指定光影限制仍见[1.4.1记录](docs/SHRINE_SLASH_VALIDATION.md)。
 
 ## 特级咒具与游云三形态（1.12.0）
+
+1.12.1修正双刀第一人称：使用统一的左右视图变换和适合屏幕的尺寸，移除错误的独立副手手臂，避免耐久或主手设置变化后双刀掉到屏幕外。[热修复记录](docs/HOTFIX_1_12_1.md)。
 
 三件武器使用原创OBJ网格、专用材质，加入模组自己的创造栏。天逆鉾接触解除目前已有的目标术式；释魂刀潜行右键开启灵魂感知后发挥穿透效果；游云为纯物理武器，随攻击蓄力和力量效果增强。
 
@@ -76,7 +78,7 @@
 
 [魔虚罗四种攻击的实机演示](docs/images/mahoraga-attacks-1.10.6.mp4)。
 
-配置、濒死优先级和原版玩家形态说明见[NPC指南](docs/NPCS.md)。客户端/服务端都需更新1.12.0（无下限协议9，领域协议14，管理/成长通道各为1）。
+配置、濒死优先级和原版玩家形态说明见[NPC指南](docs/NPCS.md)。客户端/服务端都需更新1.12.1（无下限协议9，领域协议14，管理/成长通道各为1）。
 
 ## 玩法
 

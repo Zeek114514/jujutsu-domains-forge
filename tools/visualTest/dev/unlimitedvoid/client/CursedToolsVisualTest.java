@@ -84,16 +84,25 @@ public final class CursedToolsVisualTest {
         if(ticks==295)server(mc,p->{p.getMainHandItem().getItem().use(p.serverLevel(),p,InteractionHand.MAIN_HAND);check(dev.unlimitedvoid.item.CursedToolItem.cloudForm(p.getMainHandItem())==1,"right-click selects whole staff");});
         if(ticks==315)server(mc,p->{check(Math.abs(strike(p,cloud)-24)<.05,"whole staff physical damage");check(Math.abs(p.getAttributeValue(net.minecraftforge.common.ForgeMod.ENTITY_REACH.get())-4)<.05,"whole staff reach");p.setShiftKeyDown(true);p.getMainHandItem().getItem().use(p.serverLevel(),p,InteractionHand.MAIN_HAND);p.setShiftKeyDown(false);check(dev.unlimitedvoid.item.CursedToolItem.dual(p),"active sharpening selects dual blades with empty offhand");});
         if(ticks==330)server(mc,p->{check(Math.abs(strike(p,cloud)-16)<.05,"dual blades physical damage");check(Math.abs(p.getAttributeValue(Attributes.ATTACK_SPEED)-2.6)<.05,"dual blades attack faster");});
+        if(ticks==331)server(mc,p->{cloud.moveTo(8,-60,5,180,0);armored.moveTo(8,-60,-5,180,0);});
         if(ticks==335)Screenshot.grab(mc.gameDirectory,"cloud-dual-first-person.png",mc.getMainRenderTarget(),c->{});
-        if(ticks==336)mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT);
-        if(ticks==342)Screenshot.grab(mc.gameDirectory,"cloud-dual-third-person.png",mc.getMainRenderTarget(),c->{});
-        if(ticks==345)mc.options.setCameraType(CameraType.FIRST_PERSON);
+        if(ticks==336)mc.player.swing(InteractionHand.MAIN_HAND);
+        if(ticks==338)Screenshot.grab(mc.gameDirectory,"cloud-dual-swing.png",mc.getMainRenderTarget(),c->{});
+        if(ticks==340)server(mc,p->p.setMainArm(HumanoidArm.LEFT));
+        if(ticks==345)Screenshot.grab(mc.gameDirectory,"cloud-dual-left-handed.png",mc.getMainRenderTarget(),c->{});
+        if(ticks==346)server(mc,p->p.setMainArm(HumanoidArm.RIGHT));
         if(ticks==350)server(mc,p->{p.setItemSlot(EquipmentSlot.OFFHAND,new ItemStack(Items.SHIELD));var stack=p.getMainHandItem();stack.getItem().inventoryTick(stack,p.serverLevel(),p,0,true);check(dev.unlimitedvoid.item.CursedToolItem.cloudForm(stack)==0&&p.getOffhandItem().is(Items.SHIELD),"occupied offhand safely retracts dual mode without replacing items");p.setShiftKeyDown(true);stack.getItem().use(p.serverLevel(),p,InteractionHand.MAIN_HAND);p.setShiftKeyDown(false);check(dev.unlimitedvoid.item.CursedToolItem.cloudForm(stack)==0,"sharpening rejected when offhand occupied");p.setItemSlot(EquipmentSlot.OFFHAND,ItemStack.EMPTY);stack.getItem().use(p.serverLevel(),p,InteractionHand.MAIN_HAND);check(dev.unlimitedvoid.item.CursedToolItem.cloudForm(ItemStack.of(stack.save(new net.minecraft.nbt.CompoundTag())))==1,"staff form survives item NBT save/load");});
-        if(ticks==365&&done){mc.getToasts().clear();mc.setScreen(new Preview());}
-        if(ticks==370)Screenshot.grab(mc.gameDirectory,"cursed-tools-preview.png",mc.getMainRenderTarget(),c->{});
-        if(ticks==375)mc.setScreen(new CloudFormsPreview());
-        if(ticks==380)Screenshot.grab(mc.gameDirectory,"playful-cloud-forms.png",mc.getMainRenderTarget(),c->{});
-        if(ticks==385&&done){
+        if(ticks==365)server(mc,p->{p.setShiftKeyDown(true);p.getMainHandItem().getItem().use(p.serverLevel(),p,InteractionHand.MAIN_HAND);p.setShiftKeyDown(false);});
+        if(ticks==385){mc.getToasts().clear();Screenshot.grab(mc.gameDirectory,"cloud-dual-idle-hotfix.png",mc.getMainRenderTarget(),c->{});}
+        if(ticks==386)mc.player.swing(InteractionHand.MAIN_HAND);
+        if(ticks==389)Screenshot.grab(mc.gameDirectory,"cloud-dual-swing-hotfix.png",mc.getMainRenderTarget(),c->{});
+        if(ticks==390)server(mc,p->p.setMainArm(HumanoidArm.LEFT));
+        if(ticks==398)Screenshot.grab(mc.gameDirectory,"cloud-dual-left-hotfix.png",mc.getMainRenderTarget(),c->{});
+        if(ticks==400&&done){mc.getToasts().clear();mc.setScreen(new Preview());}
+        if(ticks==405)Screenshot.grab(mc.gameDirectory,"cursed-tools-preview.png",mc.getMainRenderTarget(),c->{});
+        if(ticks==410)mc.setScreen(new CloudFormsPreview());
+        if(ticks==415)Screenshot.grab(mc.gameDirectory,"playful-cloud-forms.png",mc.getMainRenderTarget(),c->{});
+        if(ticks==420&&done){
             for(var item:new Item[]{DomainItems.INVERTED_SPEAR.get(),DomainItems.SPLIT_SOUL_KATANA.get(),DomainItems.PLAYFUL_CLOUD.get()}){
                 var model=mc.getItemRenderer().getModel(new ItemStack(item),mc.level,mc.player,0);
                 check(model!=mc.getModelManager().getMissingModel()&&!model.getQuads(null,null,net.minecraft.util.RandomSource.create()).isEmpty(),"nonempty baked item model "+item);
